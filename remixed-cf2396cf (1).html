@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Air Atlas</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+.page-bar{display:flex;background:#0d2218;padding:0 2rem;height:38px;align-items:center;gap:8px;position:sticky;top:0;z-index:300;}
+.pbar-btn{font-family:'Space Mono',monospace;font-size:11px;padding:4px 14px;border:1px solid rgba(255,255,255,.2);border-radius:20px;background:transparent;color:rgba(255,255,255,.55);cursor:pointer;letter-spacing:.05em;transition:all .15s;}
+.pbar-btn.active{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.45);}
+.pbar-btn:hover:not(.active){color:rgba(255,255,255,.85);}
+
+:root{--bg:#f4f2ee;--surface:#fff;--border:#e0ddd6;--text:#1a1a18;--muted:#6b6b67;--accent:#1a3a2a;--good:#2d7a4f;--moderate:#b87c00;--unhealthy:#c0392b;--mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;}
+#page-dashboard{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;}
+.top-band{background:var(--accent);color:#fff;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:38px;z-index:200;}
+.brand{font-family:var(--mono);font-size:15px;letter-spacing:.08em;font-weight:700;}
+.band-stats{display:flex;gap:2rem;}
+.band-stat{display:flex;flex-direction:column;align-items:flex-end;}
+.band-stat-label{font-size:10px;opacity:.6;letter-spacing:.1em;text-transform:uppercase;}
+.band-stat-value{font-family:var(--mono);font-size:15px;font-weight:700;}
+.band-location{display:flex;flex-direction:column;}
+.band-location-name{font-size:14px;font-weight:500;opacity:.9;}
+.band-location-sub{font-size:11px;opacity:.55;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;display:inline-block;margin-right:6px;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.controls{padding:1.1rem 2rem 0;display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;}
+.select-wrap{display:flex;flex-direction:column;gap:4px;}
+.select-label{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-family:var(--mono);}
+select{font-family:var(--sans);font-size:14px;padding:8px 34px 8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6b67' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;min-width:130px;}
+select:focus{outline:2px solid var(--accent);outline-offset:2px;}
+.time-toggles{display:flex;gap:3px;background:var(--border);border-radius:8px;padding:3px;}
+.time-btn{font-family:var(--mono);font-size:11px;padding:5px 10px;border:none;background:transparent;color:var(--muted);cursor:pointer;border-radius:6px;}
+.time-btn.active{background:var(--surface);color:var(--text);font-weight:700;}
+.last-updated{margin-left:auto;font-size:12px;color:var(--muted);font-family:var(--mono);align-self:center;}
+.action-btn{font-family:var(--mono);font-size:11px;padding:6px 12px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;border-radius:7px;align-self:flex-end;}
+.action-btn:hover{background:var(--bg);}
+.aqi-hero{margin:1.1rem 2rem;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.1rem 2rem;display:flex;align-items:center;gap:2rem;}
+.aqi-number-wrap{display:flex;flex-direction:column;align-items:center;}
+.aqi-circle{width:86px;height:86px;border-radius:50%;border:3px solid;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.aqi-circle.good{border-color:var(--good);color:var(--good);}
+.aqi-circle.moderate{border-color:var(--moderate);color:var(--moderate);}
+.aqi-circle.unhealthy{border-color:var(--unhealthy);color:var(--unhealthy);}
+.aqi-num{font-family:var(--mono);font-size:27px;font-weight:700;line-height:1;}
+.aqi-lbl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-top:2px;}
+.aqi-status{font-size:13px;color:var(--muted);margin-top:5px;text-align:center;}
+.aqi-bar-wrap{flex:1;}
+.aqi-bar-label{font-size:12px;color:var(--muted);margin-bottom:6px;}
+.aqi-bar{height:10px;border-radius:5px;background:linear-gradient(to right,#2d7a4f 0%,#b87c00 40%,#c0392b 70%,#7b2d8b 100%);position:relative;margin-bottom:4px;}
+.aqi-needle{position:absolute;top:-4px;width:3px;height:18px;background:var(--text);border-radius:2px;transform:translateX(-50%);transition:left .5s ease;}
+.aqi-bar-ticks{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:5px;}
+.section-title{padding:.65rem 2rem .35rem;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px;padding:0 2rem .9rem;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1rem;cursor:pointer;transition:box-shadow .15s;}
+.chart-card:hover{box-shadow:0 2px 14px rgba(0,0,0,.07);}
+.chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;}
+.chart-title{font-size:11px;font-family:var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;}
+.expand-hint{font-size:9px;color:var(--muted);font-family:var(--mono);opacity:.5;}
+.chart-wrap{position:relative;height:120px;}
+.chart-stat{display:flex;gap:.8rem;padding:6px 0 0;border-top:1px solid var(--border);margin-top:6px;flex-wrap:wrap;}
+.csi{display:flex;align-items:baseline;gap:3px;}
+.csl{font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;}
+.csv{font-family:var(--mono);font-size:12px;font-weight:700;}
+.s-min{color:#378ADD;}.s-max{color:#c0392b;}.s-avg{color:var(--accent);}
+.csu{font-size:9px;color:var(--muted);}
+.corr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px;padding:0 2rem .9rem;}
+.corr-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1rem;}
+.corr-selects{display:flex;gap:.5rem;margin-bottom:.65rem;align-items:center;flex-wrap:wrap;}
+.corr-selects select{min-width:95px;font-size:12px;padding:5px 22px 5px 8px;}
+.corr-vs{font-size:11px;color:var(--muted);font-family:var(--mono);}
+.corr-wrap{position:relative;height:180px;}
+.corr-info{font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:5px;}
+.hei-summary{display:flex;gap:1.2rem;margin-top:6px;flex-wrap:wrap;}
+.hei-stat{display:flex;flex-direction:column;}
+.hei-label{font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;}
+.hei-value{font-family:var(--mono);font-size:13px;font-weight:700;}
+.heatmap-section{padding:0 2rem 1.5rem;}
+.heatmap-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.15rem;}
+.heatmap-controls{display:flex;gap:8px;margin-bottom:.9rem;flex-wrap:wrap;align-items:center;}
+.heatmap-controls select{min-width:130px;font-size:12px;padding:5px 28px 5px 8px;}
+.heatmap-grid{display:grid;grid-template-columns:60px repeat(24,1fr);gap:2px;font-family:var(--mono);font-size:9px;}
+.hm-label{color:var(--muted);display:flex;align-items:center;}
+.hm-cell{height:21px;border-radius:3px;}
+.hm-header{color:var(--muted);text-align:center;font-size:8px;padding-bottom:2px;}
+.hm-legend{display:flex;align-items:center;gap:8px;margin-top:7px;font-size:10px;font-family:var(--mono);color:var(--muted);}
+.hm-legend-bar{height:8px;width:120px;border-radius:4px;background:linear-gradient(to right,#e8f5e9,#2d7a4f 40%,#b87c00 70%,#c0392b);}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:20px;width:95vw;max-width:1200px;height:90vh;display:flex;flex-direction:column;overflow:hidden;}
+.modal-header{display:flex;align-items:center;gap:1rem;padding:.85rem 1.5rem;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.modal-title{font-family:var(--mono);font-size:13px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin-right:auto;}
+.modal-time-toggles{display:flex;gap:3px;background:var(--border);border-radius:8px;padding:3px;}
+.modal-time-btn{font-family:var(--mono);font-size:11px;padding:4px 9px;border:none;background:transparent;color:var(--muted);cursor:pointer;border-radius:5px;}
+.modal-time-btn.active{background:var(--surface);color:var(--text);font-weight:700;}
+.modal-close{font-family:var(--mono);font-size:18px;background:none;border:none;cursor:pointer;color:var(--muted);padding:2px 8px;}
+.modal-close:hover{color:var(--text);}
+.modal-stats-bar{display:flex;gap:1.5rem;padding:.55rem 1.5rem;border-bottom:1px solid var(--border);background:var(--bg);flex-wrap:wrap;}
+.modal-stat{display:flex;flex-direction:column;}
+.ms-label{font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;}
+.ms-value{font-family:var(--mono);font-size:16px;font-weight:700;}
+.modal-body{flex:1;display:flex;flex-direction:column;min-height:0;}
+.modal-chart-area{flex:1;position:relative;padding:.65rem 1.5rem .4rem;min-height:0;}
+.modal-chart-area canvas{width:100%!important;height:100%!important;}
+.annotation-panel{padding:.45rem 1.5rem;border-top:1px solid var(--border);background:var(--bg);}
+.annotation-panel-title{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.35rem;}
+.annotation-form{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.annotation-form input[type=datetime-local]{font-family:var(--mono);font-size:11px;padding:5px 7px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);}
+.annotation-form input[type=text]{font-family:var(--sans);font-size:12px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);flex:1;min-width:160px;}
+.annotation-form button{font-family:var(--mono);font-size:11px;padding:5px 12px;border:1px solid var(--border);background:var(--surface);border-radius:6px;cursor:pointer;}
+.annotation-form button:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+.annotations-list{margin-top:.35rem;display:flex;flex-direction:column;gap:3px;max-height:64px;overflow-y:auto;}
+.ann-item{display:flex;align-items:center;gap:8px;font-size:11px;font-family:var(--mono);}
+.ann-time{color:var(--muted);font-size:10px;white-space:nowrap;}
+.ann-del{background:none;border:none;cursor:pointer;color:var(--muted);font-size:12px;margin-left:auto;padding:0 4px;}
+.ann-del:hover{color:var(--unhealthy);}
+.modal-actions{display:flex;gap:8px;padding:.55rem 1.5rem;border-top:1px solid var(--border);align-items:center;flex-wrap:wrap;}
+.modal-btn{font-family:var(--mono);font-size:11px;padding:5px 12px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;border-radius:6px;}
+.modal-btn:hover{background:var(--border);}
+.threshold-toggle{display:flex;align-items:center;gap:6px;margin-left:auto;font-size:11px;font-family:var(--mono);color:var(--muted);}
+.threshold-toggle label{cursor:pointer;}
+.dash-footer{text-align:center;padding:1.1rem;font-size:12px;color:var(--muted);border-top:1px solid var(--border);font-family:var(--mono);}
+
+/* BUILD GUIDE */
+#page-guide{font-family:system-ui,-apple-system,sans-serif;font-size:14px;color:#1a1a1a;background:#f5f5f0;line-height:1.6;min-height:100vh;}
+#page-guide .g-con{max-width:960px;margin:0 auto;padding:24px 16px}
+#page-guide h1{font-size:24px;font-weight:600;margin-bottom:4px}
+#page-guide h2{font-size:17px;font-weight:600;margin-bottom:10px}
+#page-guide h3{font-size:14px;font-weight:600;margin-bottom:6px}
+#page-guide .g-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #ddd}
+#page-guide .g-nav-btn{padding:7px 16px;border:1px solid #ccc;border-radius:20px;background:#fff;color:#555;cursor:pointer;font-size:13px;font-family:inherit;transition:all .15s}
+#page-guide .g-nav-btn:hover{background:#f0f0ea;color:#111}
+#page-guide .g-nav-btn.active{background:#111;color:#fff;border-color:#111}
+#page-guide .g-sec{display:none}#page-guide .g-sec.gvis{display:block}
+#page-guide .gcard{background:#fff;border:1px solid #e0e0da;border-radius:12px;padding:18px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+#page-guide .gcard-alt{background:#f8f8f3;border-radius:8px;padding:12px;margin-bottom:10px}
+#page-guide .warn-box{border-left:3px solid #e8920a;padding:10px 14px;background:#fffbf2;border-radius:0 6px 6px 0;margin-bottom:12px;font-size:13px}
+#page-guide .info-box{border-left:3px solid #2a7fd8;padding:10px 14px;background:#f0f6ff;border-radius:0 6px 6px 0;margin-bottom:12px;font-size:13px}
+#page-guide .ok-box{border-left:3px solid #4a9e1a;padding:10px 14px;background:#f3fbec;border-radius:0 6px 6px 0;margin-bottom:12px;font-size:13px}
+#page-guide table{width:100%;border-collapse:collapse;font-size:13px}
+#page-guide td,#page-guide th{padding:8px 10px;text-align:left;border-bottom:1px solid #ebebeb}
+#page-guide th{font-weight:600;color:#666;font-size:12px;background:#fafaf7}
+#page-guide tr:last-child td{border-bottom:none}
+#page-guide tr:hover td{background:#fafaf7}
+#page-guide .step-row{display:flex;align-items:flex-start;margin-bottom:14px;gap:12px}
+#page-guide .step-num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#111;color:#fff;font-size:12px;font-weight:600;flex-shrink:0;margin-top:1px}
+#page-guide .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+#page-guide .b-ok{background:#e8f7dc;color:#2d6e0a}#page-guide .b-err{background:#fde8e8;color:#9a1f1f}
+#page-guide .v33{background:#d6f5eb;color:#0a5c3a;display:inline-block;padding:1px 7px;border-radius:3px;font-size:11px;font-weight:600}
+#page-guide .v5{background:#fde8d5;color:#8a2800;display:inline-block;padding:1px 7px;border-radius:3px;font-size:11px;font-weight:600}
+#page-guide pre{background:#1e1e2e;color:#cdd6f4;border-radius:8px;padding:16px;overflow-x:auto;font-size:12px;line-height:1.75;font-family:'Courier New',monospace}
+#page-guide code{background:#f0f0ea;padding:1px 5px;border-radius:3px;font-family:'Courier New',monospace;font-size:12px}
+#page-guide .shop-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#f5f5f0;border:1px solid #ccc;border-radius:6px;color:#111;text-decoration:none;font-size:12px;font-weight:600}
+#page-guide .shop-btn:hover{background:#eee}
+#page-guide .sep{height:1px;background:#ebebeb;margin:14px 0}
+#page-guide .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+#page-guide .cycle-row{display:flex;align-items:center;gap:0;margin:12px 0}
+#page-guide .cphase{flex:1;text-align:center;padding:10px 6px;border-radius:8px;font-size:12px;font-weight:600}
+#page-guide .carr{padding:0 8px;color:#888;font-size:20px}
+#page-guide .term{border-bottom:2px dashed #aaa;cursor:help;display:inline}
+#page-guide .gloss-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#page-guide .gloss-card{background:#fafaf7;border:1px solid #e8e8e0;border-radius:8px;padding:14px}
+#page-guide .gloss-card h4{font-size:13px;font-weight:700;margin-bottom:5px;color:#111}
+#page-guide .gloss-card p{font-size:12px;color:#555;line-height:1.6}
+#page-guide .wdot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:middle;border:1px solid rgba(0,0,0,.15)}
+/* ThingSpeak account cards */
+#page-guide .ts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin:12px 0}
+#page-guide .ts-card{background:#f0f6ff;border:1px solid #b8d4f8;border-radius:8px;padding:10px 12px}
+#page-guide .ts-card h4{font-size:12px;font-weight:700;color:#0a2d6e;margin-bottom:4px}
+#page-guide .ts-card p{font-size:11px;color:#3a5a9a;line-height:1.5}
+#guide-tooltip{display:none;position:fixed;z-index:9999;max-width:290px;background:#fff;border:1px solid #ccc;border-radius:10px;padding:12px 14px;font-size:12px;line-height:1.55;box-shadow:0 4px 20px rgba(0,0,0,.15);pointer-events:none}
+#guide-tt-title{font-weight:700;font-size:13px;margin-bottom:5px;color:#111}
+#guide-tt-body{color:#555}
+@media(max-width:600px){#page-guide .g3{grid-template-columns:1fr 1fr}#page-guide .gloss-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="page-bar">
+  <button class="pbar-btn active" onclick="switchPage('dashboard',this)">📊 Dashboard</button>
+  <button class="pbar-btn" onclick="switchPage('guide',this)">🔧 Build Guide</button>
+</div>
+
+<!-- ═══════════════ DASHBOARD ═══════════════ -->
+<div id="page-dashboard">
+<div class="top-band">
+  <div class="brand"><span class="live-dot"></span>AIR ATLAS</div>
+  <div class="band-location" id="band-location">
+    <div class="band-location-name">Sanganoor Rd, Coimbatore</div>
+    <div class="band-location-sub">Tamil Nadu, India</div>
+  </div>
+  <div class="band-stats">
+    <div class="band-stat"><div class="band-stat-label">Altitude</div><div class="band-stat-value" id="band-alt">411 m</div></div>
+    <div class="band-stat"><div class="band-stat-label">Temp</div><div class="band-stat-value" id="band-temp">28.4°C</div></div>
+    <div class="band-stat"><div class="band-stat-label">Humidity</div><div class="band-stat-value" id="band-hum">64%</div></div>
+  </div>
+</div>
+
+<div class="controls">
+  <div class="select-wrap">
+    <div class="select-label">City</div>
+    <select id="city-select" onchange="onCityChange()">
+      <option value="coimbatore">Coimbatore</option>
+      <option value="bangalore">Bangalore</option>
+      <option value="mumbai">Mumbai</option>
+      <option value="pune">Pune</option>
+      <option value="gurgaon">Gurgaon</option>
+      <option value="lucknow">Lucknow</option>
+    </select>
+  </div>
+  <div class="select-wrap">
+    <div class="select-label">Station</div>
+    <select id="landmark-select" onchange="onLandmarkChange()"></select>
+  </div>
+  <div class="select-wrap">
+    <div class="select-label">Time window</div>
+    <div class="time-toggles">
+      <button class="time-btn" onclick="setWindow('24h',this)">24h</button>
+      <button class="time-btn active" onclick="setWindow('week',this)">Week</button>
+      <button class="time-btn" onclick="setWindow('month',this)">Month</button>
+      <button class="time-btn" onclick="setWindow('all',this)">All</button>
+    </div>
+  </div>
+  <button class="action-btn" onclick="downloadCSV()">↓ CSV</button>
+  <div class="last-updated" id="last-updated">Updated: just now</div>
+</div>
+
+<div class="aqi-hero">
+  <div class="aqi-number-wrap">
+    <div class="aqi-circle moderate" id="aqi-circle">
+      <div class="aqi-num" id="aqi-num">72</div>
+      <div class="aqi-lbl">AQI</div>
+    </div>
+    <div class="aqi-status" id="aqi-status">Moderate</div>
+  </div>
+  <div class="aqi-bar-wrap">
+    <div class="aqi-bar-label">Air Quality Index — WHO thresholds</div>
+    <div class="aqi-bar"><div class="aqi-needle" id="aqi-needle" style="left:28%"></div></div>
+    <div class="aqi-bar-ticks"><span>0 Good</span><span>50</span><span>100 Moderate</span><span>150 Unhealthy</span><span>300+</span></div>
+  </div>
+</div>
+
+<div class="section-title">Pollutant &amp; Sensor Timeseries — click any chart to expand</div>
+<div class="charts-grid">
+  <div class="chart-card" onclick="openModal('aqi')">
+    <div class="chart-header"><div class="chart-title">Combined AQI</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-wrap"><canvas id="c-aqi"></canvas></div>
+    <div class="chart-stat">
+      <div class="csi"><span class="csl s-min">Min</span><span class="csv s-min" id="s-aqi-min">—</span></div>
+      <div class="csi"><span class="csl s-max">Max</span><span class="csv s-max" id="s-aqi-max">—</span></div>
+      <div class="csi"><span class="csl s-avg">Avg</span><span class="csv s-avg" id="s-aqi-avg">—</span></div>
+      <div class="csi"><span class="csl">σ</span><span class="csv" id="s-aqi-std">—</span></div>
+    </div>
+  </div>
+  <div class="chart-card" onclick="openModal('pm25')">
+    <div class="chart-header"><div class="chart-title">PM 2.5</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-wrap"><canvas id="c-pm25"></canvas></div>
+    <div class="chart-stat">
+      <div class="csi"><span class="csl">Now</span><span class="csv" id="m-pm25">—</span><span class="csu">µg/m³</span></div>
+      <div class="csi"><span class="csl s-min">Min</span><span class="csv s-min" id="s-pm25-min">—</span></div>
+      <div class="csi"><span class="csl s-max">Max</span><span class="csv s-max" id="s-pm25-max">—</span></div>
+      <div class="csi"><span class="csl s-avg">Avg</span><span class="csv s-avg" id="s-pm25-avg">—</span></div>
+      <div class="csi"><span class="csl">σ</span><span class="csv" id="s-pm25-std">—</span></div>
+    </div>
+  </div>
+  <div class="chart-card" onclick="openModal('pm10')">
+    <div class="chart-header"><div class="chart-title">PM 1.0</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-wrap"><canvas id="c-pm10"></canvas></div>
+    <div class="chart-stat">
+      <div class="csi"><span class="csl">Now</span><span class="csv" id="m-pm10">—</span><span class="csu">µg/m³</span></div>
+      <div class="csi"><span class="csl s-min">Min</span><span class="csv s-min" id="s-pm10-min">—</span></div>
+      <div class="csi"><span class="csl s-max">Max</span><span class="csv s-max" id="s-pm10-max">—</span></div>
+      <div class="csi"><span class="csl s-avg">Avg</span><span class="csv s-avg" id="s-pm10-avg">—</span></div>
+    </div>
+  </div>
+  <div class="chart-card" onclick="openModal('pm100')">
+    <div class="chart-header"><div class="chart-title">PM 10</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-wrap"><canvas id="c-pm100"></canvas></div>
+    <div class="chart-stat">
+      <div class="csi"><span class="csl">Now</span><span class="csv" id="m-pm100">—</span><span class="csu">µg/m³</span></div>
+      <div class="csi"><span class="csl s-min">Min</span><span class="csv s-min" id="s-pm100-min">—</span></div>
+      <div class="csi"><span class="csl s-max">Max</span><span class="csv s-max" id="s-pm100-max">—</span></div>
+      <div class="csi"><span class="csl s-avg">Avg</span><span class="csv s-avg" id="s-pm100-avg">—</span></div>
+    </div>
+  </div>
+  <div class="chart-card" onclick="openModal('co')">
+    <div class="chart-header"><div class="chart-title">CO Sensor (MQ-7)</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-wrap"><canvas id="c-co"></canvas></div>
+    <div class="chart-stat">
+      <div class="csi"><span class="csl">Now</span><span class="csv" id="m-co">—</span><span class="csu">V</span></div>
+      <div class="csi"><span class="csl s-min">Min</span><span class="csv s-min" id="s-co-min">—</span></div>
+      <div class="csi"><span class="csl s-max">Max</span><span class="csv s-max" id="s-co-max">—</span></div>
+      <div class="csi"><span class="csl s-avg">Avg</span><span class="csv s-avg" id="s-co-avg">—</span></div>
+    </div>
+  </div>
+  <div class="chart-card" onclick="openModal('mq135')">
+    <div class="chart-header"><div class="chart-title">MQ-135 Air Quality</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-wrap"><canvas id="c-mq135"></canvas></div>
+    <div class="chart-stat">
+      <div class="csi"><span class="csl">Now</span><span class="csv" id="m-mq135">—</span><span class="csu">ADC</span></div>
+      <div class="csi"><span class="csl s-min">Min</span><span class="csv s-min" id="s-mq135-min">—</span></div>
+      <div class="csi"><span class="csl s-max">Max</span><span class="csv s-max" id="s-mq135-max">—</span></div>
+      <div class="csi"><span class="csl s-avg">Avg</span><span class="csv s-avg" id="s-mq135-avg">—</span></div>
+    </div>
+  </div>
+  <div class="chart-card" onclick="openModal('temp')">
+    <div class="chart-header"><div class="chart-title">Temperature</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-wrap"><canvas id="c-temp"></canvas></div>
+    <div class="chart-stat">
+      <div class="csi"><span class="csl">Now</span><span class="csv" id="m-temp">—</span><span class="csu">°C</span></div>
+      <div class="csi"><span class="csl s-min">Min</span><span class="csv s-min" id="s-temp-min">—</span></div>
+      <div class="csi"><span class="csl s-max">Max</span><span class="csv s-max" id="s-temp-max">—</span></div>
+      <div class="csi"><span class="csl s-avg">Avg</span><span class="csv s-avg" id="s-temp-avg">—</span></div>
+    </div>
+  </div>
+  <div class="chart-card" onclick="openModal('hum')">
+    <div class="chart-header"><div class="chart-title">Humidity</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-wrap"><canvas id="c-hum"></canvas></div>
+    <div class="chart-stat">
+      <div class="csi"><span class="csl">Now</span><span class="csv" id="m-hum">—</span><span class="csu">%</span></div>
+      <div class="csi"><span class="csl s-min">Min</span><span class="csv s-min" id="s-hum-min">—</span></div>
+      <div class="csi"><span class="csl s-max">Max</span><span class="csv s-max" id="s-hum-max">—</span></div>
+      <div class="csi"><span class="csl s-avg">Avg</span><span class="csv s-avg" id="s-hum-avg">—</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="section-title">Scientific Analysis Tools</div>
+<div class="corr-grid">
+  <div class="corr-card">
+    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title">Correlation Explorer</div></div>
+    <div class="corr-selects">
+      <select id="corr-x" onchange="renderCorr()"><option value="pm25">PM2.5</option><option value="hum">Humidity</option><option value="temp">Temp</option><option value="co">CO</option><option value="mq135">MQ-135</option></select>
+      <span class="corr-vs">vs</span>
+      <select id="corr-y" onchange="renderCorr()"><option value="hum">Humidity</option><option value="pm25">PM2.5</option><option value="temp">Temp</option><option value="aqi">AQI</option><option value="pm100">PM10</option></select>
+    </div>
+    <div class="corr-wrap"><canvas id="c-corr"></canvas></div>
+    <div class="corr-info" id="corr-info">r = —</div>
+  </div>
+  <div class="corr-card">
+    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title">Diurnal Cycle (avg by hour)</div></div>
+    <div class="corr-selects">
+      <select id="diurnal-field" onchange="renderDiurnal()"><option value="pm25">PM2.5</option><option value="aqi">AQI</option><option value="pm100">PM10</option><option value="co">CO</option><option value="mq135">MQ-135</option><option value="temp">Temp</option><option value="hum">Humidity</option></select>
+    </div>
+    <div class="corr-wrap"><canvas id="c-diurnal"></canvas></div>
+    <div class="corr-info" id="diurnal-info">Peak hour: —</div>
+  </div>
+  <div class="corr-card">
+    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title">CDF — Exceedance Probability</div></div>
+    <div class="corr-selects">
+      <select id="cdf-field" onchange="renderCDF()"><option value="pm25">PM2.5</option><option value="aqi">AQI</option><option value="pm100">PM10</option><option value="co">CO</option><option value="mq135">MQ-135</option></select>
+    </div>
+    <div class="corr-wrap"><canvas id="c-cdf"></canvas></div>
+    <div class="corr-info" id="cdf-info">P90: — | P95: — | P99: —</div>
+  </div>
+  <div class="corr-card">
+    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title">PM2.5 / PM10 Ratio</div></div>
+    <div class="corr-wrap"><canvas id="c-pmratio"></canvas></div>
+    <div class="corr-info">Ratio &gt; 0.8 → fine particle dominance (combustion / traffic)</div>
+  </div>
+  <div class="corr-card">
+    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title">Health Exposure Index</div></div>
+    <div class="corr-selects">
+      <select id="hei-field" onchange="renderHEI()">
+        <option value="pm25">PM2.5 (WHO: 25 µg/m³)</option>
+        <option value="pm100">PM10 (WHO: 50 µg/m³)</option>
+        <option value="aqi">AQI (WHO: 100)</option>
+      </select>
+    </div>
+    <div class="corr-wrap"><canvas id="c-hei"></canvas></div>
+    <div class="hei-summary">
+      <div class="hei-stat"><div class="hei-label">Total excess·hrs</div><div class="hei-value" id="hei-total">—</div></div>
+      <div class="hei-stat"><div class="hei-label">Worst day</div><div class="hei-value" id="hei-worst">—</div></div>
+      <div class="hei-stat"><div class="hei-label">Days exceeded</div><div class="hei-value" id="hei-days">—</div></div>
+      <div class="hei-stat"><div class="hei-label">Clean days</div><div class="hei-value s-avg" id="hei-clean">—</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="heatmap-section">
+  <div class="section-title" style="padding-left:0;padding-top:.4rem;">Weekly Pattern — hour of day × day of week</div>
+  <div class="heatmap-card">
+    <div class="heatmap-controls">
+      <select id="hm-field" onchange="renderHeatmap()">
+        <option value="pm25">PM2.5</option><option value="pm10">PM1.0</option><option value="pm100">PM10</option><option value="co">CO</option><option value="mq135">MQ-135</option><option value="aqi">AQI</option><option value="temp">Temperature</option><option value="hum">Humidity</option>
+      </select>
+      <span style="font-size:11px;color:var(--muted);font-family:var(--mono);">Each cell = avg reading for that hour × weekday</span>
+    </div>
+    <div class="heatmap-grid" id="heatmap-grid"></div>
+    <div class="hm-legend"><span>Low</span><div class="hm-legend-bar"></div><span>High</span></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Chart</div>
+      <div class="modal-time-toggles">
+        <button class="modal-time-btn" onclick="setModalWindow('24h',this)">24h</button>
+        <button class="modal-time-btn active" onclick="setModalWindow('week',this)">Week</button>
+        <button class="modal-time-btn" onclick="setModalWindow('month',this)">Month</button>
+        <button class="modal-time-btn" onclick="setModalWindow('all',this)">All</button>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-stats-bar" id="modal-stats-bar"></div>
+    <div class="modal-body">
+      <div class="modal-chart-area"><canvas id="modal-canvas"></canvas></div>
+      <div class="annotation-panel">
+        <div class="annotation-panel-title">Annotations</div>
+        <div class="annotation-form">
+          <input type="datetime-local" id="ann-start">
+          <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">→</span>
+          <input type="datetime-local" id="ann-end">
+          <input type="text" id="ann-text" placeholder="e.g. Construction activity nearby" maxlength="120">
+          <button onclick="addAnnotation()">+ Add</button>
+        </div>
+        <div class="annotations-list" id="annotations-list"></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn" onclick="downloadChartPNG()">↓ PNG</button>
+      <button class="modal-btn" onclick="downloadModalCSV()">↓ CSV</button>
+      <div class="threshold-toggle">
+        <input type="checkbox" id="threshold-toggle" checked onchange="toggleThresholds()">
+        <label for="threshold-toggle">WHO limits</label>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="dash-footer">AIR ATLAS &nbsp;·&nbsp; Capstone Project 2026 &nbsp;·&nbsp; 152s sensor resolution &nbsp;·&nbsp; Dummy data — connect ThingSpeak to go live</div>
+</div>
+
+<!-- ═══════════════ BUILD GUIDE ═══════════════ -->
+<div id="page-guide" style="display:none">
+<div id="guide-tooltip"><div id="guide-tt-title"></div><div id="guide-tt-body"></div></div>
+<div class="g-con">
+<div style="margin-bottom:20px">
+  <h1>ESP32 Air Quality Station — Build Guide</h1>
+  <p style="color:#666;font-size:13px">BME280 · PMS7003 · MQ-7 (MOSFET cycling) · MQ-135 — hover <span class="term" data-tip="term">underlined terms</span> for quick definitions</p>
+</div>
+<div class="g-nav">
+  <button class="g-nav-btn active" onclick="guideShow('overview',this)">Overview</button>
+  <button class="g-nav-btn" onclick="guideShow('parts',this)">Parts list</button>
+  <button class="g-nav-btn" onclick="guideShow('voltage',this)">Voltage guide</button>
+  <button class="g-nav-btn" onclick="guideShow('cycling',this)">MQ-7 cycling</button>
+  <button class="g-nav-btn" onclick="guideShow('wiring',this)">Wiring</button>
+  <button class="g-nav-btn" onclick="guideShow('code',this)">Code</button>
+  <button class="g-nav-btn" onclick="guideShow('thingspeak',this)">ThingSpeak setup</button>
+  <button class="g-nav-btn" onclick="guideShow('steps',this)">Assembly</button>
+  <button class="g-nav-btn" onclick="guideShow('glossary',this)">Glossary</button>
+</div>
+
+<!-- OVERVIEW -->
+<div id="gs-overview" class="g-sec gvis">
+  <div class="gcard">
+    <h2>What you're building</h2>
+    <p style="font-size:13px;color:#555;margin-bottom:14px">A WiFi-connected air quality monitor measuring 6 parameters, sending data to ThingSpeak every 15 seconds.</p>
+    <div class="g3">
+      <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">PM2.5 / PM10</div><div style="font-size:12px;color:#666">Fine dust particles</div><div style="font-size:11px;color:#888">PMS7003 laser sensor</div></div>
+      <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">Carbon monoxide</div><div style="font-size:12px;color:#666">CO gas detection</div><div style="font-size:11px;color:#888">MQ-7 + MOSFET cycling</div></div>
+      <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">Air quality index</div><div style="font-size:12px;color:#666">NH₃, CO₂, benzene</div><div style="font-size:11px;color:#888">MQ-135</div></div>
+      <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">Temperature</div><div style="font-size:12px;color:#666">±1°C accuracy</div><div style="font-size:11px;color:#888">BME280</div></div>
+      <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">Humidity</div><div style="font-size:12px;color:#666">±3% RH</div><div style="font-size:11px;color:#888">BME280</div></div>
+      <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">Air pressure</div><div style="font-size:12px;color:#666">Barometric hPa</div><div style="font-size:11px;color:#888">BME280</div></div>
+    </div>
+  </div>
+  <div class="warn-box"><strong>Two key challenges for beginners:</strong><br>1. MQ-7 and MQ-135 output <span class="term" data-tip="5v">5V signals</span>. Your ESP32 <span class="term" data-tip="gpio">GPIO pins</span> only tolerate 3.3V max — a <span class="term" data-tip="divider">voltage divider</span> is mandatory for each.<br><br>2. The MQ-7 requires <span class="term" data-tip="cycling">voltage cycling</span> for accurate readings, automated via a <span class="term" data-tip="mosfet">MOSFET</span> and <span class="term" data-tip="pwm">PWM</span>.</div>
+  <div class="ok-box">BME280 and PMS7003 wire directly to the ESP32 — safe at 3.3V logic with no conversion needed.</div>
+</div>
+
+<!-- PARTS -->
+<div id="gs-parts" class="g-sec">
+  <div class="gcard">
+    <h2>Complete shopping list — Robocraze</h2>
+    <table>
+      <thead><tr><th>Component</th><th>Qty</th><th>Purpose</th><th>Buy</th></tr></thead>
+      <tbody>
+        <tr><td><strong>ESP32 38-pin (CP2102)</strong></td><td>1</td><td><span class="term" data-tip="mcu">Microcontroller</span> + WiFi</td><td><a class="shop-btn" href="https://robocraze.com/products/esp32-development-board" target="_blank">Robocraze ↗</a></td></tr>
+        <tr><td><strong>BME280 module</strong></td><td>1</td><td>Temp/humidity/pressure via <span class="term" data-tip="i2c">I²C</span></td><td><a class="shop-btn" href="https://robocraze.com/products/bme280-temperature-humidity-pressure-sensor" target="_blank">Robocraze ↗</a></td></tr>
+        <tr><td><strong>PMS7003 sensor</strong></td><td>1</td><td>PM2.5/PM10 via <span class="term" data-tip="uart">UART</span></td><td><a class="shop-btn" href="https://robocraze.com/search?q=pms7003" target="_blank">Search ↗</a></td></tr>
+        <tr><td><strong>MQ-7 module</strong></td><td>1</td><td>CO gas (needs MOSFET cycling)</td><td><a class="shop-btn" href="https://robocraze.com/products/mq7-carbon-monoxide-sensor-module" target="_blank">Robocraze ↗</a></td></tr>
+        <tr><td><strong>MQ-135 module</strong></td><td>1</td><td>General air quality <span class="term" data-tip="aout">AOUT</span></td><td><a class="shop-btn" href="https://robocraze.com/products/mq135-air-quality-sensor-module" target="_blank">Robocraze ↗</a></td></tr>
+        <tr><td><strong>IRLZ44N MOSFET</strong></td><td>1</td><td>Controls MQ-7 <span class="term" data-tip="heater">heater element</span></td><td><a class="shop-btn" href="https://robocraze.com/search?q=IRLZ44N" target="_blank">Search ↗</a></td></tr>
+        <tr><td><strong>1N4007 diode</strong></td><td>1</td><td><span class="term" data-tip="flyback">Flyback protection</span></td><td><a class="shop-btn" href="https://robocraze.com/products/1n4007-diode" target="_blank">Robocraze ↗</a></td></tr>
+        <tr><td><strong>Resistor kit (1/4W)</strong></td><td>1</td><td>4×10kΩ, 2×20kΩ for dividers + gate</td><td><a class="shop-btn" href="https://robocraze.com/products/resistor-kit-1-4w-600-pcs" target="_blank">Robocraze ↗</a></td></tr>
+        <tr><td><strong>830-point breadboard</strong></td><td>1</td><td>Main assembly board</td><td><a class="shop-btn" href="https://robocraze.com/products/breadboard-830-points" target="_blank">Robocraze ↗</a></td></tr>
+        <tr><td><strong>400-point breadboard</strong></td><td>1</td><td>Voltage dividers</td><td><a class="shop-btn" href="https://robocraze.com/products/mini-breadboard-400-points" target="_blank">Robocraze ↗</a></td></tr>
+        <tr><td><strong>Jumper wire kit (M-M + M-F)</strong></td><td>1</td><td>All connections</td><td><a class="shop-btn" href="https://robocraze.com/products/jumper-wires-120pcs" target="_blank">Robocraze ↗</a></td></tr>
+        <tr><td><strong>5V 2A USB adapter</strong></td><td>1</td><td>Powers all MQ heaters — must be 2A</td><td><a class="shop-btn" href="https://robocraze.com/products/5v-2a-usb-power-adapter" target="_blank">Robocraze ↗</a></td></tr>
+        <tr><td><strong>USB Micro-B cable</strong></td><td>1</td><td>Programming + data</td><td><a class="shop-btn" href="https://robocraze.com/products/usb-type-b-micro-cable-1m" target="_blank">Robocraze ↗</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- VOLTAGE -->
+<div id="gs-voltage" class="g-sec">
+  <div class="gcard">
+    <h2>Voltage levels — what connects directly vs what needs protection</h2>
+    <table>
+      <thead><tr><th>Sensor</th><th>Power</th><th>Signal output</th><th>ESP32 compatible?</th></tr></thead>
+      <tbody>
+        <tr><td>BME280</td><td><span class="v33">3.3V</span></td><td>I²C at 3.3V</td><td><span class="badge b-ok">Direct — safe ✓</span></td></tr>
+        <tr><td>PMS7003</td><td><span class="v5">5V</span></td><td>UART at 3.3V logic</td><td><span class="badge b-ok">Direct — safe ✓</span></td></tr>
+        <tr><td>MQ-7 (AOUT)</td><td><span class="v5">5V</span></td><td>0–5V analog</td><td><span class="badge b-err">Needs divider ✗</span></td></tr>
+        <tr><td>MQ-135 (AOUT)</td><td><span class="v5">5V</span></td><td>0–5V analog</td><td><span class="badge b-err">Needs divider ✗</span></td></tr>
+        <tr><td>MOSFET Gate</td><td>—</td><td>Driven by GPIO 3.3V + PWM</td><td><span class="badge b-ok">Safe — IRLZ44N ✓</span></td></tr>
+      </tbody>
+    </table>
+    <div class="sep"></div>
+    <div class="warn-box"><strong>Divider formula:</strong> Vout = Vin × R2 ÷ (R1+R2) → 5V × 20k ÷ (10k+20k) = <strong>3.33V ✓</strong><br>Build this twice — once for MQ-7 AOUT → GPIO34, once for MQ-135 AOUT → GPIO35.</div>
+  </div>
+</div>
+
+<!-- CYCLING -->
+<div id="gs-cycling" class="g-sec">
+  <div class="gcard">
+    <h2>Why the MQ-7 needs voltage cycling</h2>
+    <p style="font-size:13px;color:#555;margin-bottom:12px">The MQ-7's metal oxide <span class="term" data-tip="heater">heater element</span> saturates at constant 5V, causing readings to drift. The datasheet specifies alternating phases:</p>
+    <div class="cycle-row">
+      <div class="cphase" style="background:#fff3e0;color:#5a2e00"><div style="font-size:13px">Phase 1 — HIGH</div><div style="font-size:12px;margin-top:4px;font-weight:400">5V for 60 seconds</div><div style="font-size:11px;font-weight:400;margin-top:2px">Heats element, clears surface</div></div>
+      <div class="carr">→</div>
+      <div class="cphase" style="background:#e3f0ff;color:#0a2d5e"><div style="font-size:13px">Phase 2 — LOW</div><div style="font-size:12px;margin-top:4px;font-weight:400">1.4V for 90 seconds</div><div style="font-size:11px;font-weight:400;margin-top:2px">CO binds — READ in final 30s</div></div>
+      <div class="carr">→</div>
+      <div class="cphase" style="background:#eaf5e0;color:#1a4a05"><div style="font-size:13px">Repeat</div><div style="font-size:12px;margin-top:4px;font-weight:400">150s full cycle</div><div style="font-size:11px;font-weight:400;margin-top:2px">Continuous accurate sensing</div></div>
+    </div>
+  </div>
+  <div class="gcard">
+    <h2>Generating 1.4V via MOSFET + PWM</h2>
+    <div class="info-box">ESP32 GPIO26 drives the MOSFET gate at <strong>28% PWM duty cycle</strong>. The MOSFET switches 5V on/off at 1kHz — the heater's thermal mass averages this to 1.4V effective.<br><br><strong>Formula:</strong> 5V × 0.28 = <strong>1.4V ✓</strong> &nbsp;|&nbsp; Code value: 72/255 = 28.2% duty</div>
+  </div>
+</div>
+
+<!-- WIRING -->
+<div id="gs-wiring" class="g-sec">
+  <div class="gcard">
+    <h2>Connection table</h2>
+    <table>
+      <thead><tr><th>Component</th><th>Pin</th><th>Wire colour</th><th>ESP32 destination</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr style="background:#fff8f8"><td colspan="5" style="font-weight:600;color:#888;font-size:11px;padding:6px 10px">BME280</td></tr>
+        <tr><td>BME280</td><td>VCC</td><td><span class="wdot" style="background:#1a9e5e"></span>Dark green</td><td>ESP32 · 3V3</td><td><strong>3.3V only</strong></td></tr>
+        <tr><td>BME280</td><td>GND</td><td><span class="wdot" style="background:#111"></span>Black</td><td>GND rail</td><td></td></tr>
+        <tr><td>BME280</td><td>SDA</td><td><span class="wdot" style="background:#e06080"></span>Pink</td><td>GPIO21</td><td>I²C data</td></tr>
+        <tr><td>BME280</td><td>SCL</td><td><span class="wdot" style="background:#e06080"></span>Pink</td><td>GPIO22</td><td>I²C clock</td></tr>
+        <tr style="background:#fff8f8"><td colspan="5" style="font-weight:600;color:#888;font-size:11px;padding:6px 10px">PMS7003</td></tr>
+        <tr><td>PMS7003</td><td>VCC (pin 1)</td><td><span class="wdot" style="background:#d0251e"></span>Red</td><td>VIN (5V)</td><td>Needs 5V</td></tr>
+        <tr><td>PMS7003</td><td>GND (pin 2)</td><td><span class="wdot" style="background:#111"></span>Black</td><td>GND rail</td><td></td></tr>
+        <tr><td>PMS7003</td><td>TX (pin 9)</td><td><span class="wdot" style="background:#3070c8"></span>Blue</td><td>GPIO16 (RX2)</td><td>TX→RX cross</td></tr>
+        <tr><td>PMS7003</td><td>RX (pin 8)</td><td><span class="wdot" style="background:#3070c8"></span>Blue</td><td>GPIO17 (TX2)</td><td>RX→TX cross</td></tr>
+        <tr style="background:#fff8f8"><td colspan="5" style="font-weight:600;color:#888;font-size:11px;padding:6px 10px">MQ-7 + MOSFET + Divider A</td></tr>
+        <tr><td>MQ-7</td><td>VCC</td><td><span class="wdot" style="background:#d0251e"></span>Red</td><td>+5V → MOSFET Drain</td><td>Switched by MOSFET</td></tr>
+        <tr><td>MQ-7</td><td>AOUT</td><td><span class="wdot" style="background:#e09020"></span>Orange</td><td>Divider A → GPIO34</td><td>5V→3.3V via divider</td></tr>
+        <tr><td>MOSFET Gate</td><td>Left leg</td><td><span class="wdot" style="background:#40c090"></span>Teal</td><td>10kΩ → GPIO26</td><td>PWM gate drive</td></tr>
+        <tr><td>MOSFET Source</td><td>Right leg</td><td><span class="wdot" style="background:#111"></span>Black</td><td>GND rail</td><td></td></tr>
+        <tr><td>1N4007</td><td>Cathode (stripe)</td><td><span class="wdot" style="background:#999"></span>Grey</td><td>+5V side</td><td>Stripe toward +5V</td></tr>
+        <tr style="background:#fff8f8"><td colspan="5" style="font-weight:600;color:#888;font-size:11px;padding:6px 10px">MQ-135 + Divider B</td></tr>
+        <tr><td>MQ-135</td><td>VCC</td><td><span class="wdot" style="background:#d0251e"></span>Red</td><td>+5V rail (direct)</td><td>No MOSFET</td></tr>
+        <tr><td>MQ-135</td><td>AOUT</td><td><span class="wdot" style="background:#9050c8"></span>Purple</td><td>Divider B → GPIO35</td><td>5V→3.3V via divider</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- CODE -->
+<div id="gs-code" class="g-sec">
+  <div class="gcard">
+    <h2>Arduino IDE setup</h2>
+    <div class="step-row"><span class="step-num">1</span><div>Download Arduino IDE 2 from <a href="https://www.arduino.cc/en/software" target="_blank">arduino.cc</a></div></div>
+    <div class="step-row"><span class="step-num">2</span><div>File → Preferences → Additional boards manager URLs:<br><code>https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json</code></div></div>
+    <div class="step-row"><span class="step-num">3</span><div>Tools → Board → Boards Manager → search "esp32" → Install "esp32 by Espressif Systems"</div></div>
+    <div class="step-row"><span class="step-num">4</span><div>Sketch → Library Manager → install <strong>Adafruit BME280</strong> and <strong>Adafruit Unified Sensor</strong></div></div>
+  </div>
+  <div class="gcard">
+    <h2>ESP32 firmware (replace the 3 placeholders)</h2>
+<pre>
+#include &lt;Wire.h&gt;
+#include &lt;Adafruit_BME280.h&gt;
+#include &lt;HardwareSerial.h&gt;
+#include &lt;WiFi.h&gt;
+#include &lt;HTTPClient.h&gt;
+
+const char* ssid     = "YOUR_WIFI_SSID";
+const char* password = "YOUR_WIFI_PASSWORD";
+const char* apiKey   = "YOUR_THINGSPEAK_WRITE_KEY";  // from ThingSpeak tab
+const char* tsURL    = "http://api.thingspeak.com/update";
+
+#define PMS_RX 16  #define PMS_TX 17
+#define MQ7_ADC 34  #define MQ135_ADC 35  #define MQ7_GATE 26
+#define PWM_CH 0  #define PWM_HZ 1000  #define PWM_BITS 8
+#define DUTY_HIGH 255  #define DUTY_LOW 72   // 28% ≈ 1.4V
+
+Adafruit_BME280 bme;
+HardwareSerial pmsSerial(2);
+bool mq7High=true; uint32_t mq7Start=0;
+float mq7Last=0; bool mq7Ready=false;
+
+struct Pms{uint16_t pm1,pm25,pm10;};
+bool readPMS(Pms &d){
+  if(pmsSerial.available()&lt;32||pmsSerial.read()!=0x42||pmsSerial.read()!=0x4D)return false;
+  uint8_t b[30]; pmsSerial.readBytes(b,30);
+  d.pm25=(b[4]&lt;&lt;8)|b[5]; d.pm10=(b[6]&lt;&lt;8)|b[7]; return true;
+}
+int avgADC(int pin,int n=20){long s=0;for(int i=0;i&lt;n;i++){s+=analogRead(pin);delay(3);}return s/n;}
+void updateMQ7(){
+  uint32_t e=millis()-mq7Start;
+  if(mq7High){if(e>=60000){ledcWrite(PWM_CH,DUTY_LOW);mq7High=false;mq7Start=millis();mq7Ready=false;}}
+  else{if(e>=60000&&!mq7Ready){mq7Last=avgADC(MQ7_ADC);mq7Ready=true;}
+       if(e>=90000){ledcWrite(PWM_CH,DUTY_HIGH);mq7High=true;mq7Start=millis();}}
+}
+void setup(){
+  Serial.begin(115200);
+  pmsSerial.begin(9600,SERIAL_8N1,PMS_RX,PMS_TX);
+  Wire.begin(21,22);
+  if(!bme.begin(0x76)&&!bme.begin(0x77)){Serial.println("BME280 not found!");while(1);}
+  ledcSetup(PWM_CH,PWM_HZ,PWM_BITS);
+  ledcAttachPin(MQ7_GATE,PWM_CH);
+  ledcWrite(PWM_CH,DUTY_HIGH); mq7Start=millis();
+  WiFi.begin(ssid,password);
+  for(int i=0;i&lt;30&&WiFi.status()!=WL_CONNECTED;i++){delay(500);Serial.print(".");}
+}
+void loop(){
+  updateMQ7();
+  float temp=bme.readTemperature(),hum=bme.readHumidity(),pres=bme.readPressure()/100.0f;
+  int mq135=avgADC(MQ135_ADC);
+  Pms pms={0,0,0};
+  uint32_t t0=millis(); while(millis()-t0&lt;1500)if(readPMS(pms))break;
+  float co=mq7Ready?mq7Last:-1;
+  // Send to ThingSpeak every 15s (free tier minimum)
+  static uint32_t lastSend=0;
+  if(millis()-lastSend>=15000&&WiFi.status()==WL_CONNECTED){
+    HTTPClient http;
+    String url=String(tsURL)
+      +"?api_key="+apiKey
+      +"&amp;field1="+String(temp,1)+"&amp;field2="+String(hum,1)
+      +"&amp;field3="+String(pres,1)+"&amp;field4="+String(co,0)
+      +"&amp;field5="+String(mq135)+"&amp;field6="+String(pms.pm25)
+      +"&amp;field7="+String(pms.pm10);
+    http.begin(url);
+    Serial.println(http.GET()==200?"TS: OK":"TS: error");
+    http.end(); lastSend=millis();
+  }
+  delay(500);
+}
+</pre>
+  </div>
+</div>
+
+<!-- THINGSPEAK SETUP -->
+<div id="gs-thingspeak" class="g-sec">
+  <div class="gcard">
+    <h2>Connecting 10 ThingSpeak free accounts to Air Atlas</h2>
+    <p style="font-size:13px;color:#555;margin-bottom:14px">Each team member creates one free ThingSpeak account and one channel. The dashboard fetches all channels in parallel using their public Read API Keys — no backend server needed, ThingSpeak's API supports CORS.</p>
+
+    <div class="info-box"><strong>Free ThingSpeak limits (per account):</strong> Up to 3 channels per account · Minimum 15 seconds between writes · 3 million messages/year · Rate limit on reads: ~100 req/min. With 10 accounts you have 10 independent channels all running simultaneously with no shared rate limit.</div>
+
+    <h3 style="margin-bottom:8px">Step 1 — Each person sets up their account</h3>
+    <div class="step-row"><span class="step-num">1</span><div>Go to <a href="https://thingspeak.com" target="_blank">thingspeak.com</a> → Create account (free, use any email)</div></div>
+    <div class="step-row"><span class="step-num">2</span><div>Channels → New Channel → Name it (e.g. "Air Atlas – Sanganoor Rd") → add 7 fields:<br>Field 1: Temperature · Field 2: Humidity · Field 3: Pressure · Field 4: CO · Field 5: MQ135 · Field 6: PM2.5 · Field 7: PM10</div></div>
+    <div class="step-row"><span class="step-num">3</span><div>Save. Go to <strong>API Keys</strong> tab → copy the <strong>Write API Key</strong> → paste into your ESP32 firmware's <code>apiKey</code> variable</div></div>
+    <div class="step-row"><span class="step-num">4</span><div>Also copy your <strong>Channel ID</strong> (shown in the URL and at the top of the channel page) and your <strong>Read API Key</strong> → share both with the dashboard maintainer</div></div>
+
+    <div class="sep"></div>
+    <h3 style="margin-bottom:8px">Step 2 — Dashboard config (one person manages this file)</h3>
+    <p style="font-size:13px;color:#555;margin-bottom:10px">Replace the dummy values below with real Channel IDs and Read API Keys collected from all 10 participants. The <code>field</code> numbers match what each person configured above.</p>
+<pre>
+// air-atlas-config.js
+// Each person shares their channelId + readApiKey with you.
+// Keep Write API Keys private — only the device owner needs those.
+
+const TS_CHANNELS = [
+  {
+    station:   "Sanganoor Rd",
+    city:      "Coimbatore",
+    channelId: "2345678",          // ← replace with real Channel ID
+    readKey:   "ABCD1234EFGH5678", // ← replace with real Read API Key
+    owner:     "Person 1"
+  },
+  {
+    station:   "Kasturi Nagar",
+    city:      "Bangalore",
+    channelId: "2345679",
+    readKey:   "IJKL9012MNOP3456",
+    owner:     "Person 2"
+  },
+  {
+    station:   "Hebbal",
+    city:      "Bangalore",
+    channelId: "2345680",
+    readKey:   "QRST7890UVWX1234",
+    owner:     "Person 3"
+  },
+  // ... add all 10 entries
+];
+
+// Field mapping (must match ThingSpeak channel field order)
+const FIELD_MAP = {
+  temp:  "field1",
+  hum:   "field2",
+  pres:  "field3",
+  co:    "field4",
+  mq135: "field5",
+  pm25:  "field6",
+  pm10:  "field7"
+};
+</pre>
+
+    <div class="sep"></div>
+    <h3 style="margin-bottom:8px">Step 3 — Fetching live data from ThingSpeak</h3>
+    <p style="font-size:13px;color:#555;margin-bottom:10px">ThingSpeak provides a JSON REST API with CORS enabled. The function below fetches the last N results for any channel:</p>
+<pre>
+// Fetch last `results` readings from a ThingSpeak channel
+async function fetchChannel(channelId, readKey, results = 500) {
+  const url = `https://api.thingspeak.com/channels/${channelId}/feeds.json`
+            + `?api_key=${readKey}&results=${results}`;
+  const res  = await fetch(url);
+  const json = await res.json();
+
+  // json.feeds is an array of readings:
+  // { created_at: "2026-04-27T09:14:32Z", field1: "31.2", field6: "42.1", ... }
+  return json.feeds.map(f => ({
+    ts:    new Date(f.created_at).getTime(),
+    temp:  parseFloat(f.field1),
+    hum:   parseFloat(f.field2),
+    pres:  parseFloat(f.field3),
+    co:    parseFloat(f.field4),
+    mq135: parseFloat(f.field5),
+    pm25:  parseFloat(f.field6),
+    pm10:  parseFloat(f.field7)
+  })).filter(r => !isNaN(r.pm25)); // skip missing readings
+}
+
+// Fetch ALL 10 channels in parallel (much faster than sequential)
+async function fetchAllStations() {
+  const results = await Promise.all(
+    TS_CHANNELS.map(ch => fetchChannel(ch.channelId, ch.readKey, 500))
+  );
+  // results[0] = array of readings for station 0, etc.
+  return results;
+}
+
+// Auto-refresh every 30 seconds
+async function startLiveMode() {
+  await fetchAllStations();        // initial load
+  setInterval(fetchAllStations, 30000); // refresh every 30s
+}
+</pre>
+
+    <div class="sep"></div>
+    <h3 style="margin-bottom:8px">Step 4 — ThingSpeak free tier tips &amp; gotchas</h3>
+    <table>
+      <thead><tr><th>Situation</th><th>What happens</th><th>Solution</th></tr></thead>
+      <tbody>
+        <tr><td>ESP32 sends faster than 15s</td><td>ThingSpeak returns <code>0</code> (rejected)</td><td>Keep <code>millis()-lastSend &gt;= 15000</code> in firmware</td></tr>
+        <tr><td>Channel is private</td><td>API returns 401 Unauthorized</td><td>Channel Settings → Make Public, or share Read API Key</td></tr>
+        <tr><td>Fetching &gt; 8000 results</td><td>API caps at 8000 per request</td><td>Use date range params: <code>&start=2026-04-01</code></td></tr>
+        <tr><td>WiFi drops mid-session</td><td>ESP32 stops sending — gap in data</td><td>Add <code>WiFi.reconnect()</code> in loop if <code>status != WL_CONNECTED</code></td></tr>
+        <tr><td>Multiple devices same channel</td><td>Data gets mixed / overwritten</td><td>Each device must have its own channel and Write API Key</td></tr>
+        <tr><td>Rate limit on reads (dashboard)</td><td>&gt;100 req/min blocked</td><td>Fetch all 10 channels together every 30s, not every second</td></tr>
+      </tbody>
+    </table>
+
+    <div class="sep"></div>
+    <h3 style="margin-bottom:8px">Your 10 station assignments</h3>
+    <div class="ts-grid">
+      <div class="ts-card"><h4>Station 1 — Coimbatore</h4><p>Sanganoor Rd<br>Person 1<br>Channel ID: <em>TBD</em></p></div>
+      <div class="ts-card"><h4>Station 2 — Bangalore</h4><p>Kasturi Nagar<br>Person 2<br>Channel ID: <em>TBD</em></p></div>
+      <div class="ts-card"><h4>Station 3 — Bangalore</h4><p>Hebbal<br>Person 3<br>Channel ID: <em>TBD</em></p></div>
+      <div class="ts-card"><h4>Station 4 — Bangalore</h4><p>Southeast<br>Person 4<br>Channel ID: <em>TBD</em></p></div>
+      <div class="ts-card"><h4>Station 5 — Pune</h4><p>Madha Colony<br>Person 5<br>Channel ID: <em>TBD</em></p></div>
+      <div class="ts-card"><h4>Station 6 — Gurgaon</h4><p>Shiv Nadar School<br>Person 6<br>Channel ID: <em>TBD</em></p></div>
+      <div class="ts-card"><h4>Station 7 — Gurgaon</h4><p>Kunskapsskolan<br>Person 7<br>Channel ID: <em>TBD</em></p></div>
+      <div class="ts-card"><h4>Station 8 — Lucknow</h4><p>Gomti Nagar<br>Person 8<br>Channel ID: <em>TBD</em></p></div>
+      <div class="ts-card"><h4>Station 9</h4><p><em>Spare / backup</em><br>Person 9<br>Channel ID: <em>TBD</em></p></div>
+      <div class="ts-card"><h4>Station 10</h4><p><em>Spare / backup</em><br>Person 10<br>Channel ID: <em>TBD</em></p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ASSEMBLY -->
+<div id="gs-steps" class="g-sec">
+  <div class="gcard">
+    <h2>Step-by-step assembly</h2>
+    <div class="warn-box">Never connect a 5V signal directly to an ESP32 GPIO. Always power off before moving wires.</div>
+    <div class="sep"></div>
+    <div class="step-row"><span class="step-num">1</span><div><strong>Place ESP32</strong> on 830-point breadboard, straddling the centre gap.</div></div>
+    <div class="step-row"><span class="step-num">2</span><div><strong>Build Voltage Divider A</strong> on 400-pt board: R1 10kΩ rows 1–3 · junction row 3 → GPIO34 (orange) · R2 20kΩ rows 3–5 · row 5 → GND.</div></div>
+    <div class="step-row"><span class="step-num">3</span><div><strong>Build Voltage Divider B</strong> identically on rows 8–12. Junction → GPIO35 (purple).</div></div>
+    <div class="step-row"><span class="step-num">4</span><div><strong>Place IRLZ44N MOSFET</strong> (flat face toward you = Gate·Drain·Source): Gate → 10kΩ → GPIO26 · Drain → MQ-7 heater VCC– · Source → GND.</div></div>
+    <div class="step-row"><span class="step-num">5</span><div><strong>Place 1N4007 flyback diode:</strong> stripe (cathode) → +5V · anode → MOSFET Drain side.</div></div>
+    <div class="step-row"><span class="step-num">6</span><div><strong>Wire BME280:</strong> VCC → 3V3 · GND → GND · SDA → GPIO21 · SCL → GPIO22.</div></div>
+    <div class="step-row"><span class="step-num">7</span><div><strong>Wire PMS7003:</strong> Pin 1 → VIN · Pin 2 → GND · Pin 9 (TX) → GPIO16 · Pin 8 (RX) → GPIO17.</div></div>
+    <div class="step-row"><span class="step-num">8</span><div><strong>Wire MQ-7:</strong> VCC → +5V via MOSFET Drain · GND → GND · AOUT → Divider A.</div></div>
+    <div class="step-row"><span class="step-num">9</span><div><strong>Wire MQ-135:</strong> VCC → +5V · GND → GND · AOUT → Divider B.</div></div>
+    <div class="step-row"><span class="step-num">10</span><div><strong>Upload firmware:</strong> Board → "ESP32 Dev Module" · correct port · Serial Monitor at 115200. MQ sensors need 24–48h warm-up for calibrated readings.</div></div>
+  </div>
+  <div class="gcard">
+    <h2>Troubleshooting</h2>
+    <table>
+      <thead><tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><td>BME280 not found</td><td>I²C address mismatch</td><td>Try 0x76 and 0x77</td></tr>
+        <tr><td>No PMS7003 data</td><td>TX/RX swapped</td><td>Swap GPIO16 ↔ GPIO17</td></tr>
+        <tr><td>MQ reads always 4095</td><td>AOUT direct to GPIO (no divider)</td><td>Check divider wiring</td></tr>
+        <tr><td>MQ-7 doesn't cycle</td><td>Gate resistor missing</td><td>Add 10kΩ between GPIO26 and Gate</td></tr>
+        <tr><td>ESP32 resets randomly</td><td>Insufficient power</td><td>Use 5V 2A adapter, not PC USB</td></tr>
+        <tr><td>ThingSpeak returns 0</td><td>Sending faster than 15s</td><td>Check millis() timing in loop</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- GLOSSARY -->
+<div id="gs-glossary" class="g-sec">
+  <div class="gcard">
+    <h2>Glossary</h2>
+    <div class="gloss-grid">
+      <div class="gloss-card"><h4>GPIO</h4><p>The metal pins on your ESP32. Software sets them HIGH (3.3V) or LOW (0V). Max safe input: 3.3V — connecting 5V permanently damages the chip.</p></div>
+      <div class="gloss-card"><h4>ADC — Analog-to-Digital Converter</h4><p>Reads a voltage (0–3.3V) and converts it to a number 0–4095. MQ sensor readings arrive through these pins after voltage dividers scale them down.</p></div>
+      <div class="gloss-card"><h4>PWM — Pulse Width Modulation</h4><p>Simulates a lower voltage by rapidly switching ON/OFF. At 28% duty: 5V × 0.28 = 1.4V effective. Used to control the MQ-7 heater in the LOW phase.</p></div>
+      <div class="gloss-card"><h4>Voltage divider</h4><p>Two series resistors that split voltage proportionally. R1=10kΩ, R2=20kΩ → Vout = 5V × 20/30 = 3.33V. Protects ESP32 ADC from MQ sensors' 5V output.</p></div>
+      <div class="gloss-card"><h4>MOSFET</h4><p>An electronic switch controlled by voltage. GPIO26 drives the Gate, allowing current Drain→Source to switch the MQ-7 heater. IRLZ44N switches fully at 3.3V — safe for ESP32 direct drive.</p></div>
+      <div class="gloss-card"><h4>I²C</h4><p>Two-wire protocol: SDA (data) + SCL (clock). BME280 uses it. Multiple devices share the same two wires via unique addresses (0x76 or 0x77).</p></div>
+      <div class="gloss-card"><h4>UART</h4><p>Serial protocol: TX sends, RX receives. TX always crosses to the other device's RX. PMS7003 streams data at 9600 baud on GPIO16/17.</p></div>
+      <div class="gloss-card"><h4>Flyback diode (1N4007)</h4><p>Inductive loads generate reverse voltage spikes when switched off. The 1N4007 clamps these, protecting the MOSFET. Stripe (cathode) always toward +V.</p></div>
+      <div class="gloss-card"><h4>Heater element</h4><p>A resistive wire coil inside MQ sensors heats a metal oxide bead to ~300°C. Gas molecules change the bead's resistance — the AOUT pin reflects this as voltage.</p></div>
+      <div class="gloss-card"><h4>AOUT — Analog Output</h4><p>Continuous 0–5V pin on MQ modules. Higher gas = higher voltage. Must be divided to 0–3.3V before any ESP32 GPIO pin.</p></div>
+      <div class="gloss-card"><h4>Voltage cycling (MQ-7)</h4><p>5V for 60s clears the sensing surface. 1.4V for 90s lets CO bind — resistance is measured here. Without cycling, readings drift and saturate.</p></div>
+      <div class="gloss-card"><h4>ThingSpeak Read API Key</h4><p>A public key that lets anyone fetch your channel's data over HTTPS. Safe to share — it can only read, not write. The Write API Key must stay private on your device.</p></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /g-con -->
+</div><!-- /page-guide -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+<script>
+Chart.register(window['chartjs-plugin-annotation']);
+
+function switchPage(id,btn){
+  ['dashboard','guide'].forEach(p=>document.getElementById('page-'+p).style.display=p===id?'block':'none');
+  document.querySelectorAll('.pbar-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+const WHO_LIMITS={pm25:25,pm100:50,aqi:100};
+let curWindow='week',modalWindow='week',showThresholds=true;
+let allSeries={},modalFieldId=null,modalChart=null;
+const CI={},ANNOTATIONS={};
+const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const HOURS=Array.from({length:24},(_,i)=>i);
+
+function genSeries(base,n,noise=0.15){
+  const arr=[],now=Date.now(),iv=152000;
+  for(let i=n-1;i>=0;i--){
+    const ts=now-i*iv,h=new Date(ts).getHours();
+    const day=Math.sin((h-6)/24*Math.PI*2)*0.22;
+    const dow=new Date(ts).getDay(),wk=dow===0||dow===6?-0.1:0.05;
+    arr.push({x:ts,y:Math.max(0,Math.round((base*(1+day+wk+(Math.random()-.5)*noise))*10)/10)});
+  }
+  return arr;
+}
+function nFor(w){const pd=Math.round(86400/152);return w==='24h'?pd:w==='week'?pd*7:w==='month'?pd*30:pd*90;}
+function slice(key,w){const n=nFor(w),s=allSeries[key];return s?s.slice(-n):[];}
+function stats(arr){
+  if(!arr.length)return{min:0,max:0,avg:0,std:0,n:0};
+  const v=arr.map(p=>p.y),mn=Math.min(...v),mx=Math.max(...v),avg=v.reduce((a,b)=>a+b,0)/v.length;
+  return{min:+mn.toFixed(1),max:+mx.toFixed(1),avg:+avg.toFixed(1),std:+(Math.sqrt(v.map(x=>(x-avg)**2).reduce((a,b)=>a+b,0)/v.length)).toFixed(1),n:v.length};
+}
+function pearson(xs,ys){
+  const n=Math.min(xs.length,ys.length);if(n<2)return 0;
+  const xv=xs.slice(0,n).map(p=>p.y),yv=ys.slice(0,n).map(p=>p.y);
+  const mx=xv.reduce((a,b)=>a+b,0)/n,my=yv.reduce((a,b)=>a+b,0)/n;
+  const num=xv.map((x,i)=>(x-mx)*(yv[i]-my)).reduce((a,b)=>a+b,0);
+  const dx=Math.sqrt(xv.map(x=>(x-mx)**2).reduce((a,b)=>a+b,0));
+  const dy=Math.sqrt(yv.map(y=>(y-my)**2).reduce((a,b)=>a+b,0));
+  return dx&&dy?+(num/(dx*dy)).toFixed(3):0;
+}
+function calcAQI(pm25){
+  if(pm25<=12)return Math.round(pm25/12*50);
+  if(pm25<=35.4)return Math.round(50+(pm25-12)/(35.4-12)*50);
+  if(pm25<=55.4)return Math.round(100+(pm25-35.4)/(55.4-35.4)*50);
+  return Math.round(150+(pm25-55.4)/100*100);
+}
+function aqiCls(a){return a<=50?'good':a<=100?'moderate':'unhealthy';}
+function aqiLbl(a){return a<=50?'Good':a<=100?'Moderate':a<=150?'Unhealthy (sensitive)':'Unhealthy';}
+function fmtTs(ts){return new Date(ts).toLocaleString('en-IN',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});}
+function fmtDate(ts){return new Date(ts).toLocaleDateString('en-IN',{month:'short',day:'numeric'});}
+function setEl(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+
+function buildSeries(d){
+  const n=nFor('all');
+  allSeries={pm25:genSeries(d.pm25,n,.18),pm10:genSeries(d.pm10,n,.15),pm100:genSeries(d.pm100,n,.16),
+    co:genSeries(d.co,n,.1),mq135:genSeries(d.mq135,n,.14),temp:genSeries(d.temp,n,.05),
+    hum:genSeries(d.hum,n,.08),pres:genSeries(d.pres,n,.02)};
+  allSeries.aqi=allSeries.pm25.map(p=>({x:p.x,y:calcAQI(p.y)}));
+}
+
+function whoAnnotations(thr){
+  if(!thr||!showThresholds)return{};
+  return{w:{type:'line',yMin:thr,yMax:thr,borderColor:'rgba(192,57,43,.8)',borderWidth:1.5,borderDash:[6,4],
+    label:{content:'WHO',display:true,position:'end',font:{size:9,family:"'Space Mono',monospace"},color:'rgba(192,57,43,1)',backgroundColor:'rgba(255,255,255,.85)',padding:{x:4,y:2}}}};
+}
+function userAnnotations(fid){
+  const anns=ANNOTATIONS[fid]||[],r={};
+  anns.forEach((a,i)=>{
+    if(a.end)r[`ab${i}`]={type:'box',xMin:a.start,xMax:a.end,backgroundColor:'rgba(184,124,0,.12)',borderColor:'rgba(184,124,0,.5)',borderWidth:1,label:{content:a.text,display:true,position:'start',font:{size:9},color:'#b87c00',backgroundColor:'rgba(255,255,255,.9)',padding:{x:4,y:2}}};
+    else r[`al${i}`]={type:'line',xMin:a.start,xMax:a.start,borderColor:'rgba(184,124,0,.8)',borderWidth:1.5,borderDash:[3,3],label:{content:a.text,display:true,position:'start',font:{size:9},color:'#b87c00',backgroundColor:'rgba(255,255,255,.9)',rotation:-90,padding:{x:4,y:2}}};
+  });
+  return r;
+}
+
+const FIELDS={
+  aqi:{title:'Combined AQI',unit:'',threshold:100,color:'#1a3a2a',key:'aqi'},
+  pm25:{title:'PM 2.5',unit:'µg/m³',threshold:25,color:'#b87c00',key:'pm25'},
+  pm10:{title:'PM 1.0',unit:'µg/m³',threshold:null,color:'#2d7a4f',key:'pm10'},
+  pm100:{title:'PM 10',unit:'µg/m³',threshold:50,color:'#c0392b',key:'pm100'},
+  co:{title:'CO (MQ-7)',unit:'V',threshold:null,color:'#1a3a2a',key:'co'},
+  mq135:{title:'MQ-135',unit:'ADC',threshold:null,color:'#7b2d8b',key:'mq135'},
+  temp:{title:'Temperature',unit:'°C',threshold:null,color:'#c0392b',key:'temp'},
+  hum:{title:'Humidity',unit:'%',threshold:null,color:'#378ADD',key:'hum'},
+};
+
+function mkChart(canvasId,fid,w){
+  if(CI[canvasId])CI[canvasId].destroy();
+  const f=FIELDS[fid],ctx=document.getElementById(canvasId).getContext('2d');
+  CI[canvasId]=new Chart(ctx,{type:'line',data:{datasets:[{data:slice(f.key,w),borderColor:f.color,backgroundColor:f.color+'12',fill:true,borderWidth:1,pointRadius:0,tension:.35,spanGaps:false}]},
+    options:{responsive:true,maintainAspectRatio:false,parsing:false,
+      plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{title:i=>fmtTs(i[0].parsed.x),label:i=>`${i.parsed.y} ${f.unit}`}},annotation:{annotations:{...whoAnnotations(f.threshold)}}},
+      scales:{x:{type:'time',ticks:{color:'#6b6b67',font:{size:9},maxTicksLimit:4},grid:{color:'rgba(0,0,0,.03)'}},y:{ticks:{color:'#6b6b67',font:{size:9}},grid:{color:'rgba(0,0,0,.04)'}}}}});
+}
+
+function renderMiniCharts(){
+  const w=curWindow;
+  Object.keys(FIELDS).forEach(fid=>mkChart('c-'+fid,fid,w));
+  updateStats(w);
+}
+function updateStats(w){
+  Object.keys(FIELDS).forEach(k=>{
+    const s=stats(slice(k,w));
+    setEl(`s-${k}-min`,s.min);setEl(`s-${k}-max`,s.max);setEl(`s-${k}-avg`,s.avg);
+    if(k==='pm25'||k==='aqi')setEl(`s-${k}-std`,s.std);
+  });
+}
+
+function renderHeatmap(){
+  const key=document.getElementById('hm-field').value,data=allSeries[key]||[];
+  const B=Array.from({length:7},()=>Array.from({length:24},()=>[]));
+  data.forEach(p=>{const d=new Date(p.x);B[d.getDay()][d.getHours()].push(p.y);});
+  const avgs=B.map(r=>r.map(c=>c.length?c.reduce((a,b)=>a+b,0)/c.length:null));
+  const flat=avgs.flat().filter(v=>v!==null),mn=Math.min(...flat),rng=Math.max(...flat)-mn||1;
+  const col=v=>{if(!v)return'#f0ede8';const t=(v-mn)/rng;return t<.4?`rgba(45,122,79,${.2+t*2})`:t<.7?`rgba(184,124,0,${.3+(t-.4)*2})`:`rgba(192,57,43,${.3+(t-.7)*2.3})`;};
+  const grid=document.getElementById('heatmap-grid');grid.innerHTML='';
+  grid.appendChild(Object.assign(document.createElement('div'),{className:'hm-label'}));
+  HOURS.forEach(h=>{const el=document.createElement('div');el.className='hm-header';el.textContent=h%4===0?h+'h':'';grid.appendChild(el);});
+  DAYS.forEach((day,di)=>{
+    grid.appendChild(Object.assign(document.createElement('div'),{className:'hm-label',textContent:day}));
+    HOURS.forEach(h=>{const v=avgs[di][h],c=document.createElement('div');c.className='hm-cell';c.style.background=col(v);c.title=v!==null?`${day} ${h}:00 — ${v.toFixed(1)}`:'No data';grid.appendChild(c);});
+  });
+}
+
+function renderDiurnal(){
+  const key=document.getElementById('diurnal-field').value,data=allSeries[key]||[];
+  const B=Array.from({length:24},()=>[]);
+  data.forEach(p=>B[new Date(p.x).getHours()].push(p.y));
+  const avgs=B.map(b=>b.length?+(b.reduce((a,c)=>a+c,0)/b.length).toFixed(2):null);
+  if(CI['c-diurnal'])CI['c-diurnal'].destroy();
+  const f=FIELDS[key],ctx=document.getElementById('c-diurnal').getContext('2d');
+  CI['c-diurnal']=new Chart(ctx,{type:'bar',data:{labels:HOURS.map(h=>h+':00'),datasets:[{data:avgs,backgroundColor:avgs.map(v=>v?f.color+'99':'rgba(0,0,0,.05)'),borderRadius:3,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>`${i.parsed.y} ${f.unit||''}`}}},
+      scales:{x:{ticks:{color:'#6b6b67',font:{size:8},maxTicksLimit:12},grid:{display:false}},y:{ticks:{color:'#6b6b67',font:{size:9}},grid:{color:'rgba(0,0,0,.04)'}}}}});
+  const peak=avgs.indexOf(Math.max(...avgs.filter(Boolean)));
+  setEl('diurnal-info',`Peak hour: ${peak}:00 — avg ${avgs[peak]} ${f.unit||''}`);
+}
+
+function renderCDF(){
+  const key=document.getElementById('cdf-field').value,data=allSeries[key]||[];
+  const vals=data.map(p=>p.y).sort((a,b)=>a-b);
+  const pts=vals.map((v,i)=>({x:+v.toFixed(2),y:+((i+1)/vals.length*100).toFixed(2)}));
+  if(CI['c-cdf'])CI['c-cdf'].destroy();
+  const f=FIELDS[key],ctx=document.getElementById('c-cdf').getContext('2d');
+  const anns=f.threshold?{t:{type:'line',xMin:f.threshold,xMax:f.threshold,borderColor:'rgba(192,57,43,.8)',borderWidth:1.5,borderDash:[5,4],label:{content:'WHO',display:true,position:'start',font:{size:9},color:'#c0392b',backgroundColor:'rgba(255,255,255,.85)',padding:{x:4,y:2}}}}:{};
+  CI['c-cdf']=new Chart(ctx,{type:'line',data:{datasets:[{data:pts,borderColor:f.color,backgroundColor:f.color+'15',fill:true,borderWidth:1.5,pointRadius:0,tension:.1}]},
+    options:{responsive:true,maintainAspectRatio:false,parsing:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>`Value: ${i.parsed.x} | %ile: ${i.parsed.y}%`}},annotation:{annotations:anns}},
+      scales:{x:{title:{display:true,text:f.unit||key,color:'#6b6b67',font:{size:9}},ticks:{color:'#6b6b67',font:{size:9}},grid:{color:'rgba(0,0,0,.03)'}},y:{title:{display:true,text:'Cumulative %',color:'#6b6b67',font:{size:9}},min:0,max:100,ticks:{color:'#6b6b67',font:{size:9}},grid:{color:'rgba(0,0,0,.04)'}}}}});
+  const pct=p=>vals[Math.floor(p/100*vals.length)]?.toFixed(1)||'—';
+  setEl('cdf-info',`P90: ${pct(90)} | P95: ${pct(95)} | P99: ${pct(99)}`);
+}
+
+function renderPMRatio(){
+  if(CI['c-pmratio'])CI['c-pmratio'].destroy();
+  const pm25=slice('pm25',curWindow),pm100=slice('pm100',curWindow),n=Math.min(pm25.length,pm100.length);
+  const pts=Array.from({length:n},(_,i)=>({x:pm25[i].x,y:pm100[i].y>0?+(pm25[i].y/pm100[i].y).toFixed(3):null}));
+  const ctx=document.getElementById('c-pmratio').getContext('2d');
+  CI['c-pmratio']=new Chart(ctx,{type:'line',data:{datasets:[{data:pts,borderColor:'#7b2d8b',backgroundColor:'rgba(123,45,139,.08)',fill:true,borderWidth:1,pointRadius:0,tension:.3,spanGaps:false}]},
+    options:{responsive:true,maintainAspectRatio:false,parsing:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{title:i=>fmtTs(i[0].parsed.x),label:i=>`Ratio: ${i.parsed.y}`}},annotation:{annotations:{l:{type:'line',yMin:.8,yMax:.8,borderColor:'rgba(192,57,43,.6)',borderWidth:1,borderDash:[5,4],label:{content:'Fine dominance ≥0.8',display:true,position:'end',font:{size:9},color:'#c0392b',backgroundColor:'rgba(255,255,255,.85)',padding:{x:4,y:2}}}}}},
+      scales:{x:{type:'time',ticks:{color:'#6b6b67',font:{size:9},maxTicksLimit:4},grid:{color:'rgba(0,0,0,.03)'}},y:{min:0,max:1.2,ticks:{color:'#6b6b67',font:{size:9}},grid:{color:'rgba(0,0,0,.04)'}}}}});
+}
+
+function renderHEI(){
+  const key=document.getElementById('hei-field').value,limit=WHO_LIMITS[key]||25;
+  const data=slice(key,curWindow);if(!data.length)return;
+  const dayMap={},iv_h=152/3600;
+  data.forEach(p=>{if(p.y>limit){const dk=new Date(p.x).toDateString();dayMap[dk]=(dayMap[dk]||0)+iv_h*(p.y-limit)/limit;}});
+  const dayKeys=Object.keys(dayMap).sort((a,b)=>new Date(a)-new Date(b)),dayVals=dayKeys.map(k=>+dayMap[k].toFixed(3));
+  if(CI['c-hei'])CI['c-hei'].destroy();
+  const ctx=document.getElementById('c-hei').getContext('2d');
+  CI['c-hei']=new Chart(ctx,{type:'bar',data:{labels:dayKeys.map(k=>fmtDate(new Date(k))),datasets:[{data:dayVals,backgroundColor:dayVals.map(v=>v>2?'rgba(192,57,43,.75)':v>0.5?'rgba(184,124,0,.65)':'rgba(45,122,79,.55)'),borderRadius:3,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>`Excess·hrs: ${i.parsed.y.toFixed(2)}`}}},
+      scales:{x:{ticks:{color:'#6b6b67',font:{size:8},maxTicksLimit:10},grid:{display:false}},y:{title:{display:true,text:'Excess·hrs above WHO',color:'#6b6b67',font:{size:9}},ticks:{color:'#6b6b67',font:{size:9}},grid:{color:'rgba(0,0,0,.04)'}}}}});
+  const total=dayVals.reduce((a,b)=>a+b,0),worstIdx=dayVals.indexOf(Math.max(...dayVals));
+  const allDays=new Set(data.map(p=>new Date(p.x).toDateString())).size;
+  setEl('hei-total',total.toFixed(1)+' h');
+  setEl('hei-worst',dayKeys.length?fmtDate(new Date(dayKeys[worstIdx]))+' ('+dayVals[worstIdx].toFixed(1)+'h)':'—');
+  setEl('hei-days',dayKeys.length);setEl('hei-clean',Math.max(0,allDays-dayKeys.length));
+}
+
+function renderCorr(){
+  const xk=document.getElementById('corr-x').value,yk=document.getElementById('corr-y').value;
+  const xs=slice(xk,curWindow),ys=slice(yk,curWindow),n=Math.min(xs.length,ys.length);
+  const pts=Array.from({length:n},(_,i)=>({x:+xs[i].y.toFixed(2),y:+ys[i].y.toFixed(2)}));
+  if(CI['c-corr'])CI['c-corr'].destroy();
+  const ctx=document.getElementById('c-corr').getContext('2d');
+  CI['c-corr']=new Chart(ctx,{type:'scatter',data:{datasets:[{data:pts,backgroundColor:'rgba(26,58,42,.2)',pointRadius:2.5,pointHoverRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>`(${i.parsed.x}, ${i.parsed.y})`}}},
+      scales:{x:{title:{display:true,text:xk,color:'#6b6b67',font:{size:10}},ticks:{color:'#6b6b67',font:{size:9}},grid:{color:'rgba(0,0,0,.04)'}},y:{title:{display:true,text:yk,color:'#6b6b67',font:{size:10}},ticks:{color:'#6b6b67',font:{size:9}},grid:{color:'rgba(0,0,0,.04)'}}}}});
+  const r=pearson(xs,ys),str=Math.abs(r)<.3?'weak':Math.abs(r)<.7?'moderate':'strong';
+  setEl('corr-info',`Pearson r = ${r}  (${str} ${r>=0?'positive':'negative'} correlation, n=${n})`);
+}
+
+function openModal(fid){
+  modalFieldId=fid;if(!ANNOTATIONS[fid])ANNOTATIONS[fid]=[];
+  setEl('modal-title',FIELDS[fid].title);
+  document.getElementById('modal-overlay').classList.add('open');
+  renderModal(modalWindow);renderAnnotationsList();
+}
+function renderModal(w){
+  if(CI['modal-canvas'])CI['modal-canvas'].destroy();
+  const f=FIELDS[modalFieldId],anns={...whoAnnotations(f.threshold||null),...userAnnotations(modalFieldId)};
+  const data=slice(f.key,w);
+  const ctx=document.getElementById('modal-canvas').getContext('2d');
+  CI['modal-canvas']=new Chart(ctx,{type:'line',data:{datasets:[{label:f.title,data,borderColor:f.color,backgroundColor:f.color+'12',fill:true,borderWidth:1.5,pointRadius:2,pointHoverRadius:6,tension:.35,spanGaps:false}]},
+    options:{responsive:true,maintainAspectRatio:false,parsing:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{title:i=>fmtTs(i[0].parsed.x),label:i=>`${i.parsed.y} ${f.unit}`}},annotation:{annotations:anns}},
+      scales:{x:{type:'time',ticks:{color:'#6b6b67',font:{size:10},maxTicksLimit:10},grid:{color:'rgba(0,0,0,.03)'}},y:{ticks:{color:'#6b6b67',font:{size:10}},grid:{color:'rgba(0,0,0,.04)'}}}}});
+  modalChart=CI['modal-canvas'];
+  const st=stats(data);
+  const exc=f.threshold?+(data.filter(p=>p.y>f.threshold).length/Math.max(st.n,1)*100).toFixed(1):null;
+  document.getElementById('modal-stats-bar').innerHTML=`
+    <div class="modal-stat"><div class="ms-label">Min</div><div class="ms-value s-min">${st.min}</div></div>
+    <div class="modal-stat"><div class="ms-label">Max</div><div class="ms-value s-max">${st.max}</div></div>
+    <div class="modal-stat"><div class="ms-label">Mean</div><div class="ms-value s-avg">${st.avg}</div></div>
+    <div class="modal-stat"><div class="ms-label">Std Dev (σ)</div><div class="ms-value">${st.std}</div></div>
+    <div class="modal-stat"><div class="ms-label">Readings</div><div class="ms-value">${st.n.toLocaleString()}</div></div>
+    ${f.threshold?`<div class="modal-stat"><div class="ms-label">WHO limit</div><div class="ms-value">${f.threshold} ${f.unit}</div></div>`:''}
+    ${exc!==null?`<div class="modal-stat"><div class="ms-label">Exceeds WHO</div><div class="ms-value s-max">${exc}%</div></div>`:''}`;
+}
+function addAnnotation(){
+  const s=document.getElementById('ann-start').value,e=document.getElementById('ann-end').value,t=document.getElementById('ann-text').value.trim();
+  if(!s||!t)return;
+  ANNOTATIONS[modalFieldId].push({start:new Date(s).getTime(),end:e?new Date(e).getTime():null,text:t});
+  document.getElementById('ann-text').value='';renderAnnotationsList();renderModal(modalWindow);
+}
+function removeAnnotation(i){ANNOTATIONS[modalFieldId].splice(i,1);renderAnnotationsList();renderModal(modalWindow);}
+function renderAnnotationsList(){
+  const list=document.getElementById('annotations-list'),anns=ANNOTATIONS[modalFieldId]||[];
+  list.innerHTML=anns.length?anns.map((a,i)=>`<div class="ann-item"><span class="ann-time">${fmtTs(a.start)}${a.end?' → '+fmtTs(a.end):''}</span><span class="ann-text">${a.text}</span><button class="ann-del" onclick="removeAnnotation(${i})">✕</button></div>`).join(''):'<span style="font-size:10px;color:var(--muted);font-family:var(--mono);">No annotations yet.</span>';
+}
+function setModalWindow(w,btn){modalWindow=w;document.querySelectorAll('.modal-time-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderModal(w);}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');if(CI['modal-canvas']){CI['modal-canvas'].destroy();delete CI['modal-canvas'];modalChart=null;}}
+function closeModalOutside(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
+function toggleThresholds(){showThresholds=document.getElementById('threshold-toggle').checked;if(modalFieldId)renderModal(modalWindow);}
+function downloadChartPNG(){if(!modalChart)return;const a=document.createElement('a');a.href=modalChart.toBase64Image('image/png',1);a.download='airatlas_chart.png';a.click();}
+function downloadModalCSV(){if(!modalFieldId)return;const f=FIELDS[modalFieldId],d=slice(f.key,modalWindow);let c='timestamp,value\n';d.forEach(p=>{c+=`"${fmtTs(p.x)}",${p.y}\n`;});const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(c);a.download=`airatlas_${modalFieldId}.csv`;a.click();}
+function downloadCSV(){
+  const w=curWindow,keys=['pm25','pm10','pm100','co','mq135','temp','hum','pres','aqi'],slices=keys.map(k=>slice(k,w)),ref=slices[0];
+  let c='timestamp,'+keys.join(',')+'\n';
+  ref.forEach((_,i)=>{c+=`"${fmtTs(ref[i].x)}",${slices.map(s=>s[i]?s[i].y:'').join(',')}\n`;});
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(c);a.download=`airatlas_${w}.csv`;a.click();
+}
+function setWindow(w,btn){curWindow=w;document.querySelectorAll('.time-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderAll();}
+function renderAll(){renderMiniCharts();renderCorr();renderDiurnal();renderCDF();renderPMRatio();renderHEI();}
+
+/* STATIONS */
+const STATIONS={
+  coimbatore:{
+    landmarks:['Sanganoor Rd'],
+    state:'Tamil Nadu',
+    data:{'Sanganoor Rd':{temp:28.4,hum:64,alt:411,pm25:34,pm10:22,pm100:48,co:1.8,mq135:1480,pres:962}}
+  },
+  bangalore:{
+    landmarks:['Kasturi Nagar','Hebbal','Southeast'],
+    state:'Karnataka',
+    data:{
+      'Kasturi Nagar':{temp:24.1,hum:58,alt:921,pm25:52,pm10:34,pm100:74,co:2.2,mq135:1820,pres:910},
+      'Hebbal'        :{temp:23.8,hum:62,alt:918,pm25:61,pm10:40,pm100:88,co:2.5,mq135:2060,pres:909},
+      'Southeast'     :{temp:25.2,hum:55,alt:914,pm25:44,pm10:29,pm100:63,co:2.0,mq135:1650,pres:911}
+    }
+  },
+  mumbai:{
+    landmarks:['Chembur'],
+    state:'Maharashtra',
+    data:{'Chembur':{temp:31.8,hum:79,alt:10,pm25:68,pm10:45,pm100:96,co:2.9,mq135:2280,pres:1011}}
+  },
+  pune:{
+    landmarks:['Madha Colony','Kothrud'],
+    state:'Maharashtra',
+    data:{
+      'Madha Colony':{temp:27.6,hum:52,alt:558,pm25:46,pm10:31,pm100:65,co:2.1,mq135:1780,pres:944},
+      'Kothrud'     :{temp:26.9,hum:55,alt:572,pm25:38,pm10:25,pm100:54,co:1.9,mq135:1560,pres:943}
+    }
+  },
+  gurgaon:{
+    landmarks:['Shiv Nadar School','Kunskapsskolan'],
+    state:'Haryana',
+    data:{
+      'Shiv Nadar School':{temp:29.3,hum:48,alt:217,pm25:88,pm10:58,pm100:124,co:3.1,mq135:2640,pres:1009},
+      'Kunskapsskolan'   :{temp:30.1,hum:45,alt:220,pm25:96,pm10:63,pm100:138,co:3.4,mq135:2880,pres:1008}
+    }
+  },
+  lucknow:{
+    landmarks:['Gomti Nagar'],
+    state:'Uttar Pradesh',
+    data:{'Gomti Nagar':{temp:31.8,hum:71,alt:123,pm25:112,pm10:74,pm100:158,co:3.8,mq135:3100,pres:1006}}
+  }
+};
+
+function renderStation(d,landmark,city,state){
+  buildSeries(d);
+  const aqi=calcAQI(d.pm25);
+  document.getElementById('band-location').innerHTML=`<div class="band-location-name">${landmark}, ${city[0].toUpperCase()+city.slice(1)}</div><div class="band-location-sub">${state}, India</div>`;
+  setEl('band-alt',d.alt+' m');setEl('band-temp',d.temp.toFixed(1)+'°C');setEl('band-hum',Math.round(d.hum)+'%');
+  setEl('aqi-num',aqi);setEl('aqi-status',aqiLbl(aqi));
+  document.getElementById('aqi-circle').className='aqi-circle '+aqiCls(aqi);
+  document.getElementById('aqi-needle').style.left=Math.min(aqi/300*100,97)+'%';
+  setEl('m-pm25',d.pm25);setEl('m-pm10',d.pm10);setEl('m-pm100',d.pm100);
+  setEl('m-co',d.co.toFixed(1));setEl('m-mq135',d.mq135);setEl('m-temp',d.temp.toFixed(1));setEl('m-hum',Math.round(d.hum));
+  renderAll();renderHeatmap();
+  setEl('last-updated','Updated: '+new Date().toLocaleTimeString());
+}
+function populateLandmarks(city){
+  const sel=document.getElementById('landmark-select');sel.innerHTML='';
+  STATIONS[city].landmarks.forEach(l=>{const o=document.createElement('option');o.value=l;o.textContent=l;sel.appendChild(o);});
+}
+function onCityChange(){populateLandmarks(document.getElementById('city-select').value);onLandmarkChange();}
+function onLandmarkChange(){
+  const c=document.getElementById('city-select').value,l=document.getElementById('landmark-select').value;
+  renderStation(STATIONS[c].data[l],l,c,STATIONS[c].state);
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+populateLandmarks('coimbatore');onLandmarkChange();
+setInterval(onLandmarkChange,30000);
+
+/* BUILD GUIDE */
+function guideShow(id,btn){
+  document.querySelectorAll('.g-sec').forEach(s=>s.classList.remove('gvis'));
+  document.querySelectorAll('.g-nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('gs-'+id).classList.add('gvis');btn.classList.add('active');
+}
+const guideTips={
+  term:{t:"Hover-enabled term",b:"Hover any underlined word in this guide for a quick definition."},
+  gpio:{t:"GPIO",b:"The metal pins on ESP32. Max safe input: 3.3V. Connecting 5V permanently damages the chip."},
+  divider:{t:"Voltage divider",b:"Two resistors scale down voltage. R1=10kΩ, R2=20kΩ → 5V × 20/30 = 3.33V."},
+  mosfet:{t:"MOSFET",b:"Electronic switch: GPIO26 drives the Gate, current flows Drain→Source, controlling the MQ-7 heater."},
+  cycling:{t:"Voltage cycling",b:"5V for 60s clears the MQ-7 sensor surface. 1.4V for 90s lets CO bind for measurement."},
+  pwm:{t:"PWM",b:"Rapid ON/OFF switching simulates lower voltage. 28% duty × 5V = 1.4V effective."},
+  i2c:{t:"I²C",b:"Two-wire protocol: SDA + SCL. BME280 uses addresses 0x76 or 0x77."},
+  uart:{t:"UART",b:"Serial: TX sends, RX receives. TX always crosses to other device's RX. PMS7003 at 9600 baud."},
+  aout:{t:"AOUT",b:"Analog output 0–5V. Must be voltage-divided to 0–3.3V before ESP32 ADC pin."},
+  heater:{t:"Heater element",b:"Resistive coil heats metal oxide bead to ~300°C. Gas changes bead resistance → AOUT voltage changes."},
+  flyback:{t:"Flyback diode",b:"Clamps reverse voltage spikes when heater is switched off. Stripe (cathode) toward +V."},
+  mcu:{t:"Microcontroller",b:"ESP32: 32-bit dual-core chip with WiFi. Runs your sketch, reads sensors, sends data to ThingSpeak."},
+  "5v":{t:"5V logic level",b:"MQ sensors output 0–5V. ESP32 GPIO max is 3.3V. Always use a voltage divider."}
+};
+const gTip=document.getElementById('guide-tooltip'),gTT=document.getElementById('guide-tt-title'),gTB=document.getElementById('guide-tt-body');
+document.getElementById('page-guide').addEventListener('mouseover',e=>{
+  const el=e.target.closest('.term');if(!el)return;
+  const d=guideTips[el.getAttribute('data-tip')];if(!d)return;
+  gTT.textContent=d.t;gTB.textContent=d.b;gTip.style.display='block';moveTip(e);
+});
+document.addEventListener('mousemove',e=>{if(gTip.style.display==='block')moveTip(e);});
+document.getElementById('page-guide').addEventListener('mouseout',e=>{if(!e.target.closest('.term'))gTip.style.display='none';});
+function moveTip(e){
+  let x=e.clientX+16,y=e.clientY+14;
+  if(x+296>window.innerWidth)x=e.clientX-310;
+  if(y+110>window.innerHeight)y=e.clientY-120;
+  gTip.style.left=x+'px';gTip.style.top=y+'px';
+}
+</script>
+</body>
+</html>
