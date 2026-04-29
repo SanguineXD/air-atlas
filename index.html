@@ -1146,7 +1146,7 @@ async function fetchAndBuild(d){
   try{
     const url=`https://api.thingspeak.com/channels/${d.channelId}/feeds.json?api_key=${d.readKey}&results=500`;
     const json=await(await fetch(url)).json();
-    const feeds=(json.feeds||[]).filter(f=>f.field6);
+    const feeds=(json.feeds||[]).filter(f=>f.field1);
     const mk=field=>feeds.map(f=>({x:new Date(f.created_at).getTime(),y:+parseFloat(f[field]||0).toFixed(1)})).filter(p=>p.y>0);
     allSeries={temp:mk('field1'),hum:mk('field2'),pres:mk('field3'),co:mk('field4'),mq135:mk('field5'),pm25:mk('field6'),pm100:mk('field7'),pm10:mk('field8')};
     allSeries.aqi=allSeries.pm25.map(p=>({x:p.x,y:calcAQI(p.y)}));
@@ -1166,7 +1166,7 @@ async function onLandmarkChange(){
   if(d.live){
     showNoData(false);
     const ok=await fetchAndBuild(d);
-    if(ok&&allSeries.pm25.length){
+    if(ok&&allSeries.temp.length){
       const lp=allSeries.pm25[allSeries.pm25.length-1].y,aqi=calcAQI(lp);
       setEl('aqi-num',aqi);setEl('aqi-status',aqiLbl(aqi));
       document.getElementById('aqi-circle').className='aqi-circle '+aqiCls(aqi);
