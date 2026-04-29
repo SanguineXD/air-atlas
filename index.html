@@ -55,7 +55,8 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
 .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1rem;cursor:pointer;transition:box-shadow .15s;}
 .chart-card:hover{box-shadow:0 2px 14px rgba(0,0,0,.07);}
 .chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;}
-.chart-title{font-size:11px;font-family:var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;}
+.chart-title{font-size:11px;font-family:var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;cursor:help;border-bottom:1px dashed transparent;}
+.chart-title:hover{border-bottom-color:var(--muted);}
 .expand-hint{font-size:9px;color:var(--muted);font-family:var(--mono);opacity:.5;}
 .chart-wrap{position:relative;height:120px;}
 .chart-stat{display:flex;gap:.8rem;padding:6px 0 0;border-top:1px solid var(--border);margin-top:6px;flex-wrap:wrap;}
@@ -246,7 +247,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
 <div class="section-title">Pollutant &amp; Sensor Timeseries — click any chart to expand</div>
 <div class="charts-grid">
   <div class="chart-card" onclick="openModal('aqi')">
-    <div class="chart-header"><div class="chart-title">Combined AQI</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-header"><div class="chart-title" title="Air Quality Index — a single 0-500 number combining all pollutants. 0-50 Good, 51-100 Moderate, 101-150 Unhealthy for sensitive groups, 151+ Unhealthy. Calculated from PM2.5 levels using EPA formula.">Combined AQI</div><div class="expand-hint">↗ expand</div></div>
     <div class="chart-wrap"><canvas id="c-aqi"></canvas></div>
     <div class="chart-stat">
       <div class="csi"><span class="csl s-min">Min</span><span class="csv s-min" id="s-aqi-min">—</span></div>
@@ -256,7 +257,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     </div>
   </div>
   <div class="chart-card" onclick="openModal('pm25')">
-    <div class="chart-header"><div class="chart-title">PM 2.5</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-header"><div class="chart-title" title="Fine particles 2.5 micrometres or smaller. Penetrates deep into lungs and bloodstream. WHO safe limit: 25 µg/m³. Sources: vehicle exhaust, industry, smoke, cooking.">PM 2.5</div><div class="expand-hint">↗ expand</div></div>
     <div class="chart-wrap"><canvas id="c-pm25"></canvas></div>
     <div class="chart-stat">
       <div class="csi"><span class="csl">Now</span><span class="csv" id="m-pm25">—</span><span class="csu">µg/m³</span></div>
@@ -267,7 +268,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     </div>
   </div>
   <div class="chart-card" onclick="openModal('pm10')">
-    <div class="chart-header"><div class="chart-title">PM 1.0</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-header"><div class="chart-title" title="Ultrafine particles 1 micrometre or smaller. Most dangerous size — reaches deepest into lungs. Sources: combustion, smoke, ultrafine industrial emissions.">PM 1.0</div><div class="expand-hint">↗ expand</div></div>
     <div class="chart-wrap"><canvas id="c-pm10"></canvas></div>
     <div class="chart-stat">
       <div class="csi"><span class="csl">Now</span><span class="csv" id="m-pm10">—</span><span class="csu">µg/m³</span></div>
@@ -277,7 +278,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     </div>
   </div>
   <div class="chart-card" onclick="openModal('pm100')">
-    <div class="chart-header"><div class="chart-title">PM 10</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-header"><div class="chart-title" title="Coarse particles 10 micrometres or smaller. WHO safe limit: 50 µg/m³. Sources: dust, construction, road traffic, pollen. Causes throat and eye irritation.">PM 10</div><div class="expand-hint">↗ expand</div></div>
     <div class="chart-wrap"><canvas id="c-pm100"></canvas></div>
     <div class="chart-stat">
       <div class="csi"><span class="csl">Now</span><span class="csv" id="m-pm100">—</span><span class="csu">µg/m³</span></div>
@@ -287,7 +288,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     </div>
   </div>
   <div class="chart-card" onclick="openModal('co')">
-    <div class="chart-header"><div class="chart-title">CO Sensor (MQ-7)</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-header"><div class="chart-title" title="Carbon monoxide — colourless, odourless toxic gas. Output is sensor voltage (0-5V). Higher voltage = more CO. Main sources: vehicle exhaust, incomplete combustion, gas heaters.">CO Sensor (MQ-7)</div><div class="expand-hint">↗ expand</div></div>
     <div class="chart-wrap"><canvas id="c-co"></canvas></div>
     <div class="chart-stat">
       <div class="csi"><span class="csl">Now</span><span class="csv" id="m-co">—</span><span class="csu">V</span></div>
@@ -297,7 +298,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     </div>
   </div>
   <div class="chart-card" onclick="openModal('mq135')">
-    <div class="chart-header"><div class="chart-title">MQ-135 Air Quality</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-header"><div class="chart-title" title="Detects ammonia, nitrogen oxides, alcohol, benzene, smoke and CO2. Output is raw ADC value (0-4095). Higher = more pollutants. General-purpose air quality indicator.">MQ-135 Air Quality</div><div class="expand-hint">↗ expand</div></div>
     <div class="chart-wrap"><canvas id="c-mq135"></canvas></div>
     <div class="chart-stat">
       <div class="csi"><span class="csl">Now</span><span class="csv" id="m-mq135">—</span><span class="csu">ADC</span></div>
@@ -307,7 +308,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     </div>
   </div>
   <div class="chart-card" onclick="openModal('temp')">
-    <div class="chart-header"><div class="chart-title">Temperature</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-header"><div class="chart-title" title="Ambient temperature in degrees Celsius. Affects PM measurements (hot air can lift more dust) and gas sensor calibration. From BME280 sensor, ±1°C accuracy.">Temperature</div><div class="expand-hint">↗ expand</div></div>
     <div class="chart-wrap"><canvas id="c-temp"></canvas></div>
     <div class="chart-stat">
       <div class="csi"><span class="csl">Now</span><span class="csv" id="m-temp">—</span><span class="csu">°C</span></div>
@@ -317,7 +318,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     </div>
   </div>
   <div class="chart-card" onclick="openModal('hum')">
-    <div class="chart-header"><div class="chart-title">Humidity</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-header"><div class="chart-title" title="Relative humidity (% water vapour). High humidity often correlates with higher PM readings — moisture makes particles clump. From BME280 sensor, ±3% accuracy.">Humidity</div><div class="expand-hint">↗ expand</div></div>
     <div class="chart-wrap"><canvas id="c-hum"></canvas></div>
     <div class="chart-stat">
       <div class="csi"><span class="csl">Now</span><span class="csv" id="m-hum">—</span><span class="csu">%</span></div>
@@ -331,7 +332,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
 <div class="section-title">Scientific Analysis Tools</div>
 <div class="corr-grid">
   <div class="corr-card">
-    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title">Correlation Explorer</div></div>
+    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title" title="Scatter plot showing how two variables relate. Pearson r value: 0=unrelated, +1=perfect positive, -1=perfect negative. Useful for finding hidden relationships e.g. PM2.5 vs humidity.">Correlation Explorer</div></div>
     <div class="corr-selects">
       <select id="corr-x" onchange="renderCorr()"><option value="pm25">PM2.5</option><option value="hum">Humidity</option><option value="temp">Temp</option><option value="co">CO</option><option value="mq135">MQ-135</option></select>
       <span class="corr-vs">vs</span>
@@ -341,7 +342,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     <div class="corr-info" id="corr-info">r = —</div>
   </div>
   <div class="corr-card">
-    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title">Diurnal Cycle (avg by hour)</div></div>
+    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title" title="Average pollution by hour of day across all your data. Reveals daily patterns — e.g. peaks during rush hour, dips at night. Each bar is one hour.">Diurnal Cycle (avg by hour)</div></div>
     <div class="corr-selects">
       <select id="diurnal-field" onchange="renderDiurnal()"><option value="pm25">PM2.5</option><option value="aqi">AQI</option><option value="pm100">PM10</option><option value="co">CO</option><option value="mq135">MQ-135</option><option value="temp">Temp</option><option value="hum">Humidity</option></select>
     </div>
@@ -349,7 +350,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     <div class="corr-info" id="diurnal-info">Peak hour: —</div>
   </div>
   <div class="corr-card">
-    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title">CDF — Exceedance Probability</div></div>
+    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title" title="Cumulative Distribution Function. Shows what % of readings stay below a given value. P95 = 95% of readings were under this number. Quick way to see how often air was unhealthy.">CDF — Exceedance Probability</div></div>
     <div class="corr-selects">
       <select id="cdf-field" onchange="renderCDF()"><option value="pm25">PM2.5</option><option value="aqi">AQI</option><option value="pm100">PM10</option><option value="co">CO</option><option value="mq135">MQ-135</option></select>
     </div>
@@ -357,12 +358,12 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     <div class="corr-info" id="cdf-info">P90: — | P95: — | P99: —</div>
   </div>
   <div class="corr-card">
-    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title">PM2.5 / PM10 Ratio</div></div>
+    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title" title="Ratio of fine to coarse particles. Above 0.8 means combustion sources dominate (cars, fires). Below 0.5 means dust dominates (construction, wind). Tells you the SOURCE of pollution.">PM2.5 / PM10 Ratio</div></div>
     <div class="corr-wrap"><canvas id="c-pmratio"></canvas></div>
     <div class="corr-info">Ratio &gt; 0.8 → fine particle dominance (combustion / traffic)</div>
   </div>
   <div class="corr-card">
-    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title">Health Exposure Index</div></div>
+    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title" title="Time-weighted measure of harm. Multiplies hours × how far above WHO limit. A reading of 50 (limit 25) for 2 hours = 2 excess·hrs. Higher bars = unhealthier days.">Health Exposure Index</div></div>
     <div class="corr-selects">
       <select id="hei-field" onchange="renderHEI()">
         <option value="pm25">PM2.5 (WHO: 25 µg/m³)</option>
@@ -381,7 +382,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
 </div>
 
 <div class="heatmap-section">
-  <div class="section-title" style="padding-left:0;padding-top:.4rem;">Weekly Pattern — hour of day × day of week</div>
+      <div class="section-title" style="padding-left:0;padding-top:.4rem;cursor:help;" title="Grid showing pollution patterns across week × hour. Darker red = worse pollution. Reveals if certain weekdays or times are consistently bad — e.g. Monday rush hour every week.">Weekly Pattern — hour of day × day of week</div>
   <div class="heatmap-card">
     <div class="heatmap-controls">
       <select id="hm-field" onchange="renderHeatmap()">
@@ -1189,9 +1190,30 @@ async function onLandmarkChange(){
   renderAll();renderHeatmap();
   setEl('last-updated','Updated: '+new Date().toLocaleTimeString());
 }
+let refreshTimer=null;
+async function silentRefresh(){
+  const c=document.getElementById('city-select').value,l=document.getElementById('landmark-select').value;
+  const d=STATIONS[c].data[l];
+  if(!d.live)return;
+  try{
+    const ok=await fetchAndBuild(d);
+    if(ok&&allSeries.temp.length){
+      const lp=allSeries.pm25.length?allSeries.pm25[allSeries.pm25.length-1].y:0;
+      const aqi=lp?calcAQI(lp):0;
+      if(lp){setEl('aqi-num',aqi);setEl('aqi-status',aqiLbl(aqi));document.getElementById('aqi-circle').className='aqi-circle '+aqiCls(aqi);document.getElementById('aqi-needle').style.left=Math.min(aqi/300*100,97)+'%';}
+      setEl('m-temp',allSeries.temp[allSeries.temp.length-1].y);
+      setEl('m-hum',allSeries.hum[allSeries.hum.length-1].y);
+      if(allSeries.co.length)setEl('m-co',allSeries.co[allSeries.co.length-1].y);
+      if(allSeries.mq135.length)setEl('m-mq135',allSeries.mq135[allSeries.mq135.length-1].y);
+      setEl('last-updated','Updated: '+new Date().toLocaleTimeString());
+      renderAll();renderHeatmap();
+    }
+  }catch(e){}// silently keep showing last data if fetch fails
+}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 populateLandmarks('coimbatore');onLandmarkChange();
-setInterval(onLandmarkChange,30000);
+// refresh every 3 minutes (matches ESP32 MQ-7 cycle) without clearing screen
+setInterval(silentRefresh,180000);
 
 /* BUILD GUIDE */
 function guideShow(id,btn){
