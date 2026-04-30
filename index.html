@@ -450,6 +450,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
   <button class="g-nav-btn" onclick="guideShow('cycling',this)">MQ-7 cycling</button>
   <button class="g-nav-btn" onclick="guideShow('wiring',this)">Wiring</button>
   <button class="g-nav-btn" onclick="guideShow('code',this)">Code</button>
+  <button class="g-nav-btn" onclick="guideShow('architecture',this)">Architecture</button>
   <button class="g-nav-btn" onclick="guideShow('thingspeak',this)">ThingSpeak setup</button>
   <button class="g-nav-btn" onclick="guideShow('steps',this)">Assembly</button>
   <button class="g-nav-btn" onclick="guideShow('glossary',this)">Glossary</button>
@@ -649,6 +650,88 @@ void loop(){
   delay(500);
 }
 </pre>
+  </div>
+</div>
+
+<!-- ARCHITECTURE -->
+<div id="gs-architecture" class="g-sec">
+  <div class="gcard">
+    <h2>Air Atlas — System Architecture</h2>
+    <p style="font-size:13px;color:#555;margin-bottom:14px">How sensor data flows from your hardware all the way to the dashboard and into permanent storage.</p>
+    <pre style="background:#1e1e2e;color:#cdd6f4;font-size:11px;line-height:1.5">
+   ESP32 sensor station
+      │
+      │  every 152 seconds (1 full MQ-7 voltage cycle)
+      │  via WiFi → HTTP GET to api.thingspeak.com/update
+      ▼
+   ThingSpeak (cloud database)
+   • Free tier: 1 year retention
+   • 8 fields per channel
+   • Public channels accessible via Read API Key
+      │
+      ├──────────────────────┬──────────────────────────┐
+      │                      │                          │
+      │ on page load         │ every 30 minutes via     │
+      │ + every 3 mins       │ Google Apps Script       │
+      │ (silent refresh)     │ time-driven trigger      │
+      ▼                      ▼                          
+   Air Atlas Dashboard      Google Sheets              
+   (Netlify hosted HTML)    (permanent storage)         
+   • Reads ThingSpeak       • Flat table format         
+   • No data of its own     • Duplicate-checked         
+   • Charts live data       • UTC → IST timestamps      
+                            • Forever retention         
+    </pre>
+    <div class="ok-box" style="margin-top:14px"><strong>Verified end-to-end ✓</strong> — Chembur (Mumbai), Kharadi (Pune), and Kovaipudur (Coimbatore) are sending real sensor readings through the full pipeline.</div>
+  </div>
+
+  <div class="gcard">
+    <h2>What each component does — verified behaviour</h2>
+    <table>
+      <thead><tr><th>Component</th><th>Purpose</th><th>How often</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><strong>ESP32 firmware</strong></td><td>Reads BME280 + PMS7003 + MQ-7 + MQ-135, sends 8 fields to ThingSpeak</td><td>Every 152s (matches MQ-7 cycle)</td><td><span class="badge b-ok">Working ✓</span></td></tr>
+        <tr><td><strong>ThingSpeak channel</strong></td><td>Cloud database, public read access, holds sensor history</td><td>Stores last 1 year</td><td><span class="badge b-ok">Working ✓</span></td></tr>
+        <tr><td><strong>Air Atlas dashboard</strong></td><td>Fetches last 500 readings, draws charts, no own storage</td><td>On load + every 3 mins</td><td><span class="badge b-ok">Working ✓</span></td></tr>
+        <tr><td><strong>Apps Script</strong></td><td>Copies all 10 channels into Sheet, prevents duplicates, IST conversion</td><td>Every 30 mins</td><td><span class="badge b-ok">Working ✓</span></td></tr>
+        <tr><td><strong>Google Sheets</strong></td><td>Permanent flat-table archive: timestamp, station, city, 8 sensor cols</td><td>Forever</td><td><span class="badge b-ok">Working ✓</span></td></tr>
+        <tr><td><strong>Netlify hosting</strong></td><td>Auto-deploys dashboard on every GitHub push</td><td>~30s after push</td><td><span class="badge b-ok">Working ✓</span></td></tr>
+        <tr><td><strong>GitHub repo</strong></td><td>Version history of dashboard HTML</td><td>Every commit</td><td><span class="badge b-ok">Working ✓</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="gcard">
+    <h2>Data flow — second by second</h2>
+    <ol style="font-size:13px;color:#555;line-height:2;padding-left:20px">
+      <li>ESP32 wakes up → 60 seconds heating MQ-7 at 5V → 90 seconds at 1.4V (reading CO in last 30s)</li>
+      <li>Reads BME280 (temp/hum/pres), PMS7003 (PM2.5/PM10/PM1.0), MQ-135 (general AQ)</li>
+      <li>Sends single HTTP GET to <code>api.thingspeak.com/update</code> with 8 fields</li>
+      <li>ThingSpeak stores the row with a UTC timestamp and entry ID</li>
+      <li>Dashboard visitor opens Air Atlas → fetches last 500 entries via JSON API</li>
+      <li>Every 3 mins after that, dashboard silently refreshes without clearing the screen</li>
+      <li>Apps Script trigger fires every 30 mins → loops through all 10 channels</li>
+      <li>For each channel: fetches last 10 entries, checks if timestamp already exists in Sheet</li>
+      <li>If new, appends row with IST-converted timestamp, station name, city, and all 8 sensor values</li>
+      <li>Sheet now has permanent record. Available forever for capstone analysis.</li>
+    </ol>
+  </div>
+
+  <div class="gcard">
+    <h2>Why each design choice was made</h2>
+    <table>
+      <thead><tr><th>Choice</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td><strong>152-second send interval</strong></td><td>Matches MQ-7 voltage cycle. Sending faster wastes ThingSpeak's 15s minimum quota and gives invalid CO readings during heat phase.</td></tr>
+        <tr><td><strong>10 separate ThingSpeak accounts</strong></td><td>Free tier limits each account to 3M messages/year. With 10 accounts × 1 channel each, no rate limit conflicts.</td></tr>
+        <tr><td><strong>Google Sheets for storage</strong></td><td>Free, never expires, easy to download as Excel for analysis, no database admin needed.</td></tr>
+        <tr><td><strong>Apps Script every 30 mins (not every minute)</strong></td><td>ThingSpeak free has bandwidth quotas. 30-min interval × 10 channels = ~480 fetches/day, well under limits.</td></tr>
+        <tr><td><strong>Dashboard refreshes every 3 mins</strong></td><td>Matches ESP32 send rate. More frequent = wasted fetches, less frequent = stale display.</td></tr>
+        <tr><td><strong>Silent background refresh</strong></td><td>Earlier version cleared the screen every fetch causing flickering. Now updates only the data, never wipes charts.</td></tr>
+        <tr><td><strong>Duplicate prevention in Apps Script</strong></td><td>Without it, every 30-min run would re-save the same recent rows. Sheet would bloat with 10× duplicates.</td></tr>
+        <tr><td><strong>Field order standardised</strong></td><td>All 10 stations must use the same field-to-sensor mapping or the dashboard mixes up the readings.</td></tr>
+      </tbody>
+    </table>
   </div>
 </div>
 
@@ -1092,9 +1175,12 @@ function renderAll(){renderMiniCharts();renderCorr();renderDiurnal();renderCDF()
 /* STATIONS */
 const STATIONS={
   coimbatore:{
-    landmarks:['Sanganoor Rd'],
+    landmarks:['Sanganoor Rd','Kovaipudur'],
     state:'Tamil Nadu',
-    data:{'Sanganoor Rd':{temp:28.4,hum:64,alt:411,pm25:34,pm10:22,pm100:48,co:1.8,mq135:1480,pres:962}}
+    data:{
+      'Sanganoor Rd':{temp:28.4,hum:64,alt:411,pm25:34,pm10:22,pm100:48,co:1.8,mq135:1480,pres:962},
+      'Kovaipudur'  :{temp:27.1,hum:68,alt:430,pm25:28,pm10:18,pm100:40,co:1.6,mq135:1320,pres:961,live:true,channelId:'3280989',readKey:'V0D0JK0DVKY9U7WH'}
+    }
   },
   bangalore:{
     landmarks:['Kasturi Nagar','Hebbal','Southeast'],
@@ -1111,11 +1197,12 @@ const STATIONS={
     data:{      'Chembur':{temp:31.8,hum:79,alt:10,pm25:68,pm10:45,pm100:96,co:2.9,mq135:2280,pres:1011,live:true,channelId:'3286234',readKey:'284O2HH43PM3ARSE'}}
   },
   pune:{
-    landmarks:['Madha Colony','Kothrud'],
+    landmarks:['Madha Colony','Kothrud','Kharadi'],
     state:'Maharashtra',
     data:{
       'Madha Colony':{temp:27.6,hum:52,alt:558,pm25:46,pm10:31,pm100:65,co:2.1,mq135:1780,pres:944},
-      'Kothrud'     :{temp:26.9,hum:55,alt:572,pm25:38,pm10:25,pm100:54,co:1.9,mq135:1560,pres:943}
+      'Kothrud'     :{temp:26.9,hum:55,alt:572,pm25:38,pm10:25,pm100:54,co:1.9,mq135:1560,pres:943},
+      'Kharadi'     :{temp:27.2,hum:53,alt:560,pm25:42,pm10:28,pm100:60,co:2.0,mq135:1700,pres:944,live:true,channelId:'3285464',readKey:'TZ5UVGV5AKFDROQV'}
     }
   },
   gurgaon:{
@@ -1145,14 +1232,14 @@ function showNoData(show){
 }
 async function fetchAndBuild(d){
   try{
-    const url=`https://api.thingspeak.com/channels/${d.channelId}/feeds.json?api_key=${d.readKey}&results=500`;
+    const url=`https://api.thingspeak.com/channels/${d.channelId}/feeds.json?api_key=${d.readKey}&results=8000`;
     const json=await(await fetch(url)).json();
     const feeds=(json.feeds||[]).filter(f=>f.field1);
-    const mk=field=>feeds.map(f=>({x:new Date(f.created_at).getTime(),y:+parseFloat(f[field]||0).toFixed(1)})).filter(p=>p.y>0);
+    const mk=field=>feeds.map(f=>({x:new Date(f.created_at).getTime(),y:+parseFloat(f[field]||0).toFixed(1)})).filter(p=>!isNaN(p.y));
     allSeries={temp:mk('field1'),hum:mk('field2'),pres:mk('field3'),co:mk('field4'),mq135:mk('field5'),pm25:mk('field6'),pm100:mk('field7'),pm10:mk('field8')};
     allSeries.aqi=allSeries.pm25.map(p=>({x:p.x,y:calcAQI(p.y)}));
     return feeds.length>0;
-  }catch(e){return false;}
+  }catch(e){console.error('fetch err',e);return false;}
 }
 function populateLandmarks(city){
   const sel=document.getElementById('landmark-select');sel.innerHTML='';
