@@ -204,12 +204,11 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
   <div class="select-wrap">
     <div class="select-label">City</div>
     <select id="city-select" onchange="onCityChange()">
-      <option value="coimbatore">Coimbatore</option>
-      <option value="bangalore">Bangalore</option>
       <option value="mumbai">Mumbai</option>
       <option value="pune">Pune</option>
       <option value="gurgaon">Gurgaon</option>
-      <option value="lucknow">Lucknow</option>
+      <option value="coimbatore">Coimbatore</option>
+      <option value="bangalore">Bangalore</option>
     </select>
   </div>
   <div class="select-wrap">
@@ -459,19 +458,28 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
 <!-- OVERVIEW -->
 <div id="gs-overview" class="g-sec gvis">
   <div class="gcard">
+    <h2>Before you start — what is all this?</h2>
+    <p style="font-size:13px;color:#555;margin-bottom:10px"><strong>The ESP32</strong> is a low-cost 32-bit dual-core microcontroller with integrated Wi-Fi and Bluetooth. It executes firmware written in C++, interfaces directly with sensors via its GPIO pins, and is programmed through the Arduino IDE on a host computer.</p>
+    <p style="font-size:13px;color:#555;margin-bottom:10px"><strong>Sensors</strong> are electronic components that convert physical or chemical phenomena — temperature, humidity, particulate concentration, gas levels — into electrical signals. The ESP32 samples these signals via I²C, UART, or analogue-to-digital conversion, and processes the resulting data.</p>
+    <p style="font-size:13px;color:#555;margin-bottom:10px"><strong>ThingSpeak</strong> is an IoT cloud platform that ingests time-series sensor data via HTTP. The ESP32 transmits readings over Wi-Fi, where they are stored in a channel and made available through a public REST API.</p>
+    <p style="font-size:13px;color:#555;"><strong>The Air Atlas dashboard</strong> queries ThingSpeak's API and renders the data as interactive visualisations in the browser. No coding knowledge is required to operate the system once configured.</p>
+  </div>
+
+  <div class="gcard">
     <h2>What you're building</h2>
-    <p style="font-size:13px;color:#555;margin-bottom:14px">A WiFi-connected air quality monitor measuring 6 parameters, sending data to ThingSpeak every 15 seconds.</p>
+    <p style="font-size:13px;color:#555;margin-bottom:14px">A WiFi-connected air quality monitor measuring 8 parameters, sending data to ThingSpeak every 152 seconds (matching the MQ-7 sensor cycle).</p>
     <div class="g3">
-      <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">PM2.5 / PM10</div><div style="font-size:12px;color:#666">Fine dust particles</div><div style="font-size:11px;color:#888">PMS7003 laser sensor</div></div>
-      <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">Carbon monoxide</div><div style="font-size:12px;color:#666">CO gas detection</div><div style="font-size:11px;color:#888">MQ-7 + MOSFET cycling</div></div>
-      <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">Air quality index</div><div style="font-size:12px;color:#666">NH₃, CO₂, benzene</div><div style="font-size:11px;color:#888">MQ-135</div></div>
+      <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">PM1.0 / 2.5 / 10</div><div style="font-size:12px;color:#666">Fine dust particles</div><div style="font-size:11px;color:#888">PMS7003 laser sensor</div></div>
+      <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">Carbon monoxide</div><div style="font-size:12px;color:#666">CO gas detection</div><div style="font-size:11px;color:#888">MQ-7 + 2N7000 cycling</div></div>
+      <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">Air quality</div><div style="font-size:12px;color:#666">NH₃, CO₂, benzene</div><div style="font-size:11px;color:#888">MQ-135</div></div>
       <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">Temperature</div><div style="font-size:12px;color:#666">±1°C accuracy</div><div style="font-size:11px;color:#888">BME280</div></div>
       <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">Humidity</div><div style="font-size:12px;color:#666">±3% RH</div><div style="font-size:11px;color:#888">BME280</div></div>
       <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">Air pressure</div><div style="font-size:12px;color:#666">Barometric hPa</div><div style="font-size:11px;color:#888">BME280</div></div>
     </div>
   </div>
-  <div class="warn-box"><strong>Two key challenges for beginners:</strong><br>1. MQ-7 and MQ-135 output <span class="term" data-tip="5v">5V signals</span>. Your ESP32 <span class="term" data-tip="gpio">GPIO pins</span> only tolerate 3.3V max — a <span class="term" data-tip="divider">voltage divider</span> is mandatory for each.<br><br>2. The MQ-7 requires <span class="term" data-tip="cycling">voltage cycling</span> for accurate readings, automated via a <span class="term" data-tip="mosfet">MOSFET</span> and <span class="term" data-tip="pwm">PWM</span>.</div>
-  <div class="ok-box">BME280 and PMS7003 wire directly to the ESP32 — safe at 3.3V logic with no conversion needed.</div>
+
+  <div class="warn-box"><strong>The one tricky bit:</strong> The MQ-7 carbon monoxide sensor needs <span class="term" data-tip="cycling">voltage cycling</span> — alternating 60s at 5V and 90s at 1.4V. The ESP32 can't directly output 1.4V, so a <span class="term" data-tip="transistor">2N7000 MOSFET</span> + <span class="term" data-tip="pwm">PWM</span> at 7.8% duty cycle does it. See the MQ-7 cycling tab for the full explanation.</div>
+  <div class="ok-box">All other sensors (BME280, PMS7003, MQ-135) wire directly to the ESP32 with no extras needed.</div>
 </div>
 
 <!-- PARTS -->
@@ -482,37 +490,44 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
       <thead><tr><th>Component</th><th>Qty</th><th>Purpose</th><th>Buy</th></tr></thead>
       <tbody>
         <tr><td><strong>ESP32 38-pin (CP2102)</strong></td><td>1</td><td><span class="term" data-tip="mcu">Microcontroller</span> + WiFi</td><td><a class="shop-btn" href="https://robocraze.com/products/esp32-development-board" target="_blank">Robocraze ↗</a></td></tr>
-        <tr><td><strong>BME280 module</strong></td><td>1</td><td>Temp/humidity/pressure via <span class="term" data-tip="i2c">I²C</span></td><td><a class="shop-btn" href="https://robocraze.com/products/bme280-temperature-humidity-pressure-sensor" target="_blank">Robocraze ↗</a></td></tr>
-        <tr><td><strong>PMS7003 sensor</strong></td><td>1</td><td>PM2.5/PM10 via <span class="term" data-tip="uart">UART</span></td><td><a class="shop-btn" href="https://robocraze.com/search?q=pms7003" target="_blank">Search ↗</a></td></tr>
-        <tr><td><strong>MQ-7 module</strong></td><td>1</td><td>CO gas (needs MOSFET cycling)</td><td><a class="shop-btn" href="https://robocraze.com/products/mq7-carbon-monoxide-sensor-module" target="_blank">Robocraze ↗</a></td></tr>
+        <tr><td><strong>BME280 module</strong></td><td>1</td><td>Temp + humidity + pressure (single chip) via <span class="term" data-tip="i2c">I²C</span></td><td><a class="shop-btn" href="https://robocraze.com/products/bme280-temperature-humidity-pressure-sensor" target="_blank">Robocraze ↗</a></td></tr>
+        <tr><td><strong>PMS7003 sensor</strong></td><td>1</td><td>PM1.0/PM2.5/PM10 via <span class="term" data-tip="uart">UART</span></td><td><a class="shop-btn" href="https://robocraze.com/search?q=pms7003" target="_blank">Search ↗</a></td></tr>
+        <tr><td><strong>MQ-7 module</strong></td><td>1</td><td>CO gas (needs voltage cycling)</td><td><a class="shop-btn" href="https://robocraze.com/products/mq7-carbon-monoxide-sensor-module" target="_blank">Robocraze ↗</a></td></tr>
         <tr><td><strong>MQ-135 module</strong></td><td>1</td><td>General air quality <span class="term" data-tip="aout">AOUT</span></td><td><a class="shop-btn" href="https://robocraze.com/products/mq135-air-quality-sensor-module" target="_blank">Robocraze ↗</a></td></tr>
-        <tr><td><strong>IRLZ44N MOSFET</strong></td><td>1</td><td>Controls MQ-7 <span class="term" data-tip="heater">heater element</span></td><td><a class="shop-btn" href="https://robocraze.com/search?q=IRLZ44N" target="_blank">Search ↗</a></td></tr>
-        <tr><td><strong>Resistor kit (1/4W)</strong></td><td>1</td><td>4×10kΩ, 2×20kΩ for dividers + gate</td><td><a class="shop-btn" href="https://robocraze.com/products/resistor-kit-1-4w-600-pcs" target="_blank">Robocraze ↗</a></td></tr>
+        <tr><td><strong>2N7000 N-Channel MOSFET</strong></td><td>1</td><td>Switches MQ-7 <span class="term" data-tip="heater">heater</span> for voltage cycling</td><td><a class="shop-btn" href="https://robocraze.com/search?q=2N7000" target="_blank">Search ↗</a></td></tr>
+        <tr><td><strong>1kΩ resistor</strong></td><td>1</td><td>Gate resistor for MOSFET</td><td><a class="shop-btn" href="https://robocraze.com/products/resistor-kit-1-4w-600-pcs" target="_blank">Robocraze ↗</a></td></tr>
         <tr><td><strong>830-point breadboard</strong></td><td>1</td><td>Main assembly board</td><td><a class="shop-btn" href="https://robocraze.com/products/breadboard-830-points" target="_blank">Robocraze ↗</a></td></tr>
-        <tr><td><strong>400-point breadboard</strong></td><td>1</td><td>Voltage dividers</td><td><a class="shop-btn" href="https://robocraze.com/products/mini-breadboard-400-points" target="_blank">Robocraze ↗</a></td></tr>
         <tr><td><strong>Jumper wire kit (M-M + M-F)</strong></td><td>1</td><td>All connections</td><td><a class="shop-btn" href="https://robocraze.com/products/jumper-wires-120pcs" target="_blank">Robocraze ↗</a></td></tr>
-        <tr><td><strong>USB Micro-B cable</strong></td><td>1</td><td>Programming + data</td><td><a class="shop-btn" href="https://robocraze.com/products/usb-type-b-micro-cable-1m" target="_blank">Robocraze ↗</a></td></tr>
+        <tr><td><strong>USB Micro-B cable</strong></td><td>1</td><td>Programming + power</td><td><a class="shop-btn" href="https://robocraze.com/products/usb-type-b-micro-cable-1m" target="_blank">Robocraze ↗</a></td></tr>
       </tbody>
     </table>
+    <div class="sep"></div>
+    <p style="font-size:13px;color:#555"><strong style="color:#111">About the components:</strong> The BME280 is an integrated sensor chip that provides temperature, humidity, and pressure over a single I²C bus — three measurements in one component. The 2N7000 is a small N-Channel MOSFET that switches the MQ-7 heater on and off via PWM from the ESP32. The 1kΩ resistor between the GPIO and Gate limits current and protects the ESP32.</p>
   </div>
 </div>
 
 <!-- VOLTAGE -->
 <div id="gs-voltage" class="g-sec">
   <div class="gcard">
-    <h2>Voltage levels — what connects directly vs what needs protection</h2>
+    <h2>Understanding voltage levels</h2>
+    <p style="font-size:13px;color:#555;margin-bottom:14px">Voltage levels describe how devices encode digital signals. The ESP32's GPIO pins use 3.3V logic, meaning a HIGH signal is 3.3V. Sensors using 5V logic (such as MQ-7 and MQ-135) cannot be connected directly to ESP32 input pins, as 5V exceeds the ESP32's tolerance and will damage the chip.</p>
     <table>
-      <thead><tr><th>Sensor</th><th>Power</th><th>Signal output</th><th>ESP32 compatible?</th></tr></thead>
+      <thead><tr><th>Sensor</th><th>Power</th><th>Signal output</th><th>Direct ESP32 connection?</th></tr></thead>
       <tbody>
         <tr><td>BME280</td><td><span class="v33">3.3V</span></td><td>I²C at 3.3V</td><td><span class="badge b-ok">Direct — safe ✓</span></td></tr>
         <tr><td>PMS7003</td><td><span class="v5">5V</span></td><td>UART at 3.3V logic</td><td><span class="badge b-ok">Direct — safe ✓</span></td></tr>
-        <tr><td>MQ-7 (AOUT)</td><td><span class="v5">5V</span></td><td>0–5V analog</td><td><span class="badge b-err">Needs divider ✗</span></td></tr>
-        <tr><td>MQ-135 (AOUT)</td><td><span class="v5">5V</span></td><td>0–5V analog</td><td><span class="badge b-err">Needs divider ✗</span></td></tr>
-        <tr><td>MOSFET Gate</td><td>—</td><td>Driven by GPIO 3.3V + PWM</td><td><span class="badge b-ok">Safe — IRLZ44N ✓</span></td></tr>
+        <tr><td>MQ-7 (AOUT)</td><td><span class="v5">5V</span></td><td>0–5V analog (depends on module)</td><td><span class="badge b-err">Use voltage divider ✗</span></td></tr>
+        <tr><td>MQ-135 (AOUT)</td><td><span class="v5">5V</span></td><td>0–5V analog (depends on module)</td><td><span class="badge b-err">Use voltage divider ✗</span></td></tr>
+        <tr><td>2N7000 Gate</td><td>—</td><td>Driven by GPIO 3.3V + PWM</td><td><span class="badge b-ok">Safe with 1kΩ ✓</span></td></tr>
       </tbody>
     </table>
-    <div class="sep"></div>
-    <div class="warn-box"><strong>Divider formula:</strong> Vout = Vin × R2 ÷ (R1+R2) → 5V × 20k ÷ (10k+20k) = <strong>3.33V ✓</strong><br>Build this twice — once for MQ-7 AOUT → GPIO34, once for MQ-135 AOUT → GPIO35.</div>
+  </div>
+
+  <div class="gcard">
+    <h2>Voltage divider for MQ sensors</h2>
+    <p style="font-size:13px;color:#555;margin-bottom:12px">The MQ-7 and MQ-135 are powered by 5V and their AOUT pins can output the full 0–5V range. Most ESP32 ADC pins tolerate only 0–3.3V, so a voltage divider is required to scale the signal down safely.</p>
+    <div class="info-box"><strong>Formula:</strong> Vout = Vin × R2 ÷ (R1 + R2)<br>With R1 = 10kΩ and R2 = 20kΩ: Vout = 5V × 20 ÷ 30 = <strong>3.33V ✓</strong><br><br>Build this divider twice — once for MQ-7 AOUT → GPIO35, once for MQ-135 AOUT → GPIO33.</div>
+    <p style="font-size:13px;color:#555;margin-top:10px"><strong>Note on module variants:</strong> Some MQ breakout boards include built-in level shifters that limit AOUT to 3.3V, but this varies by manufacturer and is not always documented. Using a voltage divider is the safe default in all cases — it does no harm if the module already limits voltage, and it protects the ESP32 if it does not.</p>
   </div>
 </div>
 
@@ -520,18 +535,59 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
 <div id="gs-cycling" class="g-sec">
   <div class="gcard">
     <h2>Why the MQ-7 needs voltage cycling</h2>
-    <p style="font-size:13px;color:#555;margin-bottom:12px">The MQ-7's metal oxide <span class="term" data-tip="heater">heater element</span> saturates at constant 5V, causing readings to drift. The datasheet specifies alternating phases:</p>
+    <p style="font-size:13px;color:#555;margin-bottom:12px">The MQ-7 has a metal oxide <span class="term" data-tip="heater">heater element</span> inside. The datasheet specifies alternating phases:</p>
     <div class="cycle-row">
-      <div class="cphase" style="background:#fff3e0;color:#5a2e00"><div style="font-size:13px">Phase 1 — HIGH</div><div style="font-size:12px;margin-top:4px;font-weight:400">5V for 60 seconds</div><div style="font-size:11px;font-weight:400;margin-top:2px">Heats element, clears surface</div></div>
+      <div class="cphase" style="background:#fff3e0;color:#5a2e00"><div style="font-size:13px">Phase 1 — CLEANING</div><div style="font-size:12px;margin-top:4px;font-weight:400">5V for 60 seconds</div><div style="font-size:11px;font-weight:400;margin-top:2px">Burns off impurities. Do NOT take readings.</div></div>
       <div class="carr">→</div>
-      <div class="cphase" style="background:#e3f0ff;color:#0a2d5e"><div style="font-size:13px">Phase 2 — LOW</div><div style="font-size:12px;margin-top:4px;font-weight:400">1.4V for 90 seconds</div><div style="font-size:11px;font-weight:400;margin-top:2px">CO binds — READ in final 30s</div></div>
+      <div class="cphase" style="background:#e3f0ff;color:#0a2d5e"><div style="font-size:13px">Phase 2 — MEASUREMENT</div><div style="font-size:12px;margin-top:4px;font-weight:400">1.4V for 90 seconds</div><div style="font-size:11px;font-weight:400;margin-top:2px">Sensor is now sensitive to CO. Read in last 2-10s.</div></div>
       <div class="carr">→</div>
       <div class="cphase" style="background:#eaf5e0;color:#1a4a05"><div style="font-size:13px">Repeat</div><div style="font-size:12px;margin-top:4px;font-weight:400">150s full cycle</div><div style="font-size:11px;font-weight:400;margin-top:2px">Continuous accurate sensing</div></div>
     </div>
   </div>
+
   <div class="gcard">
-    <h2>Generating 1.4V via MOSFET + PWM</h2>
-    <div class="info-box">ESP32 GPIO26 drives the MOSFET gate at <strong>28% PWM duty cycle</strong>. The MOSFET switches 5V on/off at 1kHz — the heater's thermal mass averages this to 1.4V effective.<br><br><strong>Formula:</strong> 5V × 0.28 = <strong>1.4V ✓</strong> &nbsp;|&nbsp; Code value: 72/255 = 28.2% duty</div>
+    <h2>The PWM math — 7.8% duty cycle</h2>
+    <p style="font-size:13px;color:#555;margin-bottom:12px">Instead of a separate 1.4V power supply, the ESP32 "pulses" the 5V supply so quickly that the heater feels like it's at 1.4V.</p>
+    <div class="info-box"><strong>Important:</strong> Heating power is proportional to the <strong>square</strong> of voltage (P ∝ V²). So the duty cycle is NOT 1.4/5 = 28%. It's:<br><br>
+    <strong>Duty Cycle = (Target ÷ Source)² = (1.4 ÷ 5)² = 0.078 ≈ 7.8%</strong><br><br>
+    In ESP32 code (8-bit PWM resolution), this is PWM value <strong>20 out of 255</strong>.</div>
+    <table>
+      <thead><tr><th>Phase</th><th>PWM Value</th><th>Effective Voltage</th><th>Duration</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>Cleaning</td><td>255 (100%)</td><td>5.0V</td><td>60 seconds</td><td>Heat — no readings</td></tr>
+        <tr><td>Measurement</td><td>20 (7.8%)</td><td>1.4V effective</td><td>90 seconds</td><td>Read in last 2-10 seconds</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="gcard">
+    <h2>The 2N2222 transistor circuit</h2>
+    <p style="font-size:13px;color:#555;margin-bottom:12px">The ESP32 can't directly switch the MQ-7's heater current. A 2N2222 NPN transistor acts as the switch, controlled by GPIO32 through a mandatory 1kΩ base resistor.</p>
+    <div class="warn-box"><strong>NEVER connect the 2N2222 to the ESP32 without the 1kΩ resistor.</strong> Direct connection will draw too much current from the GPIO and can damage the ESP32.</div>
+    <table>
+      <thead><tr><th>Connection</th><th>From</th><th>To</th></tr></thead>
+      <tbody>
+        <tr><td>MQ-7 VCC</td><td>MQ-7 sensor</td><td>ESP32 5V/Vin pin</td></tr>
+        <tr><td>MQ-7 GND</td><td>MQ-7 sensor</td><td>2N2222 <strong>Collector</strong></td></tr>
+        <tr><td>2N2222 Emitter</td><td>Transistor</td><td>Main GND rail</td></tr>
+        <tr><td>2N2222 Base</td><td>Through 1kΩ resistor</td><td>ESP32 GPIO32</td></tr>
+      </tbody>
+    </table>
+    <div class="sep"></div>
+    <h3>How to identify 2N2222 pins</h3>
+    <p style="font-size:13px;color:#555;margin-bottom:8px">Hold the transistor with the <strong>flat face toward you</strong> and legs pointing down. From left to right:</p>
+    <svg width="280" viewBox="0 0 280 130">
+      <rect x="80" y="10" width="120" height="65" rx="6" fill="#1a1a1a" stroke="#555" stroke-width="1.5"/>
+      <text x="140" y="40" text-anchor="middle" font-size="12" font-weight="600" fill="#bbb" font-family="monospace">2N2222</text>
+      <text x="140" y="58" text-anchor="middle" font-size="9" fill="#777" font-family="sans-serif">flat face → you</text>
+      <line x1="100" y1="75" x2="100" y2="110" stroke="#aaa" stroke-width="3"/>
+      <line x1="140" y1="75" x2="140" y2="110" stroke="#aaa" stroke-width="3"/>
+      <line x1="180" y1="75" x2="180" y2="110" stroke="#aaa" stroke-width="3"/>
+      <text x="100" y="125" text-anchor="middle" font-size="11" font-weight="700" fill="#0e8a60" font-family="sans-serif">Emitter</text>
+      <text x="140" y="125" text-anchor="middle" font-size="11" font-weight="700" fill="#c0820a" font-family="sans-serif">Base</text>
+      <text x="180" y="125" text-anchor="middle" font-size="11" font-weight="700" fill="#5040b8" font-family="sans-serif">Collector</text>
+    </svg>
+    <p style="font-size:12px;color:#555;margin-top:8px"><strong>Memory aid:</strong> EBC = "Emitter, Base, Collector" left to right with the flat face toward you. The Base (middle) is what GPIO32 controls through the 1kΩ resistor.</p>
   </div>
 </div>
 
@@ -605,24 +661,17 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
       <line x1="252" y1="137" x2="44" y2="137" stroke="#333" stroke-width="1.5"/>
       <line x1="428" y1="137" x2="636" y2="137" stroke="#333" stroke-width="1.5"/>
 
-      <!-- BMP280 (top-left) -->
-      <rect x="40" y="68" width="140" height="62" rx="6" fill="#0a1a12" stroke="#1a9e5e" stroke-width="1.5"/>
-      <text x="110" y="88" text-anchor="middle" font-size="10" font-weight="600" fill="#1a9e5e" font-family="monospace">BMP280</text>
-      <text x="110" y="100" text-anchor="middle" font-size="8" fill="#555" font-family="sans-serif">I²C · 3.3V · pres+temp</text>
-      <circle cx="56" cy="115" r="3" fill="#e06080"/>
-      <text x="63" y="119" font-size="8" fill="#e06080" font-family="monospace">SDA→GPIO21</text>
-      <circle cx="120" cy="115" r="3" fill="#e06080"/>
-      <text x="127" y="119" font-size="8" fill="#e06080" font-family="monospace">SCL→GPIO22</text>
-      <path d="M59 115 L240 115 L240 169 L252 169" fill="none" stroke="#e06080" stroke-width="1"/>
-      <path d="M123 115 L235 115 L235 185 L252 185" fill="none" stroke="#e06080" stroke-width="1" stroke-dasharray="3 3"/>
-
-      <!-- DHT22 -->
-      <rect x="40" y="145" width="140" height="50" rx="6" fill="#1a0e1a" stroke="#e06080" stroke-width="1.5"/>
-      <text x="110" y="164" text-anchor="middle" font-size="10" font-weight="600" fill="#e06080" font-family="monospace">DHT22</text>
-      <text x="110" y="178" text-anchor="middle" font-size="8" fill="#555" font-family="sans-serif">temp + humidity · 1-wire</text>
-      <circle cx="56" cy="190" r="3" fill="#e06080"/>
-      <text x="63" y="193" font-size="7" fill="#e06080" font-family="monospace">DATA→GPIO19</text>
-      <path d="M59 190 L230 190 L230 153 L252 153" fill="none" stroke="#e06080" stroke-width="1"/>
+      <!-- BME280 (top-left) -->
+      <rect x="40" y="68" width="140" height="76" rx="6" fill="#0a1a12" stroke="#1a9e5e" stroke-width="1.5"/>
+      <text x="110" y="88" text-anchor="middle" font-size="10" font-weight="600" fill="#1a9e5e" font-family="monospace">BME280</text>
+      <text x="110" y="102" text-anchor="middle" font-size="8" fill="#555" font-family="sans-serif">I²C · 3.3V</text>
+      <text x="110" y="115" text-anchor="middle" font-size="8" fill="#555" font-family="sans-serif">temp+hum+pres</text>
+      <circle cx="56" cy="130" r="3" fill="#e06080"/>
+      <text x="63" y="134" font-size="8" fill="#e06080" font-family="monospace">SDA→GPIO21</text>
+      <circle cx="120" cy="130" r="3" fill="#e06080"/>
+      <text x="127" y="134" font-size="8" fill="#e06080" font-family="monospace">SCL→GPIO22</text>
+      <path d="M59 130 L240 130 L240 169 L252 169" fill="none" stroke="#e06080" stroke-width="1"/>
+      <path d="M123 130 L235 130 L235 185 L252 185" fill="none" stroke="#e06080" stroke-width="1" stroke-dasharray="3 3"/>
 
       <!-- PMS7003 -->
       <rect x="40" y="210" width="140" height="78" rx="6" fill="#0a0e1a" stroke="#3070c8" stroke-width="1.5"/>
@@ -825,7 +874,7 @@ void loop(){
     <table>
       <thead><tr><th>Component</th><th>Purpose</th><th>How often</th></tr></thead>
       <tbody>
-        <tr><td><strong>ESP32 firmware</strong></td><td>Reads BMP280 + DHT22 + PMS7003 + MQ-7 + MQ-135, sends 8 fields to ThingSpeak</td><td>Every 152s (matches MQ-7 cycle)</td></tr>
+        <tr><td><strong>ESP32 firmware</strong></td><td>Reads BME280 + PMS7003 + MQ-7 + MQ-135, sends 8 fields to ThingSpeak</td><td>Every 152s (matches MQ-7 cycle)</td></tr>
         <tr><td><strong>ThingSpeak channel</strong></td><td>Cloud database, public read access, holds sensor history</td><td>Stores last 1 year</td></tr>
         <tr><td><strong>Air Atlas dashboard</strong></td><td>Fetches latest readings, draws charts, no own storage</td><td>On load + every 3 mins</td></tr>
         <tr><td><strong>Apps Script</strong></td><td>Copies all 10 channels into Sheet, prevents duplicates, IST conversion</td><td>Every 30 mins</td></tr>
@@ -840,7 +889,7 @@ void loop(){
     <h2>Data flow — second by second</h2>
     <ol style="font-size:13px;color:#555;line-height:2;padding-left:20px">
       <li>ESP32 wakes up → 60 seconds heating MQ-7 at 5V → 90 seconds at 1.4V (reading CO in last 30s)</li>
-      <li>Reads BME280 (temp/hum/pres), PMS7003 (PM2.5/PM10/PM1.0), MQ-135 (general AQ)</li>
+      <li>Reads BME280 (temp/hum/pres), PMS7003 (PM1.0/PM2.5/PM10), MQ-135 (general AQ)</li>
       <li>Sends single HTTP GET to <code>api.thingspeak.com/update</code> with 8 fields</li>
       <li>ThingSpeak stores the row with a UTC timestamp and entry ID</li>
       <li>Dashboard visitor opens Air Atlas → fetches last 8000 entries via JSON API</li>
@@ -880,7 +929,7 @@ void loop(){
 
     <h3 style="margin-bottom:8px">Step 1 — Each person sets up their account</h3>
     <div class="step-row"><span class="step-num">1</span><div>Go to <a href="https://thingspeak.com" target="_blank">thingspeak.com</a> → Create account (free, use any email)</div></div>
-    <div class="step-row"><span class="step-num">2</span><div>Channels → New Channel → Name it (e.g. "Air Atlas – Sanganoor Rd") → add 7 fields:<br>Field 1: Temperature · Field 2: Humidity · Field 3: Pressure · Field 4: CO · Field 5: MQ135 · Field 6: PM2.5 · Field 7: PM10</div></div>
+    <div class="step-row"><span class="step-num">2</span><div>Channels → New Channel → Name it (e.g. "Air Atlas – Sanganoor Rd") → add 8 fields in this exact order:<br>Field 1: <strong>Temperature</strong> · Field 2: <strong>Humidity</strong> · Field 3: <strong>Pressure</strong> · Field 4: <strong>CO</strong> · Field 5: <strong>MQ135</strong> · Field 6: <strong>PM2.5</strong> · Field 7: <strong>PM10</strong> · Field 8: <strong>PM1.0</strong></div></div>
     <div class="step-row"><span class="step-num">3</span><div>Save. Go to <strong>API Keys</strong> tab → copy the <strong>Write API Key</strong> → paste into your ESP32 firmware's <code>apiKey</code> variable</div></div>
     <div class="step-row"><span class="step-num">4</span><div>Also copy your <strong>Channel ID</strong> (shown in the URL and at the top of the channel page) and your <strong>Read API Key</strong> → share both with the dashboard maintainer</div></div>
 
@@ -925,7 +974,8 @@ const FIELD_MAP = {
   co:    "field4",
   mq135: "field5",
   pm25:  "field6",
-  pm10:  "field7"
+  pm10:  "field7",
+  pm1:   "field8"
 };
 </pre>
 
@@ -950,8 +1000,9 @@ async function fetchChannel(channelId, readKey, results = 500) {
     co:    parseFloat(f.field4),
     mq135: parseFloat(f.field5),
     pm25:  parseFloat(f.field6),
-    pm10:  parseFloat(f.field7)
-  })).filter(r => !isNaN(r.pm25)); // skip missing readings
+    pm10:  parseFloat(f.field7),
+    pm1:   parseFloat(f.field8)
+  })).filter(r => !isNaN(r.temp));
 }
 
 // Fetch ALL 10 channels in parallel (much faster than sequential)
@@ -984,20 +1035,6 @@ async function startLiveMode() {
       </tbody>
     </table>
 
-    <div class="sep"></div>
-    <h3 style="margin-bottom:8px">Your 10 station assignments</h3>
-    <div class="ts-grid">
-      <div class="ts-card"><h4>Station 1 — Coimbatore</h4><p>Sanganoor Rd<br>Person 1<br>Channel ID: <em>TBD</em></p></div>
-      <div class="ts-card"><h4>Station 2 — Bangalore</h4><p>Kasturi Nagar<br>Person 2<br>Channel ID: <em>TBD</em></p></div>
-      <div class="ts-card"><h4>Station 3 — Bangalore</h4><p>Hebbal<br>Person 3<br>Channel ID: <em>TBD</em></p></div>
-      <div class="ts-card"><h4>Station 4 — Bangalore</h4><p>Southeast<br>Person 4<br>Channel ID: <em>TBD</em></p></div>
-      <div class="ts-card"><h4>Station 5 — Pune</h4><p>Madha Colony<br>Person 5<br>Channel ID: <em>TBD</em></p></div>
-      <div class="ts-card"><h4>Station 6 — Gurgaon</h4><p>Shiv Nadar School<br>Person 6<br>Channel ID: <em>TBD</em></p></div>
-      <div class="ts-card"><h4>Station 7 — Gurgaon</h4><p>Kunskapsskolan<br>Person 7<br>Channel ID: <em>TBD</em></p></div>
-      <div class="ts-card"><h4>Station 8 — Lucknow</h4><p>Gomti Nagar<br>Person 8<br>Channel ID: <em>TBD</em></p></div>
-      <div class="ts-card"><h4>Station 9</h4><p><em>Spare / backup</em><br>Person 9<br>Channel ID: <em>TBD</em></p></div>
-      <div class="ts-card"><h4>Station 10</h4><p><em>Spare / backup</em><br>Person 10<br>Channel ID: <em>TBD</em></p></div>
-    </div>
   </div>
 </div>
 
@@ -1005,17 +1042,17 @@ async function startLiveMode() {
 <div id="gs-steps" class="g-sec">
   <div class="gcard">
     <h2>Step-by-step assembly</h2>
-    <div class="warn-box">Never connect a 5V signal directly to an ESP32 GPIO. Always power off before moving wires.</div>
+    <div class="warn-box">Always power off (unplug USB) before adding or moving wires.</div>
     <div class="sep"></div>
-    <div class="step-row"><span class="step-num">1</span><div><strong>Place ESP32</strong> on 830-point breadboard, straddling the centre gap.</div></div>
-    <div class="step-row"><span class="step-num">2</span><div><strong>Build Voltage Divider A</strong> on 400-pt board: R1 10kΩ rows 1–3 · junction row 3 → GPIO34 (orange) · R2 20kΩ rows 3–5 · row 5 → GND.</div></div>
-    <div class="step-row"><span class="step-num">3</span><div><strong>Build Voltage Divider B</strong> identically on rows 8–12. Junction → GPIO35 (purple).</div></div>
-    <div class="step-row"><span class="step-num">4</span><div><strong>Place IRLZ44N MOSFET</strong> (flat face toward you = Gate·Drain·Source): Gate → 10kΩ → GPIO26 · Drain → MQ-7 heater VCC– · Source → GND.</div></div>
-    <div class="step-row"><span class="step-num">5</span><div><strong>Place 1N4007 flyback diode:</strong> stripe (cathode) → +5V · anode → MOSFET Drain side.</div></div>
-    <div class="step-row"><span class="step-num">6</span><div><strong>Wire BME280:</strong> VCC → 3V3 · GND → GND · SDA → GPIO21 · SCL → GPIO22.</div></div>
-    <div class="step-row"><span class="step-num">7</span><div><strong>Wire PMS7003:</strong> Pin 1 → VIN · Pin 2 → GND · Pin 9 (TX) → GPIO16 · Pin 8 (RX) → GPIO17.</div></div>
-    <div class="step-row"><span class="step-num">8</span><div><strong>Wire MQ-7:</strong> VCC → +5V via MOSFET Drain · GND → GND · AOUT → Divider A.</div></div>
-    <div class="step-row"><span class="step-num">9</span><div><strong>Wire MQ-135:</strong> VCC → +5V · GND → GND · AOUT → Divider B.</div></div>
+    <div class="step-row"><span class="step-num">1</span><div><strong>Place ESP32</strong> on the 830-point breadboard, straddling the centre gap so each pin sits on its own row.</div></div>
+    <div class="step-row"><span class="step-num">2</span><div><strong>Place 2N7000 MOSFET</strong> on the breadboard with the flat face toward you. Pins from left to right: <strong>Source · Gate · Drain</strong>.</div></div>
+    <div class="step-row"><span class="step-num">3</span><div><strong>Wire the 2N7000:</strong> Source → GND rail · Gate → 1kΩ resistor → ESP32 GPIO32 · Drain → MQ-7 GND pin (later in step 7).</div></div>
+    <div class="step-row"><span class="step-num">4</span><div><strong>Wire BME280:</strong> VCC → 3V3 · GND → GND · SDA → GPIO21 · SCL → GPIO22.</div></div>
+    <div class="step-row"><span class="step-num">5</span><div><strong>Wire PMS7003:</strong> Pin 1 (VCC) → VIN (5V) · Pin 2 (GND) → GND · Pin 9 (TX) → GPIO16 · Pin 8 (RX) → GPIO17. (TX always crosses to RX.)</div></div>
+    <div class="step-row"><span class="step-num">6</span><div><strong>Build voltage divider A</strong> for MQ-7: R1 10kΩ + R2 20kΩ in series, junction → GPIO35.</div></div>
+    <div class="step-row"><span class="step-num">7</span><div><strong>Wire MQ-7:</strong> VCC → ESP32 5V/Vin pin · <strong>GND → 2N7000 Drain</strong> (NOT direct to ground rail) · AOUT → top of divider A.</div></div>
+    <div class="step-row"><span class="step-num">8</span><div><strong>Build voltage divider B</strong> for MQ-135 and wire MQ-135: VCC → 5V · GND → GND · AOUT → top of divider B → GPIO33.</div></div>
+    <div class="step-row"><span class="step-num">9</span><div><strong>Final checks:</strong><br>✓ 1kΩ resistor between GPIO32 and 2N7000 Gate<br>✓ MQ-7's GND goes to MOSFET Drain, not ground rail<br>✓ TX/RX swap on PMS7003 (TX→GPIO16, RX→GPIO17)<br>✓ All other component GNDs share the common rail</div></div>
     <div class="step-row"><span class="step-num">10</span><div><strong>Upload firmware:</strong> Board → "ESP32 Dev Module" · correct port · Serial Monitor at 115200. MQ sensors need 24–48h warm-up for calibrated readings.</div></div>
   </div>
   <div class="gcard">
@@ -1023,12 +1060,13 @@ async function startLiveMode() {
     <table>
       <thead><tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr></thead>
       <tbody>
-        <tr><td>BME280 not found</td><td>I²C address mismatch</td><td>Try 0x76 and 0x77</td></tr>
-        <tr><td>No PMS7003 data</td><td>TX/RX swapped</td><td>Swap GPIO16 ↔ GPIO17</td></tr>
-        <tr><td>MQ reads always 4095</td><td>AOUT direct to GPIO (no divider)</td><td>Check divider wiring</td></tr>
-        <tr><td>MQ-7 doesn't cycle</td><td>Gate resistor missing</td><td>Add 10kΩ between GPIO26 and Gate</td></tr>
-        <tr><td>ESP32 resets randomly</td><td>Insufficient power</td><td>Use 5V 2A adapter, not PC USB</td></tr>
-        <tr><td>ThingSpeak returns 0</td><td>Sending faster than 15s</td><td>Check millis() timing in loop</td></tr>
+        <tr><td>BME280 not found</td><td>I²C address mismatch</td><td>Code tries 0x76 then 0x77 automatically</td></tr>
+        <tr><td>No PMS7003 data</td><td>TX/RX swapped or wrong pins</td><td>Confirm GPIO16 (RX2) and GPIO17 (TX2) — try swapping</td></tr>
+        <tr><td>MQ reads always 4095</td><td>AOUT direct to GPIO (no divider)</td><td>Check voltage divider wiring</td></tr>
+        <tr><td>MQ-7 always reads 0</td><td>MOSFET wired wrong</td><td>Check Source/Gate/Drain — flat face toward you</td></tr>
+        <tr><td>MQ-7 doesn't cycle</td><td>1kΩ resistor missing</td><td>Add 1kΩ between GPIO32 and Gate — mandatory</td></tr>
+        <tr><td>ESP32 resets randomly</td><td>USB cable doesn't supply enough current</td><td>Try a different USB cable</td></tr>
+        <tr><td>ThingSpeak returns FAIL</td><td>Sending faster than 15s, or wrong API key</td><td>Cycle is 152s anyway — check API key for typos</td></tr>
       </tbody>
     </table>
   </div>
@@ -1433,7 +1471,7 @@ async function silentRefresh(){
   }catch(e){}// silently keep showing last data if fetch fails
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
-populateLandmarks('coimbatore');onLandmarkChange();
+populateLandmarks('mumbai');onLandmarkChange();
 // refresh every 3 minutes (matches ESP32 MQ-7 cycle) without clearing screen
 setInterval(silentRefresh,180000);
 
@@ -1445,18 +1483,16 @@ function guideShow(id,btn){
 }
 const guideTips={
   term:{t:"Hover-enabled term",b:"Hover any underlined word in this guide for a quick definition."},
-  gpio:{t:"GPIO",b:"The metal pins on ESP32. Max safe input: 3.3V. Connecting 5V permanently damages the chip."},
-  divider:{t:"Voltage divider",b:"Two resistors scale down voltage. R1=10kΩ, R2=20kΩ → 5V × 20/30 = 3.33V."},
-  mosfet:{t:"MOSFET",b:"Electronic switch: GPIO26 drives the Gate, current flows Drain→Source, controlling the MQ-7 heater."},
-  cycling:{t:"Voltage cycling",b:"5V for 60s clears the MQ-7 sensor surface. 1.4V for 90s lets CO bind for measurement."},
-  pwm:{t:"PWM",b:"Rapid ON/OFF switching simulates lower voltage. 28% duty × 5V = 1.4V effective."},
-  i2c:{t:"I²C",b:"Two-wire protocol: SDA + SCL. BME280 uses addresses 0x76 or 0x77."},
-  uart:{t:"UART",b:"Serial: TX sends, RX receives. TX always crosses to other device's RX. PMS7003 at 9600 baud."},
-  aout:{t:"AOUT",b:"Analog output 0–5V. Must be voltage-divided to 0–3.3V before ESP32 ADC pin."},
+  gpio:{t:"GPIO",b:"The metal pins on ESP32. Each can be HIGH (3.3V) or LOW (0V). Some pins read voltages (ADC), some output PWM."},
+  transistor:{t:"2N7000 MOSFET",b:"Electronic switch: GPIO32 drives the Gate through 1kΩ, current flows Drain→Source, controlling the MQ-7 heater."},
+  cycling:{t:"Voltage cycling",b:"5V for 60s burns off impurities. 1.4V for 90s lets CO bind for measurement. Without cycling, readings saturate."},
+  pwm:{t:"PWM",b:"Rapid ON/OFF switching simulates lower voltage. 7.8% duty × 5V² gives 1.4V effective heating power."},
+  i2c:{t:"I²C",b:"Two-wire protocol: SDA + SCL. BMP280 uses addresses 0x76 or 0x77. Multiple devices share the same two wires."},
+  uart:{t:"UART",b:"Serial: TX sends, RX receives. TX always crosses to the other device's RX. PMS7003 at 9600 baud."},
+  aout:{t:"AOUT",b:"Analog output 0–3.3V on modern MQ modules with built-in level shifters. Read directly by ESP32 ADC pins."},
   heater:{t:"Heater element",b:"Resistive coil heats metal oxide bead to ~300°C. Gas changes bead resistance → AOUT voltage changes."},
-  flyback:{t:"Flyback diode",b:"Clamps reverse voltage spikes when heater is switched off. Stripe (cathode) toward +V."},
   mcu:{t:"Microcontroller",b:"ESP32: 32-bit dual-core chip with WiFi. Runs your sketch, reads sensors, sends data to ThingSpeak."},
-  "5v":{t:"5V logic level",b:"MQ sensors output 0–5V. ESP32 GPIO max is 3.3V. Always use a voltage divider."}
+  "5v":{t:"5V power",b:"MQ sensors and PMS7003 need 5V power from VIN. Their data pins are 3.3V compatible (level-shifted on the module)."}
 };
 const gTip=document.getElementById('guide-tooltip'),gTT=document.getElementById('guide-tt-title'),gTB=document.getElementById('guide-tt-body');
 document.getElementById('page-guide').addEventListener('mouseover',e=>{
