@@ -55,8 +55,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
 .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1rem;cursor:pointer;transition:box-shadow .15s;}
 .chart-card:hover{box-shadow:0 2px 14px rgba(0,0,0,.07);}
 .chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;}
-.chart-title{font-size:11px;font-family:var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;cursor:help;border-bottom:1px dashed transparent;}
-.chart-title:hover{border-bottom-color:var(--muted);}
+.chart-title{font-size:11px;font-family:var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;}
 .expand-hint{font-size:9px;color:var(--muted);font-family:var(--mono);opacity:.5;}
 .chart-wrap{position:relative;height:120px;}
 .chart-stat{display:flex;gap:.8rem;padding:6px 0 0;border-top:1px solid var(--border);margin-top:6px;flex-wrap:wrap;}
@@ -167,11 +166,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
 #page-guide .gloss-card h4{font-size:13px;font-weight:700;margin-bottom:5px;color:#111}
 #page-guide .gloss-card p{font-size:12px;color:#555;line-height:1.6}
 #page-guide .wdot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:middle;border:1px solid rgba(0,0,0,.15)}
-/* ThingSpeak account cards */
-#page-guide .ts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin:12px 0}
-#page-guide .ts-card{background:#f0f6ff;border:1px solid #b8d4f8;border-radius:8px;padding:10px 12px}
-#page-guide .ts-card h4{font-size:12px;font-weight:700;color:#0a2d6e;margin-bottom:4px}
-#page-guide .ts-card p{font-size:11px;color:#3a5a9a;line-height:1.5}
+#page-guide pre{background:#1e1e2e;color:#cdd6f4;border-radius:8px;padding:16px;overflow-x:auto;font-size:12px;line-height:1.75;font-family:'Courier New',monospace}
 #guide-tooltip{display:none;position:fixed;z-index:9999;max-width:290px;background:#fff;border:1px solid #ccc;border-radius:10px;padding:12px 14px;font-size:12px;line-height:1.55;box-shadow:0 4px 20px rgba(0,0,0,.15);pointer-events:none}
 #guide-tt-title{font-weight:700;font-size:13px;margin-bottom:5px;color:#111}
 #guide-tt-body{color:#555}
@@ -190,13 +185,13 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
 <div class="top-band">
   <div class="brand"><span class="live-dot"></span>AIR ATLAS</div>
   <div class="band-location" id="band-location">
-    <div class="band-location-name">Sanganoor Rd, Coimbatore</div>
-    <div class="band-location-sub">Tamil Nadu, India</div>
+    <div class="band-location-name">Chembur, Mumbai</div>
+    <div class="band-location-sub">Maharashtra, India</div>
   </div>
   <div class="band-stats">
-    <div class="band-stat"><div class="band-stat-label">Altitude</div><div class="band-stat-value" id="band-alt">411 m</div></div>
-    <div class="band-stat"><div class="band-stat-label">Temp</div><div class="band-stat-value" id="band-temp">28.4°C</div></div>
-    <div class="band-stat"><div class="band-stat-label">Humidity</div><div class="band-stat-value" id="band-hum">64%</div></div>
+    <div class="band-stat"><div class="band-stat-label">Altitude</div><div class="band-stat-value" id="band-alt">10 m</div></div>
+    <div class="band-stat"><div class="band-stat-label">Temp</div><div class="band-stat-value" id="band-temp">31.8°C</div></div>
+    <div class="band-stat"><div class="band-stat-label">Humidity</div><div class="band-stat-value" id="band-hum">79%</div></div>
   </div>
 </div>
 
@@ -209,6 +204,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
       <option value="gurgaon">Gurgaon</option>
       <option value="coimbatore">Coimbatore</option>
       <option value="bangalore">Bangalore</option>
+      <option value="lucknow">Lucknow</option>
     </select>
   </div>
   <div class="select-wrap">
@@ -231,14 +227,14 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
 <div class="aqi-hero">
   <div class="aqi-number-wrap">
     <div class="aqi-circle moderate" id="aqi-circle">
-      <div class="aqi-num" id="aqi-num">72</div>
+      <div class="aqi-num" id="aqi-num">—</div>
       <div class="aqi-lbl">AQI</div>
     </div>
-    <div class="aqi-status" id="aqi-status">Moderate</div>
+    <div class="aqi-status" id="aqi-status">Loading…</div>
   </div>
   <div class="aqi-bar-wrap">
     <div class="aqi-bar-label">Air Quality Index — WHO thresholds</div>
-    <div class="aqi-bar"><div class="aqi-needle" id="aqi-needle" style="left:28%"></div></div>
+    <div class="aqi-bar"><div class="aqi-needle" id="aqi-needle" style="left:0%"></div></div>
     <div class="aqi-bar-ticks"><span>0 Good</span><span>50</span><span>100 Moderate</span><span>150 Unhealthy</span><span>300+</span></div>
   </div>
 </div>
@@ -246,7 +242,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
 <div class="section-title">Pollutant &amp; Sensor Timeseries — click any chart to expand</div>
 <div class="charts-grid">
   <div class="chart-card" onclick="openModal('aqi')">
-    <div class="chart-header"><div class="chart-title" title="Air Quality Index — a single 0-500 number combining all pollutants. 0-50 Good, 51-100 Moderate, 101-150 Unhealthy for sensitive groups, 151+ Unhealthy. Calculated from PM2.5 levels using EPA formula.">Combined AQI</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-header"><div class="chart-title" title="Air Quality Index — a single 0-500 number combining all pollutants. 0-50 Good, 51-100 Moderate, 101-150 Unhealthy for sensitive groups, 151+ Unhealthy.">Combined AQI</div><div class="expand-hint">↗ expand</div></div>
     <div class="chart-wrap"><canvas id="c-aqi"></canvas></div>
     <div class="chart-stat">
       <div class="csi"><span class="csl s-min">Min</span><span class="csv s-min" id="s-aqi-min">—</span></div>
@@ -256,7 +252,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     </div>
   </div>
   <div class="chart-card" onclick="openModal('pm25')">
-    <div class="chart-header"><div class="chart-title" title="Fine particles 2.5 micrometres or smaller. Penetrates deep into lungs and bloodstream. WHO safe limit: 25 µg/m³. Sources: vehicle exhaust, industry, smoke, cooking.">PM 2.5</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-header"><div class="chart-title" title="Fine particles 2.5 µm or smaller. WHO safe limit: 25 µg/m³.">PM 2.5</div><div class="expand-hint">↗ expand</div></div>
     <div class="chart-wrap"><canvas id="c-pm25"></canvas></div>
     <div class="chart-stat">
       <div class="csi"><span class="csl">Now</span><span class="csv" id="m-pm25">—</span><span class="csu">µg/m³</span></div>
@@ -267,7 +263,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     </div>
   </div>
   <div class="chart-card" onclick="openModal('pm10')">
-    <div class="chart-header"><div class="chart-title" title="Ultrafine particles 1 micrometre or smaller. Most dangerous size — reaches deepest into lungs. Sources: combustion, smoke, ultrafine industrial emissions.">PM 1.0</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-header"><div class="chart-title" title="Ultrafine particles 1 µm or smaller — deepest lung penetration.">PM 1.0</div><div class="expand-hint">↗ expand</div></div>
     <div class="chart-wrap"><canvas id="c-pm10"></canvas></div>
     <div class="chart-stat">
       <div class="csi"><span class="csl">Now</span><span class="csv" id="m-pm10">—</span><span class="csu">µg/m³</span></div>
@@ -277,7 +273,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     </div>
   </div>
   <div class="chart-card" onclick="openModal('pm100')">
-    <div class="chart-header"><div class="chart-title" title="Coarse particles 10 micrometres or smaller. WHO safe limit: 50 µg/m³. Sources: dust, construction, road traffic, pollen. Causes throat and eye irritation.">PM 10</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-header"><div class="chart-title" title="Coarse particles 10 µm or smaller. WHO safe limit: 50 µg/m³.">PM 10</div><div class="expand-hint">↗ expand</div></div>
     <div class="chart-wrap"><canvas id="c-pm100"></canvas></div>
     <div class="chart-stat">
       <div class="csi"><span class="csl">Now</span><span class="csv" id="m-pm100">—</span><span class="csu">µg/m³</span></div>
@@ -287,17 +283,17 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     </div>
   </div>
   <div class="chart-card" onclick="openModal('co')">
-    <div class="chart-header"><div class="chart-title" title="Carbon monoxide — colourless, odourless toxic gas. Output is sensor voltage (0-5V). Higher voltage = more CO. Main sources: vehicle exhaust, incomplete combustion, gas heaters.">CO Sensor (MQ-7)</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-header"><div class="chart-title" title="Carbon monoxide — output is ADC value (0–4095) after voltage divider. Higher = more CO. Main sources: vehicle exhaust, incomplete combustion.">CO Sensor (MQ-7)</div><div class="expand-hint">↗ expand</div></div>
     <div class="chart-wrap"><canvas id="c-co"></canvas></div>
     <div class="chart-stat">
-      <div class="csi"><span class="csl">Now</span><span class="csv" id="m-co">—</span><span class="csu">V</span></div>
+      <div class="csi"><span class="csl">Now</span><span class="csv" id="m-co">—</span><span class="csu">ADC</span></div>
       <div class="csi"><span class="csl s-min">Min</span><span class="csv s-min" id="s-co-min">—</span></div>
       <div class="csi"><span class="csl s-max">Max</span><span class="csv s-max" id="s-co-max">—</span></div>
       <div class="csi"><span class="csl s-avg">Avg</span><span class="csv s-avg" id="s-co-avg">—</span></div>
     </div>
   </div>
   <div class="chart-card" onclick="openModal('mq135')">
-    <div class="chart-header"><div class="chart-title" title="Detects ammonia, nitrogen oxides, alcohol, benzene, smoke and CO2. Output is raw ADC value (0-4095). Higher = more pollutants. General-purpose air quality indicator.">MQ-135 Air Quality</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-header"><div class="chart-title" title="Detects NH₃, NOx, alcohol, benzene, smoke, CO₂. Output is raw ADC value (0–4095). General-purpose air quality indicator.">MQ-135 Air Quality</div><div class="expand-hint">↗ expand</div></div>
     <div class="chart-wrap"><canvas id="c-mq135"></canvas></div>
     <div class="chart-stat">
       <div class="csi"><span class="csl">Now</span><span class="csv" id="m-mq135">—</span><span class="csu">ADC</span></div>
@@ -307,7 +303,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     </div>
   </div>
   <div class="chart-card" onclick="openModal('temp')">
-    <div class="chart-header"><div class="chart-title" title="Ambient temperature in degrees Celsius. Affects PM measurements (hot air can lift more dust) and gas sensor calibration. From BME280 sensor, ±1°C accuracy.">Temperature</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-header"><div class="chart-title" title="Ambient temperature in °C. From BME280, ±1°C accuracy.">Temperature</div><div class="expand-hint">↗ expand</div></div>
     <div class="chart-wrap"><canvas id="c-temp"></canvas></div>
     <div class="chart-stat">
       <div class="csi"><span class="csl">Now</span><span class="csv" id="m-temp">—</span><span class="csu">°C</span></div>
@@ -317,7 +313,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     </div>
   </div>
   <div class="chart-card" onclick="openModal('hum')">
-    <div class="chart-header"><div class="chart-title" title="Relative humidity (% water vapour). High humidity often correlates with higher PM readings — moisture makes particles clump. From BME280 sensor, ±3% accuracy.">Humidity</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-header"><div class="chart-title" title="Relative humidity %. High humidity often correlates with higher PM. From BME280, ±3% accuracy.">Humidity</div><div class="expand-hint">↗ expand</div></div>
     <div class="chart-wrap"><canvas id="c-hum"></canvas></div>
     <div class="chart-stat">
       <div class="csi"><span class="csl">Now</span><span class="csv" id="m-hum">—</span><span class="csu">%</span></div>
@@ -331,7 +327,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
 <div class="section-title">Scientific Analysis Tools</div>
 <div class="corr-grid">
   <div class="corr-card">
-    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title" title="Scatter plot showing how two variables relate. Pearson r value: 0=unrelated, +1=perfect positive, -1=perfect negative. Useful for finding hidden relationships e.g. PM2.5 vs humidity.">Correlation Explorer</div></div>
+    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title">Correlation Explorer</div></div>
     <div class="corr-selects">
       <select id="corr-x" onchange="renderCorr()"><option value="pm25">PM2.5</option><option value="hum">Humidity</option><option value="temp">Temp</option><option value="co">CO</option><option value="mq135">MQ-135</option></select>
       <span class="corr-vs">vs</span>
@@ -341,7 +337,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     <div class="corr-info" id="corr-info">r = —</div>
   </div>
   <div class="corr-card">
-    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title" title="Average pollution by hour of day across all your data. Reveals daily patterns — e.g. peaks during rush hour, dips at night. Each bar is one hour.">Diurnal Cycle (avg by hour)</div></div>
+    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title">Diurnal Cycle (avg by hour)</div></div>
     <div class="corr-selects">
       <select id="diurnal-field" onchange="renderDiurnal()"><option value="pm25">PM2.5</option><option value="aqi">AQI</option><option value="pm100">PM10</option><option value="co">CO</option><option value="mq135">MQ-135</option><option value="temp">Temp</option><option value="hum">Humidity</option></select>
     </div>
@@ -349,7 +345,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     <div class="corr-info" id="diurnal-info">Peak hour: —</div>
   </div>
   <div class="corr-card">
-    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title" title="Cumulative Distribution Function. Shows what % of readings stay below a given value. P95 = 95% of readings were under this number. Quick way to see how often air was unhealthy.">CDF — Exceedance Probability</div></div>
+    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title">CDF — Exceedance Probability</div></div>
     <div class="corr-selects">
       <select id="cdf-field" onchange="renderCDF()"><option value="pm25">PM2.5</option><option value="aqi">AQI</option><option value="pm100">PM10</option><option value="co">CO</option><option value="mq135">MQ-135</option></select>
     </div>
@@ -357,12 +353,12 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     <div class="corr-info" id="cdf-info">P90: — | P95: — | P99: —</div>
   </div>
   <div class="corr-card">
-    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title" title="Ratio of fine to coarse particles. Above 0.8 means combustion sources dominate (cars, fires). Below 0.5 means dust dominates (construction, wind). Tells you the SOURCE of pollution.">PM2.5 / PM10 Ratio</div></div>
+    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title">PM2.5 / PM10 Ratio</div></div>
     <div class="corr-wrap"><canvas id="c-pmratio"></canvas></div>
     <div class="corr-info">Ratio &gt; 0.8 → fine particle dominance (combustion / traffic)</div>
   </div>
   <div class="corr-card">
-    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title" title="Time-weighted measure of harm. Multiplies hours × how far above WHO limit. A reading of 50 (limit 25) for 2 hours = 2 excess·hrs. Higher bars = unhealthier days.">Health Exposure Index</div></div>
+    <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title">Health Exposure Index</div></div>
     <div class="corr-selects">
       <select id="hei-field" onchange="renderHEI()">
         <option value="pm25">PM2.5 (WHO: 25 µg/m³)</option>
@@ -381,7 +377,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
 </div>
 
 <div class="heatmap-section">
-      <div class="section-title" style="padding-left:0;padding-top:.4rem;cursor:help;" title="Grid showing pollution patterns across week × hour. Darker red = worse pollution. Reveals if certain weekdays or times are consistently bad — e.g. Monday rush hour every week.">Weekly Pattern — hour of day × day of week</div>
+  <div class="section-title" style="padding-left:0;padding-top:.4rem;">Weekly Pattern — hour of day × day of week</div>
   <div class="heatmap-card">
     <div class="heatmap-controls">
       <select id="hm-field" onchange="renderHeatmap()">
@@ -431,7 +427,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     </div>
   </div>
 </div>
-<div class="dash-footer">AIR ATLAS &nbsp;·&nbsp; Capstone Project 2026 &nbsp;·&nbsp; 152s sensor resolution &nbsp;·&nbsp; Dummy data — connect ThingSpeak to go live</div>
+<div class="dash-footer">AIR ATLAS &nbsp;·&nbsp; Capstone Project 2026 &nbsp;·&nbsp; 150s sensor cycle (60s clean + 90s measure) &nbsp;·&nbsp; Live stations fetch ThingSpeak · others show simulated data</div>
 </div>
 
 <!-- ═══════════════ BUILD GUIDE ═══════════════ -->
@@ -440,7 +436,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
 <div class="g-con">
 <div style="margin-bottom:20px">
   <h1>ESP32 Air Quality Station — Build Guide</h1>
-  <p style="color:#666;font-size:13px">BME280 · PMS7003 · MQ-7 (MOSFET cycling) · MQ-135 — hover <span class="term" data-tip="term">underlined terms</span> for quick definitions</p>
+  <p style="color:#666;font-size:13px">BME280 · PMS7003 · MQ-7 (IRLZ44N MOSFET cycling) · MQ-135 — hover <span class="term" data-tip="term">underlined terms</span> for quick definitions</p>
 </div>
 <div class="g-nav">
   <button class="g-nav-btn active" onclick="guideShow('overview',this)">Overview</button>
@@ -460,49 +456,47 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
   <div class="gcard">
     <h2>Before you start — what is all this?</h2>
     <p style="font-size:13px;color:#555;margin-bottom:10px"><strong>The ESP32</strong> is a low-cost 32-bit dual-core microcontroller with integrated Wi-Fi and Bluetooth. It executes firmware written in C++, interfaces directly with sensors via its GPIO pins, and is programmed through the Arduino IDE on a host computer.</p>
-    <p style="font-size:13px;color:#555;margin-bottom:10px"><strong>Sensors</strong> are electronic components that convert physical or chemical phenomena — temperature, humidity, particulate concentration, gas levels — into electrical signals. The ESP32 samples these signals via I²C, UART, or analogue-to-digital conversion, and processes the resulting data.</p>
-    <p style="font-size:13px;color:#555;margin-bottom:10px"><strong>ThingSpeak</strong> is an IoT cloud platform that ingests time-series sensor data via HTTP. The ESP32 transmits readings over Wi-Fi, where they are stored in a channel and made available through a public REST API.</p>
-    <p style="font-size:13px;color:#555;"><strong>The Air Atlas dashboard</strong> queries ThingSpeak's API and renders the data as interactive visualisations in the browser. No coding knowledge is required to operate the system once configured.</p>
+    <p style="font-size:13px;color:#555;margin-bottom:10px"><strong>Sensors</strong> are electronic components that convert physical or chemical phenomena into electrical signals. The ESP32 samples these via I²C, UART, or analogue-to-digital conversion.</p>
+    <p style="font-size:13px;color:#555;margin-bottom:10px"><strong>ThingSpeak</strong> is an IoT cloud platform that ingests time-series sensor data via HTTP. The ESP32 transmits readings over Wi-Fi every 152 seconds.</p>
+    <p style="font-size:13px;color:#555;"><strong>The Air Atlas dashboard</strong> queries ThingSpeak's API and renders the data as interactive visualisations in the browser.</p>
   </div>
-
   <div class="gcard">
     <h2>What you're building</h2>
     <p style="font-size:13px;color:#555;margin-bottom:14px">A WiFi-connected air quality monitor measuring 8 parameters, sending data to ThingSpeak every 152 seconds (matching the MQ-7 sensor cycle).</p>
     <div class="g3">
       <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">PM1.0 / 2.5 / 10</div><div style="font-size:12px;color:#666">Fine dust particles</div><div style="font-size:11px;color:#888">PMS7003 laser sensor</div></div>
-      <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">Carbon monoxide</div><div style="font-size:12px;color:#666">CO gas detection</div><div style="font-size:11px;color:#888">MQ-7 + 2N7000 cycling</div></div>
+      <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">Carbon monoxide</div><div style="font-size:12px;color:#666">CO gas detection</div><div style="font-size:11px;color:#888">MQ-7 + IRLZ44N cycling</div></div>
       <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">Air quality</div><div style="font-size:12px;color:#666">NH₃, CO₂, benzene</div><div style="font-size:11px;color:#888">MQ-135</div></div>
       <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">Temperature</div><div style="font-size:12px;color:#666">±1°C accuracy</div><div style="font-size:11px;color:#888">BME280</div></div>
       <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">Humidity</div><div style="font-size:12px;color:#666">±3% RH</div><div style="font-size:11px;color:#888">BME280</div></div>
       <div class="gcard-alt"><div style="font-weight:600;font-size:13px;margin-bottom:2px">Air pressure</div><div style="font-size:12px;color:#666">Barometric hPa</div><div style="font-size:11px;color:#888">BME280</div></div>
     </div>
   </div>
-
-  <div class="warn-box"><strong>The one tricky bit:</strong> The MQ-7 carbon monoxide sensor needs <span class="term" data-tip="cycling">voltage cycling</span> — alternating 60s at 5V and 90s at 1.4V. The ESP32 can't directly output 1.4V, so a <span class="term" data-tip="transistor">2N7000 MOSFET</span> + <span class="term" data-tip="pwm">PWM</span> at 7.8% duty cycle does it. See the MQ-7 cycling tab for the full explanation.</div>
-  <div class="ok-box">All other sensors (BME280, PMS7003, MQ-135) wire directly to the ESP32 with no extras needed.</div>
+  <div class="warn-box"><strong>The one tricky bit:</strong> The MQ-7 CO sensor needs <span class="term" data-tip="cycling">voltage cycling</span> — 60s at 5V (cleaning) then 90s at 1.4V (measurement). The ESP32 can't directly output 1.4V, so an <span class="term" data-tip="mosfet">IRLZ44N MOSFET</span> + <span class="term" data-tip="pwm">PWM</span> at 7.8% duty cycle achieves 1.4V RMS at the heater. See the MQ-7 cycling tab for the full explanation.</div>
+  <div class="ok-box">All other sensors (BME280, PMS7003, MQ-135) wire directly to the ESP32 with no transistors or MOSFETs needed.</div>
 </div>
 
 <!-- PARTS -->
 <div id="gs-parts" class="g-sec">
   <div class="gcard">
-    <h2>Complete shopping list — Robocraze</h2>
+    <h2>Complete shopping list</h2>
     <table>
       <thead><tr><th>Component</th><th>Qty</th><th>Purpose</th><th>Buy</th></tr></thead>
       <tbody>
         <tr><td><strong>ESP32 38-pin (CP2102)</strong></td><td>1</td><td><span class="term" data-tip="mcu">Microcontroller</span> + WiFi</td><td><a class="shop-btn" href="https://robocraze.com/products/esp32-development-board" target="_blank">Robocraze ↗</a></td></tr>
-        <tr><td><strong>BME280 module</strong></td><td>1</td><td>Temp + humidity + pressure (single chip) via <span class="term" data-tip="i2c">I²C</span></td><td><a class="shop-btn" href="https://robocraze.com/products/bme280-temperature-humidity-pressure-sensor" target="_blank">Robocraze ↗</a></td></tr>
+        <tr><td><strong>BME280 module</strong></td><td>1</td><td>Temp + humidity + pressure via <span class="term" data-tip="i2c">I²C</span></td><td><a class="shop-btn" href="https://robocraze.com/products/bme280-temperature-humidity-pressure-sensor" target="_blank">Robocraze ↗</a></td></tr>
         <tr><td><strong>PMS7003 sensor</strong></td><td>1</td><td>PM1.0/PM2.5/PM10 via <span class="term" data-tip="uart">UART</span></td><td><a class="shop-btn" href="https://robocraze.com/search?q=pms7003" target="_blank">Search ↗</a></td></tr>
         <tr><td><strong>MQ-7 module</strong></td><td>1</td><td>CO gas (needs voltage cycling)</td><td><a class="shop-btn" href="https://robocraze.com/products/mq7-carbon-monoxide-sensor-module" target="_blank">Robocraze ↗</a></td></tr>
         <tr><td><strong>MQ-135 module</strong></td><td>1</td><td>General air quality <span class="term" data-tip="aout">AOUT</span></td><td><a class="shop-btn" href="https://robocraze.com/products/mq135-air-quality-sensor-module" target="_blank">Robocraze ↗</a></td></tr>
-        <tr><td><strong>2N7000 N-Channel MOSFET</strong></td><td>1</td><td>Switches MQ-7 <span class="term" data-tip="heater">heater</span> for voltage cycling</td><td><a class="shop-btn" href="https://robocraze.com/search?q=2N7000" target="_blank">Search ↗</a></td></tr>
-        <tr><td><strong>1kΩ resistor</strong></td><td>1</td><td>Gate resistor for MOSFET</td><td><a class="shop-btn" href="https://robocraze.com/products/resistor-kit-1-4w-600-pcs" target="_blank">Robocraze ↗</a></td></tr>
+        <tr><td><strong>IRLZ44N N-Channel MOSFET</strong></td><td>1</td><td>Switches MQ-7 <span class="term" data-tip="heater">heater</span> for voltage cycling. Logic-level gate — switches fully at 3.3V, safe for ESP32 direct drive.</td><td><a class="shop-btn" href="https://robocraze.com/search?q=IRLZ44N" target="_blank">Search ↗</a></td></tr>
+        <tr><td><strong>1kΩ resistor</strong></td><td>1</td><td>Gate resistor for IRLZ44N — limits dV/dt and suppresses ringing</td><td><a class="shop-btn" href="https://robocraze.com/products/resistor-kit-1-4w-600-pcs" target="_blank">Robocraze ↗</a></td></tr>
+        <tr><td><strong>10kΩ resistor × 2</strong></td><td>2</td><td>R1 of voltage dividers for MQ-7 AOUT and MQ-135 AOUT</td><td><a class="shop-btn" href="https://robocraze.com/products/resistor-kit-1-4w-600-pcs" target="_blank">Robocraze ↗</a></td></tr>
+        <tr><td><strong>20kΩ resistor × 2</strong></td><td>2</td><td>R2 of voltage dividers (divides 5V → 3.3V)</td><td><a class="shop-btn" href="https://robocraze.com/products/resistor-kit-1-4w-600-pcs" target="_blank">Robocraze ↗</a></td></tr>
         <tr><td><strong>830-point breadboard</strong></td><td>1</td><td>Main assembly board</td><td><a class="shop-btn" href="https://robocraze.com/products/breadboard-830-points" target="_blank">Robocraze ↗</a></td></tr>
         <tr><td><strong>Jumper wire kit (M-M + M-F)</strong></td><td>1</td><td>All connections</td><td><a class="shop-btn" href="https://robocraze.com/products/jumper-wires-120pcs" target="_blank">Robocraze ↗</a></td></tr>
         <tr><td><strong>USB Micro-B cable</strong></td><td>1</td><td>Programming + power</td><td><a class="shop-btn" href="https://robocraze.com/products/usb-type-b-micro-cable-1m" target="_blank">Robocraze ↗</a></td></tr>
       </tbody>
     </table>
-    <div class="sep"></div>
-    <p style="font-size:13px;color:#555"><strong style="color:#111">About the components:</strong> The BME280 is an integrated sensor chip that provides temperature, humidity, and pressure over a single I²C bus — three measurements in one component. The 2N7000 is a small N-Channel MOSFET that switches the MQ-7 heater on and off via PWM from the ESP32. The 1kΩ resistor between the GPIO and Gate limits current and protects the ESP32.</p>
   </div>
 </div>
 
@@ -510,24 +504,22 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
 <div id="gs-voltage" class="g-sec">
   <div class="gcard">
     <h2>Understanding voltage levels</h2>
-    <p style="font-size:13px;color:#555;margin-bottom:14px">Voltage levels describe how devices encode digital signals. The ESP32's GPIO pins use 3.3V logic, meaning a HIGH signal is 3.3V. Sensors using 5V logic (such as MQ-7 and MQ-135) cannot be connected directly to ESP32 input pins, as 5V exceeds the ESP32's tolerance and will damage the chip.</p>
+    <p style="font-size:13px;color:#555;margin-bottom:14px">The ESP32's GPIO pins use 3.3V logic. Sensors powered by 5V may output up to 5V on their analogue pins, which exceeds the ESP32's tolerance and will damage the chip. A voltage divider is required for any analogue signal path.</p>
     <table>
       <thead><tr><th>Sensor</th><th>Power</th><th>Signal output</th><th>Direct ESP32 connection?</th></tr></thead>
       <tbody>
         <tr><td>BME280</td><td><span class="v33">3.3V</span></td><td>I²C at 3.3V</td><td><span class="badge b-ok">Direct — safe ✓</span></td></tr>
         <tr><td>PMS7003</td><td><span class="v5">5V</span></td><td>UART at 3.3V logic</td><td><span class="badge b-ok">Direct — safe ✓</span></td></tr>
-        <tr><td>MQ-7 (AOUT)</td><td><span class="v5">5V</span></td><td>0–5V analog (depends on module)</td><td><span class="badge b-err">Use voltage divider ✗</span></td></tr>
-        <tr><td>MQ-135 (AOUT)</td><td><span class="v5">5V</span></td><td>0–5V analog (depends on module)</td><td><span class="badge b-err">Use voltage divider ✗</span></td></tr>
-        <tr><td>2N7000 Gate</td><td>—</td><td>Driven by GPIO 3.3V + PWM</td><td><span class="badge b-ok">Safe with 1kΩ ✓</span></td></tr>
+        <tr><td>MQ-7 (AOUT)</td><td><span class="v5">5V</span></td><td>0–5V analog</td><td><span class="badge b-err">Voltage divider required ✗</span></td></tr>
+        <tr><td>MQ-135 (AOUT)</td><td><span class="v5">5V</span></td><td>0–5V analog</td><td><span class="badge b-err">Voltage divider required ✗</span></td></tr>
+        <tr><td>IRLZ44N Gate</td><td>—</td><td>Driven by GPIO26 at 3.3V + PWM</td><td><span class="badge b-ok">Safe with 1kΩ ✓</span></td></tr>
       </tbody>
     </table>
   </div>
-
   <div class="gcard">
     <h2>Voltage divider for MQ sensors</h2>
-    <p style="font-size:13px;color:#555;margin-bottom:12px">The MQ-7 and MQ-135 are powered by 5V and their AOUT pins can output the full 0–5V range. Most ESP32 ADC pins tolerate only 0–3.3V, so a voltage divider is required to scale the signal down safely.</p>
-    <div class="info-box"><strong>Formula:</strong> Vout = Vin × R2 ÷ (R1 + R2)<br>With R1 = 10kΩ and R2 = 20kΩ: Vout = 5V × 20 ÷ 30 = <strong>3.33V ✓</strong><br><br>Build this divider twice — once for MQ-7 AOUT → GPIO35, once for MQ-135 AOUT → GPIO33.</div>
-    <p style="font-size:13px;color:#555;margin-top:10px"><strong>Note on module variants:</strong> Some MQ breakout boards include built-in level shifters that limit AOUT to 3.3V, but this varies by manufacturer and is not always documented. Using a voltage divider is the safe default in all cases — it does no harm if the module already limits voltage, and it protects the ESP32 if it does not.</p>
+    <p style="font-size:13px;color:#555;margin-bottom:12px">Build two identical voltage dividers — one for MQ-7 AOUT → GPIO34, one for MQ-135 AOUT → GPIO35.</p>
+    <div class="info-box"><strong>Formula:</strong> Vout = Vin × R2 ÷ (R1 + R2)<br>With R1 = 10kΩ and R2 = 20kΩ: Vout = 5V × 20 ÷ 30 = <strong>3.33V ✓</strong></div>
   </div>
 </div>
 
@@ -539,55 +531,58 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
     <div class="cycle-row">
       <div class="cphase" style="background:#fff3e0;color:#5a2e00"><div style="font-size:13px">Phase 1 — CLEANING</div><div style="font-size:12px;margin-top:4px;font-weight:400">5V for 60 seconds</div><div style="font-size:11px;font-weight:400;margin-top:2px">Burns off impurities. Do NOT take readings.</div></div>
       <div class="carr">→</div>
-      <div class="cphase" style="background:#e3f0ff;color:#0a2d5e"><div style="font-size:13px">Phase 2 — MEASUREMENT</div><div style="font-size:12px;margin-top:4px;font-weight:400">1.4V for 90 seconds</div><div style="font-size:11px;font-weight:400;margin-top:2px">Sensor is now sensitive to CO. Read in last 2-10s.</div></div>
+      <div class="cphase" style="background:#e3f0ff;color:#0a2d5e"><div style="font-size:13px">Phase 2 — MEASUREMENT</div><div style="font-size:12px;margin-top:4px;font-weight:400">1.4V for 90 seconds</div><div style="font-size:11px;font-weight:400;margin-top:2px">Sensor is sensitive to CO. Read in last 30 seconds.</div></div>
       <div class="carr">→</div>
-      <div class="cphase" style="background:#eaf5e0;color:#1a4a05"><div style="font-size:13px">Repeat</div><div style="font-size:12px;margin-top:4px;font-weight:400">150s full cycle</div><div style="font-size:11px;font-weight:400;margin-top:2px">Continuous accurate sensing</div></div>
+      <div class="cphase" style="background:#eaf5e0;color:#1a4a05"><div style="font-size:13px">Repeat</div><div style="font-size:12px;margin-top:4px;font-weight:400">150s full cycle</div><div style="font-size:11px;font-weight:400;margin-top:2px">ESP32 sends data at end of each cycle</div></div>
     </div>
   </div>
 
   <div class="gcard">
     <h2>The PWM math — 7.8% duty cycle</h2>
-    <p style="font-size:13px;color:#555;margin-bottom:12px">Instead of a separate 1.4V power supply, the ESP32 "pulses" the 5V supply so quickly that the heater feels like it's at 1.4V.</p>
-    <div class="info-box"><strong>Important:</strong> Heating power is proportional to the <strong>square</strong> of voltage (P ∝ V²). So the duty cycle is NOT 1.4/5 = 28%. It's:<br><br>
-    <strong>Duty Cycle = (Target ÷ Source)² = (1.4 ÷ 5)² = 0.078 ≈ 7.8%</strong><br><br>
-    In ESP32 code (8-bit PWM resolution), this is PWM value <strong>20 out of 255</strong>.</div>
+    <p style="font-size:13px;color:#555;margin-bottom:12px">Instead of a separate 1.4V supply, the ESP32 pulses the MOSFET so fast that the heater's RMS voltage equals 1.4V.</p>
+    <div class="info-box"><strong>Why squared?</strong> For a resistive heater, heating power is proportional to V². To get the same thermal effect as 1.4V DC, the RMS voltage of the PWM waveform must equal 1.4V. V_rms = V_supply × √(duty), so:<br><br>
+    <strong>duty = (V_target ÷ V_supply)² = (1.4 ÷ 5)² = 0.0784 ≈ 7.8%</strong><br><br>
+    In ESP32 8-bit PWM (0–255): 255 × 0.078 = <strong>~20 out of 255</strong>. Using 28% (linear ratio) would give 2.65V RMS — far too hot and will burn out the heater over time.</div>
     <table>
-      <thead><tr><th>Phase</th><th>PWM Value</th><th>Effective Voltage</th><th>Duration</th><th>Action</th></tr></thead>
+      <thead><tr><th>Phase</th><th>PWM Value</th><th>V_rms at heater</th><th>Duration</th><th>Action</th></tr></thead>
       <tbody>
         <tr><td>Cleaning</td><td>255 (100%)</td><td>5.0V</td><td>60 seconds</td><td>Heat — no readings</td></tr>
-        <tr><td>Measurement</td><td>20 (7.8%)</td><td>1.4V effective</td><td>90 seconds</td><td>Read in last 2-10 seconds</td></tr>
+        <tr><td>Measurement</td><td>20 (7.8%)</td><td>1.4V</td><td>90 seconds</td><td>Read in last 30 seconds</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="gcard">
-    <h2>The 2N2222 transistor circuit</h2>
-    <p style="font-size:13px;color:#555;margin-bottom:12px">The ESP32 can't directly switch the MQ-7's heater current. A 2N2222 NPN transistor acts as the switch, controlled by GPIO32 through a mandatory 1kΩ base resistor.</p>
-    <div class="warn-box"><strong>NEVER connect the 2N2222 to the ESP32 without the 1kΩ resistor.</strong> Direct connection will draw too much current from the GPIO and can damage the ESP32.</div>
+    <h2>The IRLZ44N MOSFET circuit</h2>
+    <p style="font-size:13px;color:#555;margin-bottom:12px">The IRLZ44N is a logic-level N-channel MOSFET — its gate switches fully ON at 3.3V, so it can be driven directly from a GPIO pin (through a 1kΩ resistor). GPIO26 outputs the PWM signal.</p>
+    <div class="warn-box"><strong>Always include the 1kΩ Gate resistor.</strong> Even though the MOSFET gate draws negligible steady-state current, the 1kΩ resistor limits the peak current spike when the gate capacitance charges/discharges at each PWM edge, protecting the ESP32 GPIO.</div>
     <table>
       <thead><tr><th>Connection</th><th>From</th><th>To</th></tr></thead>
       <tbody>
         <tr><td>MQ-7 VCC</td><td>MQ-7 sensor</td><td>ESP32 5V/Vin pin</td></tr>
-        <tr><td>MQ-7 GND</td><td>MQ-7 sensor</td><td>2N2222 <strong>Collector</strong></td></tr>
-        <tr><td>2N2222 Emitter</td><td>Transistor</td><td>Main GND rail</td></tr>
-        <tr><td>2N2222 Base</td><td>Through 1kΩ resistor</td><td>ESP32 GPIO32</td></tr>
+        <tr><td>MQ-7 GND (heater−)</td><td>MQ-7 sensor</td><td>IRLZ44N <strong>Drain</strong> (middle leg)</td></tr>
+        <tr><td>IRLZ44N Source</td><td>Right leg</td><td>Main GND rail</td></tr>
+        <tr><td>IRLZ44N Gate</td><td>Left leg, through 1kΩ</td><td>ESP32 GPIO26</td></tr>
       </tbody>
     </table>
     <div class="sep"></div>
-    <h3>How to identify 2N2222 pins</h3>
-    <p style="font-size:13px;color:#555;margin-bottom:8px">Hold the transistor with the <strong>flat face toward you</strong> and legs pointing down. From left to right:</p>
-    <svg width="280" viewBox="0 0 280 130">
-      <rect x="80" y="10" width="120" height="65" rx="6" fill="#1a1a1a" stroke="#555" stroke-width="1.5"/>
-      <text x="140" y="40" text-anchor="middle" font-size="12" font-weight="600" fill="#bbb" font-family="monospace">2N2222</text>
-      <text x="140" y="58" text-anchor="middle" font-size="9" fill="#777" font-family="sans-serif">flat face → you</text>
-      <line x1="100" y1="75" x2="100" y2="110" stroke="#aaa" stroke-width="3"/>
-      <line x1="140" y1="75" x2="140" y2="110" stroke="#aaa" stroke-width="3"/>
-      <line x1="180" y1="75" x2="180" y2="110" stroke="#aaa" stroke-width="3"/>
-      <text x="100" y="125" text-anchor="middle" font-size="11" font-weight="700" fill="#0e8a60" font-family="sans-serif">Emitter</text>
-      <text x="140" y="125" text-anchor="middle" font-size="11" font-weight="700" fill="#c0820a" font-family="sans-serif">Base</text>
-      <text x="180" y="125" text-anchor="middle" font-size="11" font-weight="700" fill="#5040b8" font-family="sans-serif">Collector</text>
+    <h3>How to identify IRLZ44N pins</h3>
+    <p style="font-size:13px;color:#555;margin-bottom:8px">Hold the IRLZ44N with the <strong>printed label facing you</strong> and legs pointing down. From left to right:</p>
+    <svg width="300" viewBox="0 0 300 140">
+      <rect x="80" y="10" width="130" height="70" rx="6" fill="#1a1a1a" stroke="#555" stroke-width="1.5"/>
+      <!-- metal tab -->
+      <rect x="194" y="4" width="20" height="36" rx="2" fill="#888" stroke="#666" stroke-width="1"/>
+      <text x="223" y="26" font-size="9" fill="#777" font-family="sans-serif">tab = Drain</text>
+      <text x="145" y="42" text-anchor="middle" font-size="12" font-weight="600" fill="#bbb" font-family="monospace">IRLZ44N</text>
+      <text x="145" y="60" text-anchor="middle" font-size="9" fill="#777" font-family="sans-serif">label side → you · TO-220</text>
+      <line x1="100" y1="80" x2="100" y2="115" stroke="#aaa" stroke-width="3"/>
+      <line x1="145" y1="80" x2="145" y2="115" stroke="#aaa" stroke-width="3"/>
+      <line x1="190" y1="80" x2="190" y2="115" stroke="#aaa" stroke-width="3"/>
+      <text x="100" y="132" text-anchor="middle" font-size="11" font-weight="700" fill="#c0820a" font-family="sans-serif">Gate</text>
+      <text x="145" y="132" text-anchor="middle" font-size="11" font-weight="700" fill="#5040b8" font-family="sans-serif">Drain</text>
+      <text x="190" y="132" text-anchor="middle" font-size="11" font-weight="700" fill="#0e8a60" font-family="sans-serif">Source</text>
     </svg>
-    <p style="font-size:12px;color:#555;margin-top:8px"><strong>Memory aid:</strong> EBC = "Emitter, Base, Collector" left to right with the flat face toward you. The Base (middle) is what GPIO32 controls through the 1kΩ resistor.</p>
+    <p style="font-size:12px;color:#555;margin-top:10px"><strong>Memory aid:</strong> G–D–S left to right with label facing you. Gate (left) → 1kΩ → GPIO26. Drain (middle) → MQ-7 GND pin. Source (right) → common GND rail. The metal tab on the back is also electrically connected to Drain.</p>
   </div>
 </div>
 
@@ -608,51 +603,51 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
         <tr><td>PMS7003</td><td>GND (pin 2)</td><td><span class="wdot" style="background:#111"></span>Black</td><td>GND rail</td><td></td></tr>
         <tr><td>PMS7003</td><td>TX (pin 9)</td><td><span class="wdot" style="background:#3070c8"></span>Blue</td><td>GPIO16 (RX2)</td><td>TX→RX cross</td></tr>
         <tr><td>PMS7003</td><td>RX (pin 8)</td><td><span class="wdot" style="background:#3070c8"></span>Blue</td><td>GPIO17 (TX2)</td><td>RX→TX cross</td></tr>
-        <tr style="background:#fff8f8"><td colspan="5" style="font-weight:600;color:#888;font-size:11px;padding:6px 10px">MQ-7 + MOSFET + Divider A</td></tr>
-        <tr><td>MQ-7</td><td>VCC</td><td><span class="wdot" style="background:#d0251e"></span>Red</td><td>+5V → MOSFET Drain</td><td>Switched by MOSFET</td></tr>
-        <tr><td>MQ-7</td><td>AOUT</td><td><span class="wdot" style="background:#e09020"></span>Orange</td><td>Divider A → GPIO34</td><td>5V→3.3V via divider</td></tr>
-        <tr><td>MOSFET Gate</td><td>Left leg</td><td><span class="wdot" style="background:#40c090"></span>Teal</td><td>10kΩ → GPIO26</td><td>PWM gate drive</td></tr>
-        <tr><td>MOSFET Source</td><td>Right leg</td><td><span class="wdot" style="background:#111"></span>Black</td><td>GND rail</td><td></td></tr>
+        <tr style="background:#fff8f8"><td colspan="5" style="font-weight:600;color:#888;font-size:11px;padding:6px 10px">MQ-7 + IRLZ44N + Divider A</td></tr>
+        <tr><td>MQ-7</td><td>VCC</td><td><span class="wdot" style="background:#d0251e"></span>Red</td><td>VIN (+5V)</td><td>Always powered</td></tr>
+        <tr><td>MQ-7</td><td>GND (heater−)</td><td><span class="wdot" style="background:#c47a00"></span>Brown</td><td>IRLZ44N Drain (middle leg)</td><td>MOSFET switches heater</td></tr>
+        <tr><td>MQ-7</td><td>AOUT</td><td><span class="wdot" style="background:#e09020"></span>Orange</td><td>Divider A → GPIO34</td><td>5V → 3.3V via divider</td></tr>
+        <tr><td>IRLZ44N Gate</td><td>Left leg</td><td><span class="wdot" style="background:#40c090"></span>Teal</td><td>1kΩ → GPIO26</td><td>PWM gate drive</td></tr>
+        <tr><td>IRLZ44N Source</td><td>Right leg</td><td><span class="wdot" style="background:#111"></span>Black</td><td>GND rail</td><td></td></tr>
         <tr style="background:#fff8f8"><td colspan="5" style="font-weight:600;color:#888;font-size:11px;padding:6px 10px">MQ-135 + Divider B</td></tr>
-        <tr><td>MQ-135</td><td>VCC</td><td><span class="wdot" style="background:#d0251e"></span>Red</td><td>+5V rail (direct)</td><td>No MOSFET</td></tr>
-        <tr><td>MQ-135</td><td>AOUT</td><td><span class="wdot" style="background:#9050c8"></span>Purple</td><td>Divider B → GPIO35</td><td>5V→3.3V via divider</td></tr>
+        <tr><td>MQ-135</td><td>VCC</td><td><span class="wdot" style="background:#d0251e"></span>Red</td><td>+5V rail (direct)</td><td>No MOSFET needed</td></tr>
+        <tr><td>MQ-135</td><td>GND</td><td><span class="wdot" style="background:#111"></span>Black</td><td>GND rail</td><td></td></tr>
+        <tr><td>MQ-135</td><td>AOUT</td><td><span class="wdot" style="background:#9050c8"></span>Purple</td><td>Divider B → GPIO35</td><td>5V → 3.3V via divider</td></tr>
       </tbody>
     </table>
   </div>
   <div class="gcard">
     <h2>Visual wiring diagram</h2>
-    <p style="font-size:13px;color:#555;margin-bottom:12px">Standard schematic — red = +5V, dark green = 3.3V, black = GND, dashed lines = signal through voltage dividers.</p>
     <svg width="100%" viewBox="0 0 680 560" style="background:#fafaf7;border-radius:8px;">
-      <!-- Power rails -->
       <line x1="60" y1="42" x2="620" y2="42" stroke="#d0251e" stroke-width="2" opacity=".25"/>
       <text x="626" y="46" font-size="9" fill="#d0251e" font-family="monospace">+5V</text>
       <line x1="44" y1="42" x2="44" y2="540" stroke="#333" stroke-width="2" opacity=".2"/>
       <line x1="636" y1="42" x2="636" y2="540" stroke="#333" stroke-width="2" opacity=".2"/>
 
       <!-- ESP32 -->
-      <rect x="250" y="60" width="180" height="320" rx="10" fill="#12121e" stroke="#3a3a5e" stroke-width="2"/>
+      <rect x="250" y="60" width="180" height="290" rx="10" fill="#12121e" stroke="#3a3a5e" stroke-width="2"/>
       <text x="340" y="84" text-anchor="middle" font-size="11" font-weight="600" fill="#90e0c0" font-family="monospace">ESP32</text>
       <text x="340" y="97" text-anchor="middle" font-size="8" fill="#555" font-family="monospace">38-pin Dev Board</text>
+      <!-- left-side pins -->
       <text x="247" y="124" text-anchor="end" font-size="8" fill="#1a9e5e" font-family="monospace">3V3</text>
       <text x="247" y="140" text-anchor="end" font-size="8" fill="#555" font-family="monospace">GND</text>
-      <text x="247" y="156" text-anchor="end" font-size="8" fill="#e06080" font-family="monospace">GPIO19 DHT22</text>
-      <text x="247" y="172" text-anchor="end" font-size="8" fill="#e06080" font-family="monospace">GPIO21 SDA</text>
-      <text x="247" y="188" text-anchor="end" font-size="8" fill="#e06080" font-family="monospace">GPIO22 SCL</text>
-      <text x="247" y="204" text-anchor="end" font-size="8" fill="#3070c8" font-family="monospace">GPIO25 PMS RX</text>
-      <text x="247" y="220" text-anchor="end" font-size="8" fill="#3070c8" font-family="monospace">GPIO26 PMS TX</text>
-      <text x="247" y="236" text-anchor="end" font-size="8" fill="#9050c8" font-family="monospace">GPIO33 MQ135</text>
-      <text x="247" y="252" text-anchor="end" font-size="8" fill="#e09020" font-family="monospace">GPIO35 MQ7 ADC</text>
-      <text x="247" y="268" text-anchor="end" font-size="8" fill="#40c090" font-family="monospace">GPIO32 MQ7 GATE</text>
+      <text x="247" y="156" text-anchor="end" font-size="8" fill="#e06080" font-family="monospace">GPIO21 SDA</text>
+      <text x="247" y="172" text-anchor="end" font-size="8" fill="#e06080" font-family="monospace">GPIO22 SCL</text>
+      <text x="247" y="188" text-anchor="end" font-size="8" fill="#3070c8" font-family="monospace">GPIO16 PMS-RX</text>
+      <text x="247" y="204" text-anchor="end" font-size="8" fill="#3070c8" font-family="monospace">GPIO17 PMS-TX</text>
+      <text x="247" y="220" text-anchor="end" font-size="8" fill="#9050c8" font-family="monospace">GPIO35 MQ135</text>
+      <text x="247" y="236" text-anchor="end" font-size="8" fill="#e09020" font-family="monospace">GPIO34 MQ7-ADC</text>
+      <text x="247" y="252" text-anchor="end" font-size="8" fill="#40c090" font-family="monospace">GPIO26 MQ7-GATE</text>
       <circle cx="252" cy="121" r="3" fill="#1a9e5e"/>
       <circle cx="252" cy="137" r="3" fill="#555"/>
       <circle cx="252" cy="153" r="3" fill="#e06080"/>
       <circle cx="252" cy="169" r="3" fill="#e06080"/>
-      <circle cx="252" cy="185" r="3" fill="#e06080"/>
+      <circle cx="252" cy="185" r="3" fill="#3070c8"/>
       <circle cx="252" cy="201" r="3" fill="#3070c8"/>
-      <circle cx="252" cy="217" r="3" fill="#3070c8"/>
-      <circle cx="252" cy="233" r="3" fill="#9050c8"/>
-      <circle cx="252" cy="249" r="3" fill="#e09020"/>
-      <circle cx="252" cy="265" r="3" fill="#40c090"/>
+      <circle cx="252" cy="217" r="3" fill="#9050c8"/>
+      <circle cx="252" cy="233" r="3" fill="#e09020"/>
+      <circle cx="252" cy="249" r="3" fill="#40c090"/>
+      <!-- right-side pins -->
       <text x="433" y="124" font-size="8" fill="#d0251e" font-family="monospace">VIN (+5V)</text>
       <text x="433" y="140" font-size="8" fill="#555" font-family="monospace">GND</text>
       <circle cx="428" cy="121" r="3" fill="#d0251e"/>
@@ -661,76 +656,78 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
       <line x1="252" y1="137" x2="44" y2="137" stroke="#333" stroke-width="1.5"/>
       <line x1="428" y1="137" x2="636" y2="137" stroke="#333" stroke-width="1.5"/>
 
-      <!-- BME280 (top-left) -->
+      <!-- BME280 -->
       <rect x="40" y="68" width="140" height="76" rx="6" fill="#0a1a12" stroke="#1a9e5e" stroke-width="1.5"/>
       <text x="110" y="88" text-anchor="middle" font-size="10" font-weight="600" fill="#1a9e5e" font-family="monospace">BME280</text>
-      <text x="110" y="102" text-anchor="middle" font-size="8" fill="#555" font-family="sans-serif">I²C · 3.3V</text>
-      <text x="110" y="115" text-anchor="middle" font-size="8" fill="#555" font-family="sans-serif">temp+hum+pres</text>
-      <circle cx="56" cy="130" r="3" fill="#e06080"/>
-      <text x="63" y="134" font-size="8" fill="#e06080" font-family="monospace">SDA→GPIO21</text>
-      <circle cx="120" cy="130" r="3" fill="#e06080"/>
-      <text x="127" y="134" font-size="8" fill="#e06080" font-family="monospace">SCL→GPIO22</text>
-      <path d="M59 130 L240 130 L240 169 L252 169" fill="none" stroke="#e06080" stroke-width="1"/>
-      <path d="M123 130 L235 130 L235 185 L252 185" fill="none" stroke="#e06080" stroke-width="1" stroke-dasharray="3 3"/>
+      <text x="110" y="102" text-anchor="middle" font-size="8" fill="#555" font-family="sans-serif">I²C · 3.3V · temp+hum+pres</text>
+      <circle cx="56" cy="128" r="3" fill="#e06080"/>
+      <text x="63" y="132" font-size="8" fill="#e06080" font-family="monospace">SDA→GPIO21</text>
+      <circle cx="120" cy="128" r="3" fill="#e06080"/>
+      <text x="127" y="132" font-size="8" fill="#e06080" font-family="monospace">SCL→GPIO22</text>
+      <path d="M59 128 L240 128 L240 153 L252 153" fill="none" stroke="#e06080" stroke-width="1"/>
+      <path d="M123 128 L235 128 L235 169 L252 169" fill="none" stroke="#e06080" stroke-width="1" stroke-dasharray="3 3"/>
 
       <!-- PMS7003 -->
-      <rect x="40" y="210" width="140" height="78" rx="6" fill="#0a0e1a" stroke="#3070c8" stroke-width="1.5"/>
-      <text x="110" y="230" text-anchor="middle" font-size="10" font-weight="600" fill="#3070c8" font-family="monospace">PMS7003</text>
-      <text x="110" y="243" text-anchor="middle" font-size="8" fill="#555" font-family="sans-serif">UART · 5V · PM1/2.5/10</text>
-      <circle cx="56" cy="258" r="3" fill="#d0251e"/>
-      <text x="63" y="262" font-size="8" fill="#d0251e" font-family="monospace">VCC→5V</text>
-      <circle cx="56" cy="271" r="3" fill="#3070c8"/>
-      <text x="63" y="275" font-size="8" fill="#3070c8" font-family="monospace">TX→GPIO25</text>
-      <circle cx="56" cy="283" r="3" fill="#3070c8"/>
-      <text x="63" y="287" font-size="8" fill="#3070c8" font-family="monospace">RX→GPIO26</text>
-      <path d="M59 258 L44 258 L44 42" fill="none" stroke="#d0251e" stroke-width="1.5"/>
-      <path d="M59 271 L225 271 L225 201 L252 201" fill="none" stroke="#3070c8" stroke-width="1.2"/>
-      <path d="M59 283 L220 283 L220 217 L252 217" fill="none" stroke="#3070c8" stroke-width="1.2" stroke-dasharray="3 3"/>
+      <rect x="40" y="200" width="140" height="78" rx="6" fill="#0a0e1a" stroke="#3070c8" stroke-width="1.5"/>
+      <text x="110" y="220" text-anchor="middle" font-size="10" font-weight="600" fill="#3070c8" font-family="monospace">PMS7003</text>
+      <text x="110" y="233" text-anchor="middle" font-size="8" fill="#555" font-family="sans-serif">UART · 5V · PM1/2.5/10</text>
+      <circle cx="56" cy="248" r="3" fill="#d0251e"/>
+      <text x="63" y="252" font-size="8" fill="#d0251e" font-family="monospace">VCC→5V</text>
+      <circle cx="56" cy="261" r="3" fill="#3070c8"/>
+      <text x="63" y="265" font-size="8" fill="#3070c8" font-family="monospace">TX→GPIO16</text>
+      <circle cx="56" cy="273" r="3" fill="#3070c8"/>
+      <text x="63" y="277" font-size="8" fill="#3070c8" font-family="monospace">RX→GPIO17</text>
+      <path d="M59 248 L44 248 L44 42" fill="none" stroke="#d0251e" stroke-width="1.5"/>
+      <path d="M59 261 L225 261 L225 185 L252 185" fill="none" stroke="#3070c8" stroke-width="1.2"/>
+      <path d="M59 273 L220 273 L220 201 L252 201" fill="none" stroke="#3070c8" stroke-width="1.2" stroke-dasharray="3 3"/>
 
       <!-- MQ-7 -->
-      <rect x="500" y="68" width="140" height="84" rx="6" fill="#1a0e05" stroke="#c47a00" stroke-width="1.5"/>
-      <text x="570" y="88" text-anchor="middle" font-size="10" font-weight="600" fill="#c47a00" font-family="monospace">MQ-7 (CO)</text>
-      <text x="570" y="101" text-anchor="middle" font-size="8" fill="#555" font-family="sans-serif">via MOSFET + Divider A</text>
-      <circle cx="516" cy="115" r="3" fill="#d0251e"/>
-      <text x="523" y="119" font-size="8" fill="#d0251e" font-family="monospace">VCC→5V</text>
-      <circle cx="516" cy="128" r="3" fill="#e09020"/>
-      <text x="523" y="132" font-size="8" fill="#e09020" font-family="monospace">AOUT→Div A</text>
-      <circle cx="516" cy="141" r="3" fill="#c47a00"/>
-      <text x="523" y="145" font-size="8" fill="#c47a00" font-family="monospace">VCC- (heater)</text>
-      <path d="M519 115 L636 115 L636 42" fill="none" stroke="#d0251e" stroke-width="1.5"/>
-      <path d="M519 128 L519 270 L252 270" fill="none" stroke="#e09020" stroke-width="1.5" stroke-dasharray="5 3"/>
-      <rect x="253" y="262" width="90" height="18" rx="3" fill="#fff8e8" stroke="#e09020" stroke-width="0.5"/>
-      <text x="298" y="275" text-anchor="middle" font-size="8" fill="#c06000" font-family="sans-serif">Div A (10k+20k)</text>
-      <path d="M252 270 L236 270 L236 249 L252 249" fill="none" stroke="#e09020" stroke-width="1.5"/>
+      <rect x="500" y="60" width="140" height="84" rx="6" fill="#1a0e05" stroke="#c47a00" stroke-width="1.5"/>
+      <text x="570" y="80" text-anchor="middle" font-size="10" font-weight="600" fill="#c47a00" font-family="monospace">MQ-7 (CO)</text>
+      <text x="570" y="93" text-anchor="middle" font-size="8" fill="#555" font-family="sans-serif">IRLZ44N + Divider A</text>
+      <circle cx="516" cy="108" r="3" fill="#d0251e"/>
+      <text x="523" y="112" font-size="8" fill="#d0251e" font-family="monospace">VCC→5V</text>
+      <circle cx="516" cy="121" r="3" fill="#e09020"/>
+      <text x="523" y="125" font-size="8" fill="#e09020" font-family="monospace">AOUT→Div A</text>
+      <circle cx="516" cy="134" r="3" fill="#c47a00"/>
+      <text x="523" y="138" font-size="8" fill="#c47a00" font-family="monospace">GND→Drain</text>
+      <path d="M519 108 L636 108 L636 42" fill="none" stroke="#d0251e" stroke-width="1.5"/>
+      <path d="M519 121 L519 255 L252 255" fill="none" stroke="#e09020" stroke-width="1.5" stroke-dasharray="5 3"/>
+      <rect x="253" y="247" width="90" height="16" rx="3" fill="#fff8e8" stroke="#e09020" stroke-width="0.5"/>
+      <text x="298" y="259" text-anchor="middle" font-size="8" fill="#c06000" font-family="sans-serif">Div A (10k+20k)</text>
+      <path d="M252 255 L236 255 L236 233 L252 233" fill="none" stroke="#e09020" stroke-width="1.5"/>
 
-      <!-- MOSFET -->
-      <rect x="500" y="170" width="140" height="80" rx="6" fill="#0c0c1e" stroke="#5040b8" stroke-width="1.5"/>
-      <text x="570" y="190" text-anchor="middle" font-size="10" font-weight="600" fill="#9080e0" font-family="monospace">IRLZ44N</text>
-      <text x="570" y="203" text-anchor="middle" font-size="8" fill="#555" font-family="sans-serif">N-ch MOSFET</text>
-      <circle cx="516" cy="218" r="3" fill="#40c090"/>
-      <text x="523" y="222" font-size="8" fill="#40c090" font-family="monospace">Gate→10k→GPIO32</text>
-      <circle cx="516" cy="231" r="3" fill="#c47a00"/>
-      <text x="523" y="235" font-size="8" fill="#c47a00" font-family="monospace">Drain→MQ7 VCC-</text>
-      <circle cx="516" cy="244" r="3" fill="#555"/>
-      <text x="523" y="248" font-size="8" fill="#555" font-family="monospace">Source→GND</text>
-      <path d="M252 265 L228 265 L228 218 L516 218" fill="none" stroke="#40c090" stroke-width="1.5"/>
-      <rect x="330" y="209" width="56" height="14" rx="3" fill="#eafbe7" stroke="#2d8a50" stroke-width="0.5"/>
-      <text x="358" y="220" text-anchor="middle" font-size="8" fill="#2d8a50" font-family="sans-serif">10kΩ gate</text>
-      <path d="M519 231 L498 231 L498 141 L519 141" fill="none" stroke="#c47a00" stroke-width="1.5" stroke-dasharray="3 3"/>
-      <path d="M519 244 L636 244" fill="none" stroke="#333" stroke-width="1.5"/>
+      <!-- IRLZ44N -->
+      <rect x="500" y="162" width="140" height="80" rx="6" fill="#0c0c1e" stroke="#5040b8" stroke-width="1.5"/>
+      <text x="570" y="182" text-anchor="middle" font-size="10" font-weight="600" fill="#9080e0" font-family="monospace">IRLZ44N</text>
+      <text x="570" y="195" text-anchor="middle" font-size="8" fill="#555" font-family="sans-serif">N-ch MOSFET (logic-level)</text>
+      <circle cx="516" cy="210" r="3" fill="#40c090"/>
+      <text x="523" y="214" font-size="8" fill="#40c090" font-family="monospace">Gate←1kΩ←GPIO26</text>
+      <circle cx="516" cy="223" r="3" fill="#c47a00"/>
+      <text x="523" y="227" font-size="8" fill="#c47a00" font-family="monospace">Drain→MQ7 GND</text>
+      <circle cx="516" cy="236" r="3" fill="#555"/>
+      <text x="523" y="240" font-size="8" fill="#555" font-family="monospace">Source→GND</text>
+      <!-- gate line: GPIO26 → 1kΩ → MOSFET gate -->
+      <path d="M252 249 L228 249 L228 210 L516 210" fill="none" stroke="#40c090" stroke-width="1.5"/>
+      <rect x="330" y="202" width="46" height="14" rx="3" fill="#eafbe7" stroke="#2d8a50" stroke-width="0.5"/>
+      <text x="353" y="213" text-anchor="middle" font-size="8" fill="#2d8a50" font-family="sans-serif">1kΩ gate</text>
+      <!-- drain → MQ7 GND -->
+      <path d="M519 223 L498 223 L498 134 L519 134" fill="none" stroke="#c47a00" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <!-- source → GND -->
+      <path d="M519 236 L636 236" fill="none" stroke="#333" stroke-width="1.5"/>
 
       <!-- MQ-135 -->
-      <rect x="500" y="270" width="140" height="78" rx="6" fill="#0d0810" stroke="#9050c8" stroke-width="1.5"/>
-      <text x="570" y="290" text-anchor="middle" font-size="10" font-weight="600" fill="#b070e8" font-family="monospace">MQ-135 (AQI)</text>
-      <text x="570" y="303" text-anchor="middle" font-size="8" fill="#555" font-family="sans-serif">5V · Divider B</text>
-      <circle cx="516" cy="318" r="3" fill="#d0251e"/>
-      <text x="523" y="322" font-size="8" fill="#d0251e" font-family="monospace">VCC→5V</text>
-      <circle cx="516" cy="331" r="3" fill="#9050c8"/>
-      <text x="523" y="335" font-size="8" fill="#9050c8" font-family="monospace">AOUT→Div B</text>
-      <path d="M519 318 L636 318" fill="none" stroke="#d0251e" stroke-width="1" stroke-dasharray="3 3"/>
-      <path d="M519 331 L490 331 L490 295 L228 295 L228 233 L252 233" fill="none" stroke="#9050c8" stroke-width="1.5" stroke-dasharray="5 3"/>
-      <rect x="253" y="287" width="90" height="18" rx="3" fill="#f5eeff" stroke="#9050c8" stroke-width="0.5"/>
-      <text x="298" y="300" text-anchor="middle" font-size="8" fill="#6030a0" font-family="sans-serif">Div B (10k+20k)</text>
+      <rect x="500" y="262" width="140" height="78" rx="6" fill="#0d0810" stroke="#9050c8" stroke-width="1.5"/>
+      <text x="570" y="282" text-anchor="middle" font-size="10" font-weight="600" fill="#b070e8" font-family="monospace">MQ-135 (AQI)</text>
+      <text x="570" y="295" text-anchor="middle" font-size="8" fill="#555" font-family="sans-serif">5V · Divider B → GPIO35</text>
+      <circle cx="516" cy="310" r="3" fill="#d0251e"/>
+      <text x="523" y="314" font-size="8" fill="#d0251e" font-family="monospace">VCC→5V</text>
+      <circle cx="516" cy="323" r="3" fill="#9050c8"/>
+      <text x="523" y="327" font-size="8" fill="#9050c8" font-family="monospace">AOUT→Div B</text>
+      <path d="M519 310 L636 310" fill="none" stroke="#d0251e" stroke-width="1" stroke-dasharray="3 3"/>
+      <path d="M519 323 L490 323 L490 285 L228 285 L228 217 L252 217" fill="none" stroke="#9050c8" stroke-width="1.5" stroke-dasharray="5 3"/>
+      <rect x="253" y="277" width="90" height="16" rx="3" fill="#f5eeff" stroke="#9050c8" stroke-width="0.5"/>
+      <text x="298" y="289" text-anchor="middle" font-size="8" fill="#6030a0" font-family="sans-serif">Div B (10k+20k)</text>
 
       <!-- LEGEND -->
       <rect x="40" y="410" width="600" height="138" rx="8" fill="#fff" stroke="#ddd" stroke-width="1"/>
@@ -740,20 +737,23 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
       <line x1="200" y1="447" x2="236" y2="447" stroke="#1a9e5e" stroke-width="2.5"/>
       <text x="242" y="451" font-size="9" fill="#555" font-family="sans-serif">3.3V power</text>
       <line x1="340" y1="447" x2="376" y2="447" stroke="#333" stroke-width="2.5"/>
-      <text x="382" y="451" font-size="9" fill="#555" font-family="sans-serif">GND (common)</text>
+      <text x="382" y="451" font-size="9" fill="#555" font-family="sans-serif">GND (common rail)</text>
       <line x1="60" y1="467" x2="96" y2="467" stroke="#e06080" stroke-width="2.5"/>
-      <text x="102" y="471" font-size="9" fill="#555" font-family="sans-serif">I²C (SDA/SCL) + DHT data</text>
+      <text x="102" y="471" font-size="9" fill="#555" font-family="sans-serif">I²C (SDA/SCL)</text>
       <line x1="240" y1="467" x2="276" y2="467" stroke="#3070c8" stroke-width="2.5"/>
       <text x="282" y="471" font-size="9" fill="#555" font-family="sans-serif">UART (TX/RX) — solid/dashed</text>
       <line x1="60" y1="487" x2="96" y2="487" stroke="#e09020" stroke-width="2.5" stroke-dasharray="5 3"/>
-      <text x="102" y="491" font-size="9" fill="#555" font-family="sans-serif">MQ-7 AOUT → Divider A → GPIO35</text>
+      <text x="102" y="491" font-size="9" fill="#555" font-family="sans-serif">MQ-7 AOUT → Divider A → GPIO34</text>
       <line x1="340" y1="487" x2="376" y2="487" stroke="#9050c8" stroke-width="2.5" stroke-dasharray="5 3"/>
-      <text x="382" y="491" font-size="9" fill="#555" font-family="sans-serif">MQ-135 AOUT → Divider B → GPIO33</text>
+      <text x="382" y="491" font-size="9" fill="#555" font-family="sans-serif">MQ-135 AOUT → Divider B → GPIO35</text>
       <line x1="60" y1="507" x2="96" y2="507" stroke="#40c090" stroke-width="2.5"/>
-      <text x="102" y="511" font-size="9" fill="#555" font-family="sans-serif">GPIO32 PWM → 10kΩ → MOSFET Gate</text>
+      <text x="102" y="511" font-size="9" fill="#555" font-family="sans-serif">GPIO26 PWM → 1kΩ → IRLZ44N Gate</text>
       <text x="60" y="535" font-size="9" fill="#888" font-family="sans-serif">All GNDs share the common GND rail. Dashed signal lines pass through voltage dividers before reaching ESP32 ADC pins.</text>
     </svg>
   </div>
+</div><!-- /gs-wiring — correctly closed before gs-code -->
+
+<!-- CODE -->
 <div id="gs-code" class="g-sec">
   <div class="gcard">
     <h2>Arduino IDE setup</h2>
@@ -773,64 +773,120 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
 
 const char* ssid     = "YOUR_WIFI_SSID";
 const char* password = "YOUR_WIFI_PASSWORD";
-const char* apiKey   = "YOUR_THINGSPEAK_WRITE_KEY";  // from ThingSpeak tab
+const char* apiKey   = "YOUR_THINGSPEAK_WRITE_KEY";
 const char* tsURL    = "http://api.thingspeak.com/update";
 
-#define PMS_RX 16  #define PMS_TX 17
-#define MQ7_ADC 34  #define MQ135_ADC 35  #define MQ7_GATE 26
-#define PWM_CH 0  #define PWM_HZ 1000  #define PWM_BITS 8
-#define DUTY_HIGH 255  #define DUTY_LOW 72   // 28% ≈ 1.4V
+#define PMS_RX    16   // ESP32 Serial2 RX ← PMS7003 TX
+#define PMS_TX    17   // ESP32 Serial2 TX → PMS7003 RX
+#define MQ7_ADC   34   // MQ-7 AOUT via voltage divider A
+#define MQ135_ADC 35   // MQ-135 AOUT via voltage divider B
+#define MQ7_GATE  26   // IRLZ44N Gate (through 1kΩ)
+
+#define PWM_CH    0
+#define PWM_HZ    1000
+#define PWM_BITS  8
+#define DUTY_HIGH 255  // 100% = 5V (cleaning phase)
+#define DUTY_LOW  20   // 7.8% = (1.4/5)² keeps heater RMS at 1.4V
 
 Adafruit_BME280 bme;
 HardwareSerial pmsSerial(2);
-bool mq7High=true; uint32_t mq7Start=0;
-float mq7Last=0; bool mq7Ready=false;
+bool mq7High = true;
+uint32_t mq7Start = 0;
+float mq7Last = 0;
+bool mq7Ready = false;
 
-struct Pms{uint16_t pm1,pm25,pm10;};
-bool readPMS(Pms &d){
-  if(pmsSerial.available()&lt;32||pmsSerial.read()!=0x42||pmsSerial.read()!=0x4D)return false;
-  uint8_t b[30]; pmsSerial.readBytes(b,30);
-  d.pm25=(b[4]&lt;&lt;8)|b[5]; d.pm10=(b[6]&lt;&lt;8)|b[7]; return true;
+struct Pms { uint16_t pm1, pm25, pm10; };
+
+bool readPMS(Pms &d) {
+  if (pmsSerial.available() < 32) return false;
+  if (pmsSerial.read() != 0x42 || pmsSerial.read() != 0x4D) return false;
+  uint8_t b[30];
+  pmsSerial.readBytes(b, 30);
+  // PMS7003 frame after start bytes:
+  // b[0-1]=frame_len, b[2-3]=PM1.0, b[4-5]=PM2.5, b[6-7]=PM10 (standard env)
+  d.pm1  = (b[2] << 8) | b[3];
+  d.pm25 = (b[4] << 8) | b[5];
+  d.pm10 = (b[6] << 8) | b[7];
+  return true;
 }
-int avgADC(int pin,int n=20){long s=0;for(int i=0;i&lt;n;i++){s+=analogRead(pin);delay(3);}return s/n;}
-void updateMQ7(){
-  uint32_t e=millis()-mq7Start;
-  if(mq7High){if(e>=60000){ledcWrite(PWM_CH,DUTY_LOW);mq7High=false;mq7Start=millis();mq7Ready=false;}}
-  else{if(e>=60000&&!mq7Ready){mq7Last=avgADC(MQ7_ADC);mq7Ready=true;}
-       if(e>=90000){ledcWrite(PWM_CH,DUTY_HIGH);mq7High=true;mq7Start=millis();}}
+
+int avgADC(int pin, int n = 20) {
+  long s = 0;
+  for (int i = 0; i < n; i++) { s += analogRead(pin); delay(3); }
+  return s / n;
 }
-void setup(){
+
+void updateMQ7() {
+  uint32_t e = millis() - mq7Start;
+  if (mq7High) {
+    if (e >= 60000) {                        // 60s cleaning done
+      ledcWrite(PWM_CH, DUTY_LOW);           // switch to 1.4V RMS
+      mq7High = false;
+      mq7Start = millis();
+      mq7Ready = false;
+    }
+  } else {
+    if (e >= 60000 && !mq7Ready) {           // read in last 30s of 90s phase
+      mq7Last = avgADC(MQ7_ADC);
+      mq7Ready = true;
+    }
+    if (e >= 90000) {                        // 90s measurement done
+      ledcWrite(PWM_CH, DUTY_HIGH);          // back to 5V cleaning
+      mq7High = true;
+      mq7Start = millis();
+    }
+  }
+}
+
+void setup() {
   Serial.begin(115200);
-  pmsSerial.begin(9600,SERIAL_8N1,PMS_RX,PMS_TX);
-  Wire.begin(21,22);
-  if(!bme.begin(0x76)&&!bme.begin(0x77)){Serial.println("BME280 not found!");while(1);}
-  ledcSetup(PWM_CH,PWM_HZ,PWM_BITS);
-  ledcAttachPin(MQ7_GATE,PWM_CH);
-  ledcWrite(PWM_CH,DUTY_HIGH); mq7Start=millis();
-  WiFi.begin(ssid,password);
-  for(int i=0;i&lt;30&&WiFi.status()!=WL_CONNECTED;i++){delay(500);Serial.print(".");}
+  pmsSerial.begin(9600, SERIAL_8N1, PMS_RX, PMS_TX);
+  Wire.begin(21, 22);
+  if (!bme.begin(0x76) && !bme.begin(0x77)) {
+    Serial.println("BME280 not found!"); while (1);
+  }
+  ledcSetup(PWM_CH, PWM_HZ, PWM_BITS);
+  ledcAttachPin(MQ7_GATE, PWM_CH);
+  ledcWrite(PWM_CH, DUTY_HIGH);
+  mq7Start = millis();
+  WiFi.begin(ssid, password);
+  for (int i = 0; i < 30 && WiFi.status() != WL_CONNECTED; i++) {
+    delay(500); Serial.print(".");
+  }
 }
-void loop(){
+
+void loop() {
   updateMQ7();
-  float temp=bme.readTemperature(),hum=bme.readHumidity(),pres=bme.readPressure()/100.0f;
-  int mq135=avgADC(MQ135_ADC);
-  Pms pms={0,0,0};
-  uint32_t t0=millis(); while(millis()-t0&lt;1500)if(readPMS(pms))break;
-  float co=mq7Ready?mq7Last:-1;
-  // Send to ThingSpeak every 15s (free tier minimum)
-  static uint32_t lastSend=0;
-  if(millis()-lastSend>=15000&&WiFi.status()==WL_CONNECTED){
+
+  float temp = bme.readTemperature();
+  float hum  = bme.readHumidity();
+  float pres = bme.readPressure() / 100.0f;
+  int   mq135 = avgADC(MQ135_ADC);
+
+  Pms pms = {0, 0, 0};
+  uint32_t t0 = millis();
+  while (millis() - t0 < 1500) if (readPMS(pms)) break;
+
+  // Send every 152s (one full MQ-7 cycle = 60+90+2s overhead)
+  // ThingSpeak free tier: minimum 15s between writes — we are well above that
+  static uint32_t lastSend = 0;
+  if (millis() - lastSend >= 152000 && WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
-    String url=String(tsURL)
-      +"?api_key="+apiKey
-      +"&amp;field1="+String(temp,1)+"&amp;field2="+String(hum,1)
-      +"&amp;field3="+String(pres,1)+"&amp;field4="+String(co,0)
-      +"&amp;field5="+String(mq135)+"&amp;field6="+String(pms.pm25)
-      +"&amp;field7="+String(pms.pm10)
-      +"&amp;field8="+String(pms.pm1);
+    String url = String(tsURL)
+      + "?api_key=" + apiKey
+      + "&field1=" + String(temp, 1)
+      + "&field2=" + String(hum, 1)
+      + "&field3=" + String(pres, 1)
+      + "&field4=" + String(mq7Ready ? mq7Last : -1, 0)
+      + "&field5=" + String(mq135)
+      + "&field6=" + String(pms.pm25)
+      + "&field7=" + String(pms.pm10)
+      + "&field8=" + String(pms.pm1);
     http.begin(url);
-    Serial.println(http.GET()==200?"TS: OK":"TS: error");
-    http.end(); lastSend=millis();
+    int code = http.GET();
+    Serial.println(code == 200 ? "ThingSpeak: OK" : "ThingSpeak: error");
+    http.end();
+    lastSend = millis();
   }
   delay(500);
 }
@@ -842,11 +898,10 @@ void loop(){
 <div id="gs-architecture" class="g-sec">
   <div class="gcard">
     <h2>Air Atlas — System Architecture</h2>
-    <p style="font-size:13px;color:#555;margin-bottom:14px">How sensor data flows from your hardware all the way to the dashboard and into permanent storage.</p>
     <pre style="background:#1e1e2e;color:#cdd6f4;font-size:11px;line-height:1.5">
    ESP32 sensor station
       │
-      │  every 152 seconds (1 full MQ-7 voltage cycle)
+      │  every 152 seconds (1 full MQ-7 voltage cycle: 60s clean + 90s measure)
       │  via WiFi → HTTP GET to api.thingspeak.com/update
       ▼
    ThingSpeak (cloud database)
@@ -857,184 +912,62 @@ void loop(){
       ├──────────────────────┬──────────────────────────┐
       │                      │                          │
       │ on page load         │ every 30 minutes via     │
-      │ + every 3 mins       │ Google Apps Script       │
+      │ + every 150 seconds  │ Google Apps Script       │
       │ (silent refresh)     │ time-driven trigger      │
-      ▼                      ▼                          
-   Air Atlas Dashboard      Google Sheets              
-   (Netlify hosted HTML)    (permanent storage)         
-   • Reads ThingSpeak       • Flat table format         
-   • No data of its own     • Duplicate-checked         
-   • Charts live data       • UTC → IST timestamps      
-                            • Forever retention         
+      ▼                      ▼
+   Air Atlas Dashboard      Google Sheets
+   (Netlify hosted HTML)    (permanent storage)
+   • Reads ThingSpeak       • Flat table format
+   • No data of its own     • Duplicate-checked
+   • Charts live data       • UTC → IST timestamps
+                            • Forever retention
     </pre>
   </div>
-
-  <div class="gcard">
-    <h2>What each component does</h2>
-    <table>
-      <thead><tr><th>Component</th><th>Purpose</th><th>How often</th></tr></thead>
-      <tbody>
-        <tr><td><strong>ESP32 firmware</strong></td><td>Reads BME280 + PMS7003 + MQ-7 + MQ-135, sends 8 fields to ThingSpeak</td><td>Every 152s (matches MQ-7 cycle)</td></tr>
-        <tr><td><strong>ThingSpeak channel</strong></td><td>Cloud database, public read access, holds sensor history</td><td>Stores last 1 year</td></tr>
-        <tr><td><strong>Air Atlas dashboard</strong></td><td>Fetches latest readings, draws charts, no own storage</td><td>On load + every 3 mins</td></tr>
-        <tr><td><strong>Apps Script</strong></td><td>Copies all 10 channels into Sheet, prevents duplicates, IST conversion</td><td>Every 30 mins</td></tr>
-        <tr><td><strong>Google Sheets</strong></td><td>Permanent flat-table archive: timestamp, station, city, 8 sensor cols</td><td>Forever</td></tr>
-        <tr><td><strong>Netlify hosting</strong></td><td>Auto-deploys dashboard on every GitHub push</td><td>~30s after push</td></tr>
-        <tr><td><strong>GitHub repo</strong></td><td>Version history of dashboard HTML</td><td>Every commit</td></tr>
-      </tbody>
-    </table>
-  </div>
-
   <div class="gcard">
     <h2>Data flow — second by second</h2>
     <ol style="font-size:13px;color:#555;line-height:2;padding-left:20px">
-      <li>ESP32 wakes up → 60 seconds heating MQ-7 at 5V → 90 seconds at 1.4V (reading CO in last 30s)</li>
-      <li>Reads BME280 (temp/hum/pres), PMS7003 (PM1.0/PM2.5/PM10), MQ-135 (general AQ)</li>
-      <li>Sends single HTTP GET to <code>api.thingspeak.com/update</code> with 8 fields</li>
-      <li>ThingSpeak stores the row with a UTC timestamp and entry ID</li>
-      <li>Dashboard visitor opens Air Atlas → fetches last 8000 entries via JSON API</li>
-      <li>Every 3 mins after that, dashboard silently refreshes without clearing the screen</li>
-      <li>Apps Script trigger fires every 30 mins → loops through all 10 channels</li>
-      <li>For each channel: fetches last 10 entries, checks if timestamp already exists in Sheet</li>
-      <li>If new, appends row with IST-converted timestamp, station name, city, and all 8 sensor values</li>
-      <li>Sheet now has permanent record. Available forever for capstone analysis.</li>
+      <li>ESP32 wakes → 60 seconds heating MQ-7 at 5V (cleaning phase — no CO readings taken)</li>
+      <li>Switches IRLZ44N PWM to 7.8% duty → heater settles to 1.4V RMS for 90 seconds</li>
+      <li>At 60 seconds into measurement phase (30 seconds before end), reads MQ-7 ADC</li>
+      <li>Simultaneously reads BME280 (temp/hum/pres), PMS7003 (PM1.0/PM2.5/PM10), MQ-135</li>
+      <li>Sends single HTTP GET to ThingSpeak with all 8 fields — total cycle: 152 seconds</li>
+      <li>Dashboard visitor fetches last 8000 entries via ThingSpeak JSON API on page load</li>
+      <li>Every 150 seconds, dashboard silently refreshes without clearing charts</li>
+      <li>Apps Script trigger fires every 30 mins → loops through all channels</li>
+      <li>Checks timestamp against Sheet to avoid duplicates, appends new rows with IST time</li>
     </ol>
-  </div>
-
-  <div class="gcard">
-    <h2>Why each design choice was made</h2>
-    <table>
-      <thead><tr><th>Choice</th><th>Why</th></tr></thead>
-      <tbody>
-        <tr><td><strong>152-second send interval</strong></td><td>Matches MQ-7 voltage cycle. Sending faster wastes ThingSpeak's 15s minimum quota and gives invalid CO readings during heat phase.</td></tr>
-        <tr><td><strong>10 separate ThingSpeak accounts</strong></td><td>Free tier limits each account to 3M messages/year. With 10 accounts × 1 channel each, no rate limit conflicts.</td></tr>
-        <tr><td><strong>Google Sheets for storage</strong></td><td>Free, never expires, easy to download as Excel for analysis, no database admin needed.</td></tr>
-        <tr><td><strong>Apps Script every 30 mins (not every minute)</strong></td><td>ThingSpeak free has bandwidth quotas. 30-min interval × 10 channels = ~480 fetches/day, well under limits.</td></tr>
-        <tr><td><strong>Dashboard refreshes every 3 mins</strong></td><td>Matches ESP32 send rate. More frequent = wasted fetches, less frequent = stale display.</td></tr>
-        <tr><td><strong>Silent background refresh</strong></td><td>Earlier version cleared the screen every fetch causing flickering. Now updates only the data, never wipes charts.</td></tr>
-        <tr><td><strong>Duplicate prevention in Apps Script</strong></td><td>Without it, every 30-min run would re-save the same recent rows. Sheet would bloat with 10× duplicates.</td></tr>
-        <tr><td><strong>Field order standardised</strong></td><td>All 10 stations must use the same field-to-sensor mapping or the dashboard mixes up the readings.</td></tr>
-      </tbody>
-    </table>
   </div>
 </div>
 
 <!-- THINGSPEAK SETUP -->
 <div id="gs-thingspeak" class="g-sec">
   <div class="gcard">
-    <h2>Connecting 10 ThingSpeak free accounts to Air Atlas</h2>
-    <p style="font-size:13px;color:#555;margin-bottom:14px">Each team member creates one free ThingSpeak account and one channel. The dashboard fetches all channels in parallel using their public Read API Keys.</p>
-
-    <div class="info-box"><strong>Free ThingSpeak limits (per account):</strong> Up to 3 channels per account · Minimum 15 seconds between writes · 3 million messages/year · Rate limit on reads: ~100 req/min. With 10 accounts you have 10 independent channels all running simultaneously with no shared rate limit.</div>
-
-    <h3 style="margin-bottom:8px">Step 1 — Each person sets up their account</h3>
-    <div class="step-row"><span class="step-num">1</span><div>Go to <a href="https://thingspeak.com" target="_blank">thingspeak.com</a> → Create account (free, use any email)</div></div>
-    <div class="step-row"><span class="step-num">2</span><div>Channels → New Channel → Name it (e.g. "Air Atlas – Sanganoor Rd") → add 8 fields in this exact order:<br>Field 1: <strong>Temperature</strong> · Field 2: <strong>Humidity</strong> · Field 3: <strong>Pressure</strong> · Field 4: <strong>CO</strong> · Field 5: <strong>MQ135</strong> · Field 6: <strong>PM2.5</strong> · Field 7: <strong>PM10</strong> · Field 8: <strong>PM1.0</strong></div></div>
-    <div class="step-row"><span class="step-num">3</span><div>Save. Go to <strong>API Keys</strong> tab → copy the <strong>Write API Key</strong> → paste into your ESP32 firmware's <code>apiKey</code> variable</div></div>
-    <div class="step-row"><span class="step-num">4</span><div>Also copy your <strong>Channel ID</strong> (shown in the URL and at the top of the channel page) and your <strong>Read API Key</strong> → share both with the dashboard maintainer</div></div>
-
+    <h2>ThingSpeak setup — field order (must match firmware)</h2>
+    <div class="info-box">All stations must configure their ThingSpeak channel fields in this exact order or the dashboard will display the wrong data.</div>
+    <table>
+      <thead><tr><th>Field</th><th>Sensor</th><th>Unit</th><th>Firmware variable</th></tr></thead>
+      <tbody>
+        <tr><td>Field 1</td><td>Temperature</td><td>°C</td><td>temp</td></tr>
+        <tr><td>Field 2</td><td>Humidity</td><td>%</td><td>hum</td></tr>
+        <tr><td>Field 3</td><td>Pressure</td><td>hPa</td><td>pres</td></tr>
+        <tr><td>Field 4</td><td>CO (MQ-7)</td><td>ADC</td><td>mq7Last</td></tr>
+        <tr><td>Field 5</td><td>MQ-135</td><td>ADC</td><td>mq135</td></tr>
+        <tr><td>Field 6</td><td>PM 2.5</td><td>µg/m³</td><td>pms.pm25</td></tr>
+        <tr><td>Field 7</td><td>PM 10</td><td>µg/m³</td><td>pms.pm10</td></tr>
+        <tr><td>Field 8</td><td>PM 1.0</td><td>µg/m³</td><td>pms.pm1</td></tr>
+      </tbody>
+    </table>
     <div class="sep"></div>
-    <h3 style="margin-bottom:8px">Step 2 — Dashboard config (one person manages this file)</h3>
-    <p style="font-size:13px;color:#555;margin-bottom:10px">Replace the dummy values below with real Channel IDs and Read API Keys collected from all 10 participants. The <code>field</code> numbers match what each person configured above.</p>
-<pre>
-// air-atlas-config.js
-// Each person shares their channelId + readApiKey with you.
-// Keep Write API Keys private — only the device owner needs those.
-
-const TS_CHANNELS = [
-  {
-    station:   "Sanganoor Rd",
-    city:      "Coimbatore",
-    channelId: "2345678",          // ← replace with real Channel ID
-    readKey:   "ABCD1234EFGH5678", // ← replace with real Read API Key
-    owner:     "Person 1"
-  },
-  {
-    station:   "Kasturi Nagar",
-    city:      "Bangalore",
-    channelId: "2345679",
-    readKey:   "IJKL9012MNOP3456",
-    owner:     "Person 2"
-  },
-  {
-    station:   "Hebbal",
-    city:      "Bangalore",
-    channelId: "2345680",
-    readKey:   "QRST7890UVWX1234",
-    owner:     "Person 3"
-  },
-  // ... add all 10 entries
-];
-
-// Field mapping (must match ThingSpeak channel field order)
-const FIELD_MAP = {
-  temp:  "field1",
-  hum:   "field2",
-  pres:  "field3",
-  co:    "field4",
-  mq135: "field5",
-  pm25:  "field6",
-  pm10:  "field7",
-  pm1:   "field8"
-};
-</pre>
-
-    <div class="sep"></div>
-    <h3 style="margin-bottom:8px">Step 3 — Fetching live data from ThingSpeak</h3>
-    <p style="font-size:13px;color:#555;margin-bottom:10px">The function below fetches the last N results for any channel as JSON:</p>
-<pre>
-// Fetch last `results` readings from a ThingSpeak channel
-async function fetchChannel(channelId, readKey, results = 500) {
-  const url = `https://api.thingspeak.com/channels/${channelId}/feeds.json`
-            + `?api_key=${readKey}&results=${results}`;
-  const res  = await fetch(url);
-  const json = await res.json();
-
-  // json.feeds is an array of readings:
-  // { created_at: "2026-04-27T09:14:32Z", field1: "31.2", field6: "42.1", ... }
-  return json.feeds.map(f => ({
-    ts:    new Date(f.created_at).getTime(),
-    temp:  parseFloat(f.field1),
-    hum:   parseFloat(f.field2),
-    pres:  parseFloat(f.field3),
-    co:    parseFloat(f.field4),
-    mq135: parseFloat(f.field5),
-    pm25:  parseFloat(f.field6),
-    pm10:  parseFloat(f.field7),
-    pm1:   parseFloat(f.field8)
-  })).filter(r => !isNaN(r.temp));
-}
-
-// Fetch ALL 10 channels in parallel (much faster than sequential)
-async function fetchAllStations() {
-  const results = await Promise.all(
-    TS_CHANNELS.map(ch => fetchChannel(ch.channelId, ch.readKey, 500))
-  );
-  // results[0] = array of readings for station 0, etc.
-  return results;
-}
-
-// Auto-refresh every 30 seconds
-async function startLiveMode() {
-  await fetchAllStations();        // initial load
-  setInterval(fetchAllStations, 30000); // refresh every 30s
-}
-</pre>
-
-    <div class="sep"></div>
-    <h3 style="margin-bottom:8px">Step 4 — ThingSpeak free tier tips &amp; gotchas</h3>
+    <h3>ThingSpeak free tier limits</h3>
     <table>
       <thead><tr><th>Situation</th><th>What happens</th><th>Solution</th></tr></thead>
       <tbody>
-        <tr><td>ESP32 sends faster than 15s</td><td>ThingSpeak returns <code>0</code> (rejected)</td><td>Keep <code>millis()-lastSend &gt;= 15000</code> in firmware</td></tr>
-        <tr><td>Channel is private</td><td>API returns 401 Unauthorized</td><td>Channel Settings → Make Public, or share Read API Key</td></tr>
-        <tr><td>Fetching &gt; 8000 results</td><td>API caps at 8000 per request</td><td>Use date range params: <code>&start=2026-04-01</code></td></tr>
-        <tr><td>WiFi drops mid-session</td><td>ESP32 stops sending — gap in data</td><td>Add <code>WiFi.reconnect()</code> in loop if <code>status != WL_CONNECTED</code></td></tr>
-        <tr><td>Multiple devices same channel</td><td>Data gets mixed / overwritten</td><td>Each device must have its own channel and Write API Key</td></tr>
-        <tr><td>Rate limit on reads (dashboard)</td><td>&gt;100 req/min blocked</td><td>Fetch all 10 channels together every 30s, not every second</td></tr>
+        <tr><td>Sending faster than 15s</td><td>ThingSpeak returns 0 (rejected)</td><td>Our 152s interval is well above the limit</td></tr>
+        <tr><td>Channel is private</td><td>API returns 401</td><td>Channel Settings → Make Public, or share Read API Key</td></tr>
+        <tr><td>Fetching &gt;8000 results</td><td>API caps at 8000</td><td>Use date range params: &amp;start=2026-04-01</td></tr>
+        <tr><td>WiFi drops mid-session</td><td>Gap in data</td><td>Add WiFi.reconnect() in loop if status ≠ WL_CONNECTED</td></tr>
       </tbody>
     </table>
-
   </div>
 </div>
 
@@ -1045,15 +978,15 @@ async function startLiveMode() {
     <div class="warn-box">Always power off (unplug USB) before adding or moving wires.</div>
     <div class="sep"></div>
     <div class="step-row"><span class="step-num">1</span><div><strong>Place ESP32</strong> on the 830-point breadboard, straddling the centre gap so each pin sits on its own row.</div></div>
-    <div class="step-row"><span class="step-num">2</span><div><strong>Place 2N7000 MOSFET</strong> on the breadboard with the flat face toward you. Pins from left to right: <strong>Source · Gate · Drain</strong>.</div></div>
-    <div class="step-row"><span class="step-num">3</span><div><strong>Wire the 2N7000:</strong> Source → GND rail · Gate → 1kΩ resistor → ESP32 GPIO32 · Drain → MQ-7 GND pin (later in step 7).</div></div>
+    <div class="step-row"><span class="step-num">2</span><div><strong>Place IRLZ44N MOSFET</strong> on the breadboard with the printed label facing you. Pins left to right: <strong>Gate · Drain · Source</strong>.</div></div>
+    <div class="step-row"><span class="step-num">3</span><div><strong>Wire the IRLZ44N:</strong> Source (right leg) → GND rail · Gate (left leg) → 1kΩ resistor → ESP32 GPIO26 · Drain (middle leg) → MQ-7 GND pin (done in step 7).</div></div>
     <div class="step-row"><span class="step-num">4</span><div><strong>Wire BME280:</strong> VCC → 3V3 · GND → GND · SDA → GPIO21 · SCL → GPIO22.</div></div>
-    <div class="step-row"><span class="step-num">5</span><div><strong>Wire PMS7003:</strong> Pin 1 (VCC) → VIN (5V) · Pin 2 (GND) → GND · Pin 9 (TX) → GPIO16 · Pin 8 (RX) → GPIO17. (TX always crosses to RX.)</div></div>
-    <div class="step-row"><span class="step-num">6</span><div><strong>Build voltage divider A</strong> for MQ-7: R1 10kΩ + R2 20kΩ in series, junction → GPIO35.</div></div>
-    <div class="step-row"><span class="step-num">7</span><div><strong>Wire MQ-7:</strong> VCC → ESP32 5V/Vin pin · <strong>GND → 2N7000 Drain</strong> (NOT direct to ground rail) · AOUT → top of divider A.</div></div>
-    <div class="step-row"><span class="step-num">8</span><div><strong>Build voltage divider B</strong> for MQ-135 and wire MQ-135: VCC → 5V · GND → GND · AOUT → top of divider B → GPIO33.</div></div>
-    <div class="step-row"><span class="step-num">9</span><div><strong>Final checks:</strong><br>✓ 1kΩ resistor between GPIO32 and 2N7000 Gate<br>✓ MQ-7's GND goes to MOSFET Drain, not ground rail<br>✓ TX/RX swap on PMS7003 (TX→GPIO16, RX→GPIO17)<br>✓ All other component GNDs share the common rail</div></div>
-    <div class="step-row"><span class="step-num">10</span><div><strong>Upload firmware:</strong> Board → "ESP32 Dev Module" · correct port · Serial Monitor at 115200. MQ sensors need 24–48h warm-up for calibrated readings.</div></div>
+    <div class="step-row"><span class="step-num">5</span><div><strong>Wire PMS7003:</strong> Pin 1 (VCC) → VIN (5V) · Pin 2 (GND) → GND · Pin 9 (TX) → GPIO16 · Pin 8 (RX) → GPIO17. TX always crosses to RX.</div></div>
+    <div class="step-row"><span class="step-num">6</span><div><strong>Build voltage divider A</strong> for MQ-7: R1 10kΩ + R2 20kΩ in series, junction → GPIO34.</div></div>
+    <div class="step-row"><span class="step-num">7</span><div><strong>Wire MQ-7:</strong> VCC → ESP32 VIN · <strong>GND → IRLZ44N Drain</strong> (NOT directly to GND rail — the MOSFET controls this) · AOUT → top of divider A.</div></div>
+    <div class="step-row"><span class="step-num">8</span><div><strong>Build voltage divider B</strong> for MQ-135: same 10kΩ + 20kΩ configuration, junction → GPIO35. Wire MQ-135: VCC → 5V · GND → GND (direct — no MOSFET) · AOUT → top of divider B.</div></div>
+    <div class="step-row"><span class="step-num">9</span><div><strong>Final checks before powering on:</strong><br>✓ 1kΩ resistor between GPIO26 and IRLZ44N Gate<br>✓ MQ-7 GND goes to IRLZ44N Drain, NOT to GND rail<br>✓ TX/RX crossed on PMS7003 (TX→GPIO16, RX→GPIO17)<br>✓ Both voltage dividers in place before GPIO34 and GPIO35<br>✓ All other GNDs on the common rail</div></div>
+    <div class="step-row"><span class="step-num">10</span><div><strong>Upload firmware.</strong> Board → "ESP32 Dev Module" · correct COM port · Serial Monitor at 115200 baud. MQ sensors need 24–48h warm-up for calibrated readings.</div></div>
   </div>
   <div class="gcard">
     <h2>Troubleshooting</h2>
@@ -1061,12 +994,12 @@ async function startLiveMode() {
       <thead><tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr></thead>
       <tbody>
         <tr><td>BME280 not found</td><td>I²C address mismatch</td><td>Code tries 0x76 then 0x77 automatically</td></tr>
-        <tr><td>No PMS7003 data</td><td>TX/RX swapped or wrong pins</td><td>Confirm GPIO16 (RX2) and GPIO17 (TX2) — try swapping</td></tr>
-        <tr><td>MQ reads always 4095</td><td>AOUT direct to GPIO (no divider)</td><td>Check voltage divider wiring</td></tr>
-        <tr><td>MQ-7 always reads 0</td><td>MOSFET wired wrong</td><td>Check Source/Gate/Drain — flat face toward you</td></tr>
-        <tr><td>MQ-7 doesn't cycle</td><td>1kΩ resistor missing</td><td>Add 1kΩ between GPIO32 and Gate — mandatory</td></tr>
-        <tr><td>ESP32 resets randomly</td><td>USB cable doesn't supply enough current</td><td>Try a different USB cable</td></tr>
-        <tr><td>ThingSpeak returns FAIL</td><td>Sending faster than 15s, or wrong API key</td><td>Cycle is 152s anyway — check API key for typos</td></tr>
+        <tr><td>No PMS7003 data</td><td>TX/RX swapped or wrong pins</td><td>Confirm GPIO16→PMS TX, GPIO17→PMS RX — try swapping</td></tr>
+        <tr><td>MQ reads always 4095</td><td>AOUT direct to GPIO, no divider</td><td>Check voltage divider A/B wiring</td></tr>
+        <tr><td>MQ-7 always reads 0</td><td>MOSFET wired wrong or GND bypassed</td><td>Check Gate/Drain/Source order — label facing you, G left, S right</td></tr>
+        <tr><td>MQ-7 doesn't cycle</td><td>1kΩ gate resistor missing or GPIO wrong</td><td>Gate must connect through 1kΩ to GPIO26 specifically</td></tr>
+        <tr><td>ESP32 resets randomly</td><td>USB cable insufficient current</td><td>Try a different USB cable or powered hub</td></tr>
+        <tr><td>ThingSpeak returns FAIL</td><td>Wrong API key or WiFi drop</td><td>Check serial monitor — code logs "OK" or "error"</td></tr>
       </tbody>
     </table>
   </div>
@@ -1077,18 +1010,18 @@ async function startLiveMode() {
   <div class="gcard">
     <h2>Glossary</h2>
     <div class="gloss-grid">
-      <div class="gloss-card"><h4>GPIO</h4><p>The metal pins on your ESP32. Software sets them HIGH (3.3V) or LOW (0V). Max safe input: 3.3V — connecting 5V permanently damages the chip.</p></div>
-      <div class="gloss-card"><h4>ADC — Analog-to-Digital Converter</h4><p>Reads a voltage (0–3.3V) and converts it to a number 0–4095. MQ sensor readings arrive through these pins after voltage dividers scale them down.</p></div>
-      <div class="gloss-card"><h4>PWM — Pulse Width Modulation</h4><p>Simulates a lower voltage by rapidly switching ON/OFF. At 28% duty: 5V × 0.28 = 1.4V effective. Used to control the MQ-7 heater in the LOW phase.</p></div>
-      <div class="gloss-card"><h4>Voltage divider</h4><p>Two series resistors that split voltage proportionally. R1=10kΩ, R2=20kΩ → Vout = 5V × 20/30 = 3.33V. Protects ESP32 ADC from MQ sensors' 5V output.</p></div>
-      <div class="gloss-card"><h4>MOSFET</h4><p>An electronic switch controlled by voltage. GPIO26 drives the Gate, allowing current Drain→Source to switch the MQ-7 heater. IRLZ44N switches fully at 3.3V — safe for ESP32 direct drive.</p></div>
-      <div class="gloss-card"><h4>I²C</h4><p>Two-wire protocol: SDA (data) + SCL (clock). BME280 uses it. Multiple devices share the same two wires via unique addresses (0x76 or 0x77).</p></div>
+      <div class="gloss-card"><h4>GPIO</h4><p>The metal pins on ESP32. Software sets them HIGH (3.3V) or LOW (0V). Max safe input: 3.3V. Connecting 5V permanently damages the chip.</p></div>
+      <div class="gloss-card"><h4>ADC — Analog-to-Digital Converter</h4><p>Reads a voltage (0–3.3V) and converts to a number 0–4095. MQ sensor readings arrive through these after voltage dividers scale them down.</p></div>
+      <div class="gloss-card"><h4>PWM — Pulse Width Modulation</h4><p>Simulates a lower RMS voltage by rapidly switching ON/OFF. At 7.8% duty: 5V × √0.078 = 1.4V RMS. Used to control the MQ-7 heater in the measurement phase.</p></div>
+      <div class="gloss-card"><h4>Voltage divider</h4><p>Two series resistors that split voltage. R1=10kΩ, R2=20kΩ → Vout = 5V × 20/30 = 3.33V. Protects ESP32 ADC from 5V sensor outputs.</p></div>
+      <div class="gloss-card"><h4>MOSFET (IRLZ44N)</h4><p>An electronic switch controlled by gate voltage. GPIO26 drives the Gate through 1kΩ, current flows Drain→Source, switching the MQ-7 heater. Logic-level gate: fully ON at 3.3V.</p></div>
+      <div class="gloss-card"><h4>I²C</h4><p>Two-wire protocol: SDA (data) + SCL (clock). BME280 uses addresses 0x76 or 0x77. Multiple devices can share the same two wires.</p></div>
       <div class="gloss-card"><h4>UART</h4><p>Serial protocol: TX sends, RX receives. TX always crosses to the other device's RX. PMS7003 streams data at 9600 baud on GPIO16/17.</p></div>
-      <div class="gloss-card"><h4>Flyback diode (1N4007)</h4><p>Inductive loads generate reverse voltage spikes when switched off. The 1N4007 clamps these, protecting the MOSFET. Stripe (cathode) always toward +V.</p></div>
-      <div class="gloss-card"><h4>Heater element</h4><p>A resistive wire coil inside MQ sensors heats a metal oxide bead to ~300°C. Gas molecules change the bead's resistance — the AOUT pin reflects this as voltage.</p></div>
-      <div class="gloss-card"><h4>AOUT — Analog Output</h4><p>Continuous 0–5V pin on MQ modules. Higher gas = higher voltage. Must be divided to 0–3.3V before any ESP32 GPIO pin.</p></div>
-      <div class="gloss-card"><h4>Voltage cycling (MQ-7)</h4><p>5V for 60s clears the sensing surface. 1.4V for 90s lets CO bind — resistance is measured here. Without cycling, readings drift and saturate.</p></div>
-      <div class="gloss-card"><h4>ThingSpeak Read API Key</h4><p>A public key that lets anyone fetch your channel's data over HTTPS. Safe to share — it can only read, not write. The Write API Key must stay private on your device.</p></div>
+      <div class="gloss-card"><h4>Heater element</h4><p>A resistive wire coil inside MQ sensors heats a metal oxide bead to ~300°C. Gas molecules change the bead's resistance, which appears as a voltage change on AOUT.</p></div>
+      <div class="gloss-card"><h4>AOUT — Analog Output</h4><p>Continuous 0–5V pin on MQ modules. Higher gas concentration = higher voltage. Must be divided to 0–3.3V before any ESP32 ADC pin.</p></div>
+      <div class="gloss-card"><h4>Voltage cycling (MQ-7)</h4><p>5V for 60s clears the sensing surface (cleaning). 1.4V for 90s lets CO bind — resistance is measured in last 30s. Without cycling, readings drift and saturate.</p></div>
+      <div class="gloss-card"><h4>ThingSpeak Read API Key</h4><p>A public key for fetching channel data over HTTPS. Safe to share — read-only. The Write API Key must stay private on your ESP32 firmware only.</p></div>
+      <div class="gloss-card"><h4>PMS7003 frame format</h4><p>After start bytes 0x42 0x4D: bytes 2-3 = PM1.0, bytes 4-5 = PM2.5, bytes 6-7 = PM10 (standard environment concentrations in µg/m³).</p></div>
     </div>
   </div>
 </div>
@@ -1153,12 +1086,24 @@ function fmtTs(ts){return new Date(ts).toLocaleString('en-IN',{month:'short',day
 function fmtDate(ts){return new Date(ts).toLocaleDateString('en-IN',{month:'short',day:'numeric'});}
 function setEl(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
 
+// Build simulated series for non-live stations using station's known base values
 function buildSeries(d){
   const n=nFor('all');
-  allSeries={pm25:genSeries(d.pm25,n,.18),pm10:genSeries(d.pm10,n,.15),pm100:genSeries(d.pm100,n,.16),
-    co:genSeries(d.co,n,.1),mq135:genSeries(d.mq135,n,.14),temp:genSeries(d.temp,n,.05),
+  allSeries={pm25:genSeries(d.pm25,n,.18),pm10:genSeries(d.pm10,n,.15),
+    pm100:genSeries(d.pm100,n,.16),co:genSeries(d.co,n,.1),
+    mq135:genSeries(d.mq135,n,.14),temp:genSeries(d.temp,n,.05),
     hum:genSeries(d.hum,n,.08),pres:genSeries(d.pres,n,.02)};
   allSeries.aqi=allSeries.pm25.map(p=>({x:p.x,y:calcAQI(p.y)}));
+}
+function buildEmpty(){
+  allSeries={pm25:[],pm10:[],pm100:[],co:[],mq135:[],temp:[],hum:[],pres:[],aqi:[]};
+}
+function showNoData(show){
+  document.querySelectorAll('.chart-wrap').forEach(wrap=>{
+    let ov=wrap.querySelector('.no-data-overlay');
+    if(show){if(!ov){ov=document.createElement('div');ov.className='no-data-overlay';ov.innerHTML='<div class="no-data-dot"></div><div class="no-data-text">No entries yet</div>';wrap.appendChild(ov);}}
+    else{if(ov)ov.remove();}
+  });
 }
 
 function whoAnnotations(thr){
@@ -1180,7 +1125,7 @@ const FIELDS={
   pm25:{title:'PM 2.5',unit:'µg/m³',threshold:25,color:'#b87c00',key:'pm25'},
   pm10:{title:'PM 1.0',unit:'µg/m³',threshold:null,color:'#2d7a4f',key:'pm10'},
   pm100:{title:'PM 10',unit:'µg/m³',threshold:50,color:'#c0392b',key:'pm100'},
-  co:{title:'CO (MQ-7)',unit:'V',threshold:null,color:'#1a3a2a',key:'co'},
+  co:{title:'CO (MQ-7)',unit:'ADC',threshold:null,color:'#1a3a2a',key:'co'},
   mq135:{title:'MQ-135',unit:'ADC',threshold:null,color:'#7b2d8b',key:'mq135'},
   temp:{title:'Temperature',unit:'°C',threshold:null,color:'#c0392b',key:'temp'},
   hum:{title:'Humidity',unit:'%',threshold:null,color:'#378ADD',key:'hum'},
@@ -1214,7 +1159,7 @@ function renderHeatmap(){
   data.forEach(p=>{const d=new Date(p.x);B[d.getDay()][d.getHours()].push(p.y);});
   const avgs=B.map(r=>r.map(c=>c.length?c.reduce((a,b)=>a+b,0)/c.length:null));
   const flat=avgs.flat().filter(v=>v!==null),mn=Math.min(...flat),rng=Math.max(...flat)-mn||1;
-  const col=v=>{if(!v)return'#f0ede8';const t=(v-mn)/rng;return t<.4?`rgba(45,122,79,${.2+t*2})`:t<.7?`rgba(184,124,0,${.3+(t-.4)*2})`:`rgba(192,57,43,${.3+(t-.7)*2.3})`;};
+  const col=v=>{if(v===null)return'#f0ede8';const t=(v-mn)/rng;return t<.4?`rgba(45,122,79,${.2+t*2})`:t<.7?`rgba(184,124,0,${.3+(t-.4)*2})`:`rgba(192,57,43,${.3+(t-.7)*2.3})`;};
   const grid=document.getElementById('heatmap-grid');grid.innerHTML='';
   grid.appendChild(Object.assign(document.createElement('div'),{className:'hm-label'}));
   HOURS.forEach(h=>{const el=document.createElement('div');el.className='hm-header';el.textContent=h%4===0?h+'h':'';grid.appendChild(el);});
@@ -1234,8 +1179,9 @@ function renderDiurnal(){
   CI['c-diurnal']=new Chart(ctx,{type:'bar',data:{labels:HOURS.map(h=>h+':00'),datasets:[{data:avgs,backgroundColor:avgs.map(v=>v?f.color+'99':'rgba(0,0,0,.05)'),borderRadius:3,borderSkipped:false}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>`${i.parsed.y} ${f.unit||''}`}}},
       scales:{x:{ticks:{color:'#6b6b67',font:{size:8},maxTicksLimit:12},grid:{display:false}},y:{ticks:{color:'#6b6b67',font:{size:9}},grid:{color:'rgba(0,0,0,.04)'}}}}});
-  const peak=avgs.indexOf(Math.max(...avgs.filter(Boolean)));
-  setEl('diurnal-info',`Peak hour: ${peak}:00 — avg ${avgs[peak]} ${f.unit||''}`);
+  const validAvgs=avgs.filter(Boolean);
+  const peak=avgs.indexOf(Math.max(...validAvgs));
+  setEl('diurnal-info',validAvgs.length?`Peak hour: ${peak}:00 — avg ${avgs[peak]} ${f.unit||''}`:'No data');
 }
 
 function renderCDF(){
@@ -1328,7 +1274,7 @@ function addAnnotation(){
 function removeAnnotation(i){ANNOTATIONS[modalFieldId].splice(i,1);renderAnnotationsList();renderModal(modalWindow);}
 function renderAnnotationsList(){
   const list=document.getElementById('annotations-list'),anns=ANNOTATIONS[modalFieldId]||[];
-  list.innerHTML=anns.length?anns.map((a,i)=>`<div class="ann-item"><span class="ann-time">${fmtTs(a.start)}${a.end?' → '+fmtTs(a.end):''}</span><span class="ann-text">${a.text}</span><button class="ann-del" onclick="removeAnnotation(${i})">✕</button></div>`).join(''):'<span style="font-size:10px;color:var(--muted);font-family:var(--mono);">No annotations yet.</span>';
+  list.innerHTML=anns.length?anns.map((a,i)=>`<div class="ann-item"><span class="ann-time">${fmtTs(a.start)}${a.end?' → '+fmtTs(a.end):''}</span><span>${a.text}</span><button class="ann-del" onclick="removeAnnotation(${i})">✕</button></div>`).join(''):'<span style="font-size:10px;color:var(--muted);font-family:var(--mono);">No annotations yet.</span>';
 }
 function setModalWindow(w,btn){modalWindow=w;document.querySelectorAll('.modal-time-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderModal(w);}
 function closeModal(){document.getElementById('modal-overlay').classList.remove('open');if(CI['modal-canvas']){CI['modal-canvas'].destroy();delete CI['modal-canvas'];modalChart=null;}}
@@ -1347,73 +1293,88 @@ function renderAll(){renderMiniCharts();renderCorr();renderDiurnal();renderCDF()
 
 /* STATIONS */
 const STATIONS={
-  coimbatore:{
-    landmarks:['Sanganoor Rd','Kovaipudur'],
-    state:'Tamil Nadu',
-    data:{
-      'Sanganoor Rd':{temp:28.4,hum:64,alt:411,pm25:34,pm10:22,pm100:48,co:1.8,mq135:1480,pres:962},
-      'Kovaipudur'  :{temp:27.1,hum:68,alt:430,pm25:28,pm10:18,pm100:40,co:1.6,mq135:1320,pres:961,live:true,channelId:'3280989',readKey:'V0D0JK0DVKY9U7WH'}
-    }
-  },
-  bangalore:{
-    landmarks:['Kasturi Nagar','Hebbal','Southeast'],
-    state:'Karnataka',
-    data:{
-      'Kasturi Nagar':{temp:24.1,hum:58,alt:921,pm25:52,pm10:34,pm100:74,co:2.2,mq135:1820,pres:910},
-      'Hebbal'        :{temp:23.8,hum:62,alt:918,pm25:61,pm10:40,pm100:88,co:2.5,mq135:2060,pres:909},
-      'Southeast'     :{temp:25.2,hum:55,alt:914,pm25:44,pm10:29,pm100:63,co:2.0,mq135:1650,pres:911}
-    }
-  },
   mumbai:{
     landmarks:['Chembur'],
     state:'Maharashtra',
-    data:{      'Chembur':{temp:31.8,hum:79,alt:10,pm25:68,pm10:45,pm100:96,co:2.9,mq135:2280,pres:1011,live:true,channelId:'3286234',readKey:'284O2HH43PM3ARSE'}}
+    data:{
+      'Chembur':{temp:31.8,hum:79,alt:10,pm25:68,pm10:45,pm100:96,co:2900,mq135:2280,pres:1011,
+        live:true,channelId:'3286234',readKey:'284O2HH43PM3ARSE'}
+    }
   },
   pune:{
     landmarks:['Madha Colony','Kothrud','Kharadi'],
     state:'Maharashtra',
     data:{
-      'Madha Colony':{temp:27.6,hum:52,alt:558,pm25:46,pm10:31,pm100:65,co:2.1,mq135:1780,pres:944},
-      'Kothrud'     :{temp:26.9,hum:55,alt:572,pm25:38,pm10:25,pm100:54,co:1.9,mq135:1560,pres:943},
-      'Kharadi'     :{temp:27.2,hum:53,alt:560,pm25:42,pm10:28,pm100:60,co:2.0,mq135:1700,pres:944,live:true,channelId:'3285464',readKey:'TZ5UVGV5AKFDROQV'}
+      'Madha Colony':{temp:27.6,hum:52,alt:558,pm25:46,pm10:31,pm100:65,co:2100,mq135:1780,pres:944},
+      'Kothrud'     :{temp:26.9,hum:55,alt:572,pm25:38,pm10:25,pm100:54,co:1900,mq135:1560,pres:943},
+      'Kharadi'     :{temp:27.2,hum:53,alt:560,pm25:42,pm10:28,pm100:60,co:2000,mq135:1700,pres:944,
+        live:true,channelId:'3285464',readKey:'TZ5UVGV5AKFDROQV'}
     }
   },
   gurgaon:{
     landmarks:['Shiv Nadar School','Kunskapsskolan'],
     state:'Haryana',
     data:{
-      'Shiv Nadar School':{temp:29.3,hum:48,alt:217,pm25:88,pm10:58,pm100:124,co:3.1,mq135:2640,pres:1009},
-      'Kunskapsskolan'   :{temp:30.1,hum:45,alt:220,pm25:96,pm10:63,pm100:138,co:3.4,mq135:2880,pres:1008}
+      'Shiv Nadar School':{temp:29.3,hum:48,alt:217,pm25:88,pm10:58,pm100:124,co:3100,mq135:2640,pres:1009},
+      'Kunskapsskolan'   :{temp:30.1,hum:45,alt:220,pm25:96,pm10:63,pm100:138,co:3400,mq135:2880,pres:1008}
+    }
+  },
+  coimbatore:{
+    landmarks:['Sanganoor Rd','Kovaipudur'],
+    state:'Tamil Nadu',
+    data:{
+      'Sanganoor Rd':{temp:28.4,hum:64,alt:411,pm25:34,pm10:22,pm100:48,co:1800,mq135:1480,pres:962},
+      'Kovaipudur'  :{temp:27.1,hum:68,alt:430,pm25:28,pm10:18,pm100:40,co:1600,mq135:1320,pres:961,
+        live:true,channelId:'3280989',readKey:'V0D0JK0DVKY9U7WH'}
+    }
+  },
+  bangalore:{
+    landmarks:['Kasturi Nagar','Hebbal','Southeast'],
+    state:'Karnataka',
+    data:{
+      'Kasturi Nagar':{temp:24.1,hum:58,alt:921,pm25:52,pm10:34,pm100:74,co:2200,mq135:1820,pres:910},
+      'Hebbal'        :{temp:23.8,hum:62,alt:918,pm25:61,pm10:40,pm100:88,co:2500,mq135:2060,pres:909},
+      'Southeast'     :{temp:25.2,hum:55,alt:914,pm25:44,pm10:29,pm100:63,co:2000,mq135:1650,pres:911}
     }
   },
   lucknow:{
     landmarks:['Gomti Nagar'],
     state:'Uttar Pradesh',
-    data:{'Gomti Nagar':{temp:31.8,hum:71,alt:123,pm25:112,pm10:74,pm100:158,co:3.8,mq135:3100,pres:1006}}
+    data:{
+      'Gomti Nagar':{temp:31.8,hum:71,alt:123,pm25:112,pm10:74,pm100:158,co:3800,mq135:3100,pres:1006}
+    }
   }
 };
 
-function buildEmpty(){
-  allSeries={pm25:[],pm10:[],pm100:[],co:[],mq135:[],temp:[],hum:[],pres:[],aqi:[]};
+function updateBandAndAQI(d,pm25val){
+  setEl('band-alt',d.alt+' m');
+  setEl('band-temp',d.temp+'°C');
+  setEl('band-hum',d.hum+'%');
+  const aqi=calcAQI(pm25val);
+  setEl('aqi-num',aqi);setEl('aqi-status',aqiLbl(aqi));
+  document.getElementById('aqi-circle').className='aqi-circle '+aqiCls(aqi);
+  document.getElementById('aqi-needle').style.left=Math.min(aqi/300*100,97)+'%';
 }
-function showNoData(show){
-  document.querySelectorAll('.chart-wrap').forEach(wrap=>{
-    let ov=wrap.querySelector('.no-data-overlay');
-    if(show){if(!ov){ov=document.createElement('div');ov.className='no-data-overlay';ov.innerHTML='<div class="no-data-dot"></div><div class="no-data-text">No entries yet</div>';wrap.appendChild(ov);}}
-    else{if(ov)ov.remove();}
-  });
+function updateCurrentReadings(){
+  const last=k=>allSeries[k]&&allSeries[k].length?allSeries[k][allSeries[k].length-1].y:'—';
+  setEl('m-pm25',last('pm25'));setEl('m-pm10',last('pm10'));setEl('m-pm100',last('pm100'));
+  setEl('m-co',last('co'));setEl('m-mq135',last('mq135'));
+  setEl('m-temp',last('temp'));setEl('m-hum',last('hum'));
 }
+
 async function fetchAndBuild(d){
   try{
     const url=`https://api.thingspeak.com/channels/${d.channelId}/feeds.json?api_key=${d.readKey}&results=8000`;
     const json=await(await fetch(url)).json();
     const feeds=(json.feeds||[]).filter(f=>f.field1);
     const mk=field=>feeds.map(f=>({x:new Date(f.created_at).getTime(),y:+parseFloat(f[field]||0).toFixed(1)})).filter(p=>!isNaN(p.y));
-    allSeries={temp:mk('field1'),hum:mk('field2'),pres:mk('field3'),co:mk('field4'),mq135:mk('field5'),pm25:mk('field6'),pm100:mk('field7'),pm10:mk('field8')};
+    allSeries={temp:mk('field1'),hum:mk('field2'),pres:mk('field3'),co:mk('field4'),
+      mq135:mk('field5'),pm25:mk('field6'),pm100:mk('field7'),pm10:mk('field8')};
     allSeries.aqi=allSeries.pm25.map(p=>({x:p.x,y:calcAQI(p.y)}));
     return feeds.length>0;
-  }catch(e){console.error('fetch err',e);return false;}
+  }catch(e){console.error('ThingSpeak fetch error:',e);return false;}
 }
+
 function populateLandmarks(city){
   const sel=document.getElementById('landmark-select');sel.innerHTML='';
   STATIONS[city].landmarks.forEach(l=>{const o=document.createElement('option');o.value=l;o.textContent=l;sel.appendChild(o);});
@@ -1422,58 +1383,59 @@ function onCityChange(){populateLandmarks(document.getElementById('city-select')
 async function onLandmarkChange(){
   const c=document.getElementById('city-select').value,l=document.getElementById('landmark-select').value;
   const d=STATIONS[c].data[l],state=STATIONS[c].state;
-  document.getElementById('band-location').innerHTML=`<div class="band-location-name">${l}, ${c[0].toUpperCase()+c.slice(1)}</div><div class="band-location-sub">${state}, India</div>`;
-  setEl('band-alt',d.alt+' m');setEl('band-temp',d.temp+'°C');setEl('band-hum',d.hum+'%');
+  document.getElementById('band-location').innerHTML=
+    `<div class="band-location-name">${l}, ${c[0].toUpperCase()+c.slice(1)}</div><div class="band-location-sub">${state}, India</div>`;
+
   if(d.live){
+    // Try to fetch real data from ThingSpeak
     showNoData(false);
+    setEl('aqi-num','…');setEl('aqi-status','Fetching…');
     const ok=await fetchAndBuild(d);
-    if(ok&&allSeries.temp.length){
-      const lp=allSeries.pm25[allSeries.pm25.length-1].y,aqi=calcAQI(lp);
-      setEl('aqi-num',aqi);setEl('aqi-status',aqiLbl(aqi));
-      document.getElementById('aqi-circle').className='aqi-circle '+aqiCls(aqi);
-      document.getElementById('aqi-needle').style.left=Math.min(aqi/300*100,97)+'%';
-      setEl('m-pm25',lp);
-      setEl('m-pm100',allSeries.pm100.length?allSeries.pm100[allSeries.pm100.length-1].y:'—');
-      setEl('m-co',allSeries.co.length?allSeries.co[allSeries.co.length-1].y:'—');
-      setEl('m-mq135',allSeries.mq135.length?allSeries.mq135[allSeries.mq135.length-1].y:'—');
-      setEl('m-temp',allSeries.temp.length?allSeries.temp[allSeries.temp.length-1].y:d.temp);
-      setEl('m-hum',allSeries.hum.length?allSeries.hum[allSeries.hum.length-1].y:d.hum);
-      setEl('m-pm10','—');
-    } else {buildEmpty();showNoData(true);setEl('aqi-num','—');setEl('aqi-status','No data');}
+    if(ok&&allSeries.pm25.length){
+      const lp=allSeries.pm25[allSeries.pm25.length-1].y;
+      updateBandAndAQI(d,lp);
+      updateCurrentReadings();
+    } else {
+      // Live station but no data yet — fall back to simulated
+      buildSeries(d);
+      showNoData(false);
+      updateBandAndAQI(d,allSeries.pm25[allSeries.pm25.length-1].y);
+      updateCurrentReadings();
+    }
   } else {
-    buildEmpty();showNoData(true);
-    setEl('aqi-num','—');setEl('aqi-status','No data');
-    document.getElementById('aqi-circle').className='aqi-circle moderate';
-    document.getElementById('aqi-needle').style.left='0%';
-    ['m-pm25','m-pm10','m-pm100','m-co','m-mq135','m-temp','m-hum'].forEach(id=>setEl(id,'—'));
+    // Non-live station: generate simulated data from known base values
+    buildSeries(d);
+    showNoData(false);
+    const lp=allSeries.pm25[allSeries.pm25.length-1].y;
+    updateBandAndAQI(d,lp);
+    updateCurrentReadings();
   }
+
   renderAll();renderHeatmap();
   setEl('last-updated','Updated: '+new Date().toLocaleTimeString());
 }
-let refreshTimer=null;
+
 async function silentRefresh(){
   const c=document.getElementById('city-select').value,l=document.getElementById('landmark-select').value;
   const d=STATIONS[c].data[l];
-  if(!d.live)return;
+  if(!d.live)return; // simulated stations don't refresh
   try{
     const ok=await fetchAndBuild(d);
-    if(ok&&allSeries.temp.length){
-      const lp=allSeries.pm25.length?allSeries.pm25[allSeries.pm25.length-1].y:0;
-      const aqi=lp?calcAQI(lp):0;
-      if(lp){setEl('aqi-num',aqi);setEl('aqi-status',aqiLbl(aqi));document.getElementById('aqi-circle').className='aqi-circle '+aqiCls(aqi);document.getElementById('aqi-needle').style.left=Math.min(aqi/300*100,97)+'%';}
-      setEl('m-temp',allSeries.temp[allSeries.temp.length-1].y);
-      setEl('m-hum',allSeries.hum[allSeries.hum.length-1].y);
-      if(allSeries.co.length)setEl('m-co',allSeries.co[allSeries.co.length-1].y);
-      if(allSeries.mq135.length)setEl('m-mq135',allSeries.mq135[allSeries.mq135.length-1].y);
+    if(ok&&allSeries.pm25.length){
+      const lp=allSeries.pm25[allSeries.pm25.length-1].y;
+      updateBandAndAQI(d,lp);
+      updateCurrentReadings();
       setEl('last-updated','Updated: '+new Date().toLocaleTimeString());
       renderAll();renderHeatmap();
     }
-  }catch(e){}// silently keep showing last data if fetch fails
+  }catch(e){}
 }
+
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
-populateLandmarks('mumbai');onLandmarkChange();
-// refresh every 3 minutes (matches ESP32 MQ-7 cycle) without clearing screen
-setInterval(silentRefresh,180000);
+populateLandmarks('mumbai');
+onLandmarkChange();
+// Refresh every 150s — matches the MQ-7 full cycle (60s clean + 90s measure)
+setInterval(silentRefresh,150000);
 
 /* BUILD GUIDE */
 function guideShow(id,btn){
@@ -1483,16 +1445,14 @@ function guideShow(id,btn){
 }
 const guideTips={
   term:{t:"Hover-enabled term",b:"Hover any underlined word in this guide for a quick definition."},
-  gpio:{t:"GPIO",b:"The metal pins on ESP32. Each can be HIGH (3.3V) or LOW (0V). Some pins read voltages (ADC), some output PWM."},
-  transistor:{t:"2N7000 MOSFET",b:"Electronic switch: GPIO32 drives the Gate through 1kΩ, current flows Drain→Source, controlling the MQ-7 heater."},
-  cycling:{t:"Voltage cycling",b:"5V for 60s burns off impurities. 1.4V for 90s lets CO bind for measurement. Without cycling, readings saturate."},
-  pwm:{t:"PWM",b:"Rapid ON/OFF switching simulates lower voltage. 7.8% duty × 5V² gives 1.4V effective heating power."},
-  i2c:{t:"I²C",b:"Two-wire protocol: SDA + SCL. BMP280 uses addresses 0x76 or 0x77. Multiple devices share the same two wires."},
-  uart:{t:"UART",b:"Serial: TX sends, RX receives. TX always crosses to the other device's RX. PMS7003 at 9600 baud."},
-  aout:{t:"AOUT",b:"Analog output 0–3.3V on modern MQ modules with built-in level shifters. Read directly by ESP32 ADC pins."},
-  heater:{t:"Heater element",b:"Resistive coil heats metal oxide bead to ~300°C. Gas changes bead resistance → AOUT voltage changes."},
-  mcu:{t:"Microcontroller",b:"ESP32: 32-bit dual-core chip with WiFi. Runs your sketch, reads sensors, sends data to ThingSpeak."},
-  "5v":{t:"5V power",b:"MQ sensors and PMS7003 need 5V power from VIN. Their data pins are 3.3V compatible (level-shifted on the module)."}
+  mosfet:{t:"IRLZ44N MOSFET",b:"Logic-level N-channel MOSFET. Gate switches fully ON at 3.3V — safe for direct ESP32 drive. Controls MQ-7 heater via PWM on GPIO26. Pins (label facing you): Gate · Drain · Source."},
+  cycling:{t:"Voltage cycling",b:"5V for 60s burns off impurities (cleaning). 1.4V for 90s lets CO bind for measurement — read in last 30s. Without cycling, readings saturate and drift."},
+  pwm:{t:"PWM",b:"Rapid ON/OFF switching creates an effective RMS voltage. At 7.8% duty: 5V × √0.078 = 1.4V RMS at the MQ-7 heater. Must use the squared formula — NOT the linear ratio."},
+  i2c:{t:"I²C",b:"Two-wire protocol: SDA (data, GPIO21) + SCL (clock, GPIO22). BME280 uses address 0x76 or 0x77. Multiple devices share the same two wires."},
+  uart:{t:"UART",b:"Serial protocol: TX sends, RX receives. TX always crosses to the other device's RX. PMS7003 at 9600 baud on GPIO16 (RX2) and GPIO17 (TX2)."},
+  aout:{t:"AOUT",b:"Analog output 0–5V on MQ modules. Must pass through a 10kΩ/20kΩ voltage divider to reach 0–3.3V before the ESP32 ADC pin."},
+  heater:{t:"Heater element",b:"Resistive coil heats a metal oxide bead to ~300°C. Gas molecules change the bead's resistance — reflected as a voltage change on AOUT. Requires cycling for accurate CO measurement."},
+  mcu:{t:"Microcontroller",b:"ESP32: 32-bit dual-core with WiFi. Runs your sketch, reads sensors via I²C/UART/ADC, sends readings to ThingSpeak over HTTP."}
 };
 const gTip=document.getElementById('guide-tooltip'),gTT=document.getElementById('guide-tt-title'),gTB=document.getElementById('guide-tt-body');
 document.getElementById('page-guide').addEventListener('mouseover',e=>{
