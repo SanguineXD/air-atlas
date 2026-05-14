@@ -233,6 +233,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
       <option value="pune">Pune</option>
       <option value="coimbatore">Coimbatore</option>
       <option value="bangalore">Bangalore</option>
+      <option value="lucknow">Lucknow</option>
     </select>
   </div>
   <div class="select-wrap">
@@ -1383,7 +1384,7 @@ const STATIONS={
     state:'Karnataka',
     data:{
       'Thanisandra':{temp:24.5,hum:60,alt:920,pm25:50,pm10:33,pm100:72,co:2.2,mq135:1800,pres:910,live:true,channelId:'3281052',readKey:'YZ3M3CQTKNKQS1Q5'},
-      'Sarjapur'   :{temp:25.0,hum:57,alt:910,pm25:48,pm10:31,pm100:69,co:2.1,mq135:1750,pres:911}
+      'Sarjapur'   :{temp:25.0,hum:57,alt:910,pm25:48,pm10:31,pm100:69,co:2.1,mq135:1750,pres:911,live:true,channelId:'3372629',readKey:'ZGYK6DD391RYC2IX'}
     }
   },
   mumbai:{
@@ -1395,21 +1396,22 @@ const STATIONS={
     landmarks:['Viman Nagar','Kharadi'],
     state:'Maharashtra',
     data:{
-      'Viman Nagar':{temp:27.4,hum:54,alt:565,pm25:44,pm10:29,pm100:62,co:2.0,mq135:1720,pres:944},
+      'Viman Nagar':{temp:27.4,hum:54,alt:570,pm25:44,pm10:29,pm100:62,co:2.0,mq135:1720,pres:944,live:true,channelId:'3366986',readKey:'QKYDB0GFC8X81NTH'},
       'Kharadi'    :{temp:27.2,hum:53,alt:560,pm25:42,pm10:28,pm100:60,co:2.0,mq135:1700,pres:944,live:true,channelId:'3285464',readKey:'TZ5UVGV5AKFDROQV'}
     }
   },
   gurgaon:{
-    landmarks:['Unitech Cyber Park'],
+    landmarks:['Unitech Cyber Park','DLF Phase V'],
     state:'Haryana',
     data:{
-      'Unitech Cyber Park':{temp:29.7,hum:46,alt:218,pm25:92,pm10:60,pm100:130,co:3.2,mq135:2750,pres:1009,live:true,channelId:'3290239',readKey:'97YO37HRNGGJZYJU'}
+      'Unitech Cyber Park':{temp:29.7,hum:46,alt:218,pm25:92,pm10:60,pm100:130,co:3.2,mq135:2750,pres:1009,live:true,channelId:'3290239',readKey:'97YO37HRNGGJZYJU'},
+      'DLF Phase V'       :{temp:29.5,hum:47,alt:225,pm25:90,pm10:59,pm100:128,co:3.2,mq135:2720,pres:1009,live:true,channelId:'3313143',readKey:'QCM25O6AV0PLMRCJ'}
     }
   },
   lucknow:{
     landmarks:['Gomti Nagar'],
     state:'Uttar Pradesh',
-    data:{'Gomti Nagar':{temp:31.8,hum:71,alt:123,pm25:112,pm10:74,pm100:158,co:3.8,mq135:3100,pres:1006}}
+    data:{'Gomti Nagar':{temp:31.8,hum:71,alt:123,pm25:112,pm10:74,pm100:158,co:3.8,mq135:3100,pres:1006,live:true,channelId:'3331748',readKey:'ICZC6AKGSCIYO0LU'}}
   }
 };
 
