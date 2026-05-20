@@ -47,7 +47,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
 .aqi-status{font-size:13px;color:var(--muted);margin-top:5px;text-align:center;}
 .aqi-bar-wrap{flex:1;}
 .aqi-bar-label{font-size:12px;color:var(--muted);margin-bottom:6px;}
-.aqi-bar{height:10px;border-radius:5px;background:linear-gradient(to right,#2d7a4f 0%,#b87c00 40%,#c0392b 70%,#7b2d8b 100%);position:relative;margin-bottom:4px;}
+.aqi-bar{height:10px;border-radius:5px;background:linear-gradient(to right,#2d7a4f 12.5%,#b87c00 37.5%,#c0392b 62.5%,#7b2d8b 87.5%);position:relative;margin-bottom:4px;}
 .aqi-needle{position:absolute;top:-4px;width:3px;height:18px;background:var(--text);border-radius:2px;transform:translateX(-50%);transition:left .5s ease;}
 .aqi-bar-ticks{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:5px;}
 .section-title{padding:.65rem 2rem .35rem;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
@@ -263,7 +263,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
   </div>
   <div class="aqi-bar-wrap">
     <div class="aqi-bar-label">Air Quality Index — WHO thresholds</div>
-    <div class="aqi-bar"><div class="aqi-needle" id="aqi-needle" style="left:28%"></div></div>
+    <div class="aqi-bar"><div class="aqi-needle" id="aqi-needle" style="left:36%"></div></div>
     <div class="aqi-bar-ticks"><span>0 Good</span><span>50</span><span>100 Moderate</span><span>150 Unhealthy</span><span>300+</span></div>
   </div>
 </div>
@@ -351,6 +351,16 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
       <div class="csi"><span class="csl s-avg">Avg</span><span class="csv s-avg" id="s-hum-avg">—</span></div>
     </div>
   </div>
+  <div class="chart-card" onclick="openModal('pres')">
+    <div class="chart-header"><div class="chart-title" title="Barometric pressure in hectopascals. Decreasing pressure often precedes weather changes; low pressure can trap pollutants near ground (atmospheric inversion). From BME280 sensor, ±1 hPa accuracy.">Pressure</div><div class="expand-hint">↗ expand</div></div>
+    <div class="chart-wrap"><canvas id="c-pres"></canvas></div>
+    <div class="chart-stat">
+      <div class="csi"><span class="csl">Now</span><span class="csv" id="m-pres">—</span><span class="csu">hPa</span></div>
+      <div class="csi"><span class="csl s-min">Min</span><span class="csv s-min" id="s-pres-min">—</span></div>
+      <div class="csi"><span class="csl s-max">Max</span><span class="csv s-max" id="s-pres-max">—</span></div>
+      <div class="csi"><span class="csl s-avg">Avg</span><span class="csv s-avg" id="s-pres-avg">—</span></div>
+    </div>
+  </div>
 </div>
 
 <div class="section-title">Scientific Analysis Tools</div>
@@ -358,9 +368,9 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
   <div class="corr-card">
     <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title" title="Scatter plot showing how two variables relate. Pearson r value: 0=unrelated, +1=perfect positive, -1=perfect negative. Useful for finding hidden relationships e.g. PM2.5 vs humidity.">Correlation Explorer</div></div>
     <div class="corr-selects">
-      <select id="corr-x" onchange="renderCorr()"><option value="pm25">PM2.5</option><option value="hum">Humidity</option><option value="temp">Temp</option><option value="co">CO</option><option value="mq135">MQ-135</option></select>
+      <select id="corr-x" onchange="renderCorr()"><option value="pm25">PM2.5</option><option value="hum">Humidity</option><option value="temp">Temp</option><option value="co">CO</option><option value="mq135">MQ-135</option><option value="pres">Pressure</option></select>
       <span class="corr-vs">vs</span>
-      <select id="corr-y" onchange="renderCorr()"><option value="hum">Humidity</option><option value="pm25">PM2.5</option><option value="temp">Temp</option><option value="aqi">AQI</option><option value="pm100">PM10</option></select>
+      <select id="corr-y" onchange="renderCorr()"><option value="hum">Humidity</option><option value="pm25">PM2.5</option><option value="temp">Temp</option><option value="aqi">AQI</option><option value="pm100">PM10</option><option value="pres">Pressure</option></select>
     </div>
     <div class="corr-wrap"><canvas id="c-corr"></canvas></div>
     <div class="corr-info" id="corr-info">r = —</div>
@@ -368,7 +378,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
   <div class="corr-card">
     <div class="chart-header" style="margin-bottom:.6rem;"><div class="chart-title" title="Average pollution by hour of day across all your data. Reveals daily patterns — e.g. peaks during rush hour, dips at night. Each bar is one hour.">Diurnal Cycle (avg by hour)</div></div>
     <div class="corr-selects">
-      <select id="diurnal-field" onchange="renderDiurnal()"><option value="pm25">PM2.5</option><option value="aqi">AQI</option><option value="pm100">PM10</option><option value="co">CO</option><option value="mq135">MQ-135</option><option value="temp">Temp</option><option value="hum">Humidity</option></select>
+      <select id="diurnal-field" onchange="renderDiurnal()"><option value="pm25">PM2.5</option><option value="aqi">AQI</option><option value="pm100">PM10</option><option value="co">CO</option><option value="mq135">MQ-135</option><option value="temp">Temp</option><option value="hum">Humidity</option><option value="pres">Pressure</option></select>
     </div>
     <div class="corr-wrap"><canvas id="c-diurnal"></canvas></div>
     <div class="corr-info" id="diurnal-info">Peak hour: —</div>
@@ -410,7 +420,7 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
   <div class="heatmap-card">
     <div class="heatmap-controls">
       <select id="hm-field" onchange="renderHeatmap()">
-        <option value="pm25">PM2.5</option><option value="pm10">PM1.0</option><option value="pm100">PM10</option><option value="co">CO</option><option value="mq135">MQ-135</option><option value="aqi">AQI</option><option value="temp">Temperature</option><option value="hum">Humidity</option>
+        <option value="pm25">PM2.5</option><option value="pm10">PM1.0</option><option value="pm100">PM10</option><option value="co">CO</option><option value="mq135">MQ-135</option><option value="aqi">AQI</option><option value="temp">Temperature</option><option value="hum">Humidity</option><option value="pres">Pressure</option>
       </select>
       <span style="font-size:11px;color:var(--muted);font-family:var(--mono);">Each cell = avg reading for that hour × weekday</span>
     </div>
@@ -1174,6 +1184,14 @@ function calcAQI(pm25){
 }
 function aqiCls(a){return a<=50?'good':a<=100?'moderate':'unhealthy';}
 function aqiLbl(a){return a<=50?'Good':a<=100?'Moderate':a<=150?'Unhealthy (sensitive)':'Unhealthy';}
+function aqiNeedlePos(a){
+  if(a<=0)return 0;
+  if(a<=50)return a/50*25;
+  if(a<=100)return 25+(a-50)/50*25;
+  if(a<=150)return 50+(a-100)/50*25;
+  if(a<=300)return 75+(a-150)/150*25;
+  return 100;
+}
 function fmtTs(ts){return new Date(ts).toLocaleString('en-IN',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});}
 function fmtDate(ts){return new Date(ts).toLocaleDateString('en-IN',{month:'short',day:'numeric'});}
 function setEl(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
@@ -1209,6 +1227,7 @@ const FIELDS={
   mq135:{title:'MQ-135',unit:'ADC',threshold:null,color:'#7b2d8b',key:'mq135'},
   temp:{title:'Temperature',unit:'°C',threshold:null,color:'#c0392b',key:'temp'},
   hum:{title:'Humidity',unit:'%',threshold:null,color:'#378ADD',key:'hum'},
+  pres:{title:'Pressure',unit:'hPa',threshold:null,color:'#5b7a8a',key:'pres'},
 };
 
 function mkChart(canvasId,fid,w){
@@ -1453,13 +1472,14 @@ async function onLandmarkChange(){
       const lp=allSeries.pm25[allSeries.pm25.length-1].y,aqi=calcAQI(lp);
       setEl('aqi-num',aqi);setEl('aqi-status',aqiLbl(aqi));
       document.getElementById('aqi-circle').className='aqi-circle '+aqiCls(aqi);
-      document.getElementById('aqi-needle').style.left=Math.min(aqi/300*100,97)+'%';
+      document.getElementById('aqi-needle').style.left=aqiNeedlePos(aqi)+'%';
       setEl('m-pm25',lp);
       setEl('m-pm100',allSeries.pm100.length?allSeries.pm100[allSeries.pm100.length-1].y:'—');
       setEl('m-co',allSeries.co.length?allSeries.co[allSeries.co.length-1].y:'—');
       setEl('m-mq135',allSeries.mq135.length?allSeries.mq135[allSeries.mq135.length-1].y:'—');
       setEl('m-temp',allSeries.temp.length?allSeries.temp[allSeries.temp.length-1].y:d.temp);
       setEl('m-hum',allSeries.hum.length?allSeries.hum[allSeries.hum.length-1].y:d.hum);
+      setEl('m-pres',allSeries.pres.length?allSeries.pres[allSeries.pres.length-1].y:d.pres);
       setEl('m-pm10','—');
     } else {buildEmpty();showNoData(true);setEl('aqi-num','—');setEl('aqi-status','No data');}
   } else {
@@ -1467,7 +1487,7 @@ async function onLandmarkChange(){
     setEl('aqi-num','—');setEl('aqi-status','No data');
     document.getElementById('aqi-circle').className='aqi-circle moderate';
     document.getElementById('aqi-needle').style.left='0%';
-    ['m-pm25','m-pm10','m-pm100','m-co','m-mq135','m-temp','m-hum'].forEach(id=>setEl(id,'—'));
+    ['m-pm25','m-pm10','m-pm100','m-co','m-mq135','m-temp','m-hum','m-pres'].forEach(id=>setEl(id,'—'));
   }
   renderAll();renderHeatmap();
   setEl('last-updated','Updated: '+new Date().toLocaleTimeString());
@@ -1482,9 +1502,10 @@ async function silentRefresh(){
     if(ok&&allSeries.temp.length){
       const lp=allSeries.pm25.length?allSeries.pm25[allSeries.pm25.length-1].y:0;
       const aqi=lp?calcAQI(lp):0;
-      if(lp){setEl('aqi-num',aqi);setEl('aqi-status',aqiLbl(aqi));document.getElementById('aqi-circle').className='aqi-circle '+aqiCls(aqi);document.getElementById('aqi-needle').style.left=Math.min(aqi/300*100,97)+'%';}
+      if(lp){setEl('aqi-num',aqi);setEl('aqi-status',aqiLbl(aqi));document.getElementById('aqi-circle').className='aqi-circle '+aqiCls(aqi);document.getElementById('aqi-needle').style.left=aqiNeedlePos(aqi)+'%';}
       setEl('m-temp',allSeries.temp[allSeries.temp.length-1].y);
       setEl('m-hum',allSeries.hum[allSeries.hum.length-1].y);
+      if(allSeries.pres.length)setEl('m-pres',allSeries.pres[allSeries.pres.length-1].y);
       if(allSeries.co.length)setEl('m-co',allSeries.co[allSeries.co.length-1].y);
       if(allSeries.mq135.length)setEl('m-mq135',allSeries.mq135[allSeries.mq135.length-1].y);
       setEl('last-updated','Updated: '+new Date().toLocaleTimeString());
