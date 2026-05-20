@@ -47,8 +47,14 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
 .aqi-status{font-size:13px;color:var(--muted);margin-top:5px;text-align:center;}
 .aqi-bar-wrap{flex:1;}
 .aqi-bar-label{font-size:12px;color:var(--muted);margin-bottom:6px;}
-.aqi-bar{height:10px;border-radius:5px;background:linear-gradient(to right,#2d7a4f 12.5%,#b87c00 37.5%,#c0392b 62.5%,#7b2d8b 87.5%);position:relative;margin-bottom:4px;}
+.aqi-bar{height:10px;border-radius:5px;background:linear-gradient(to right,#2d7a4f 0%,#2d7a4f 22%,#b87c00 28%,#b87c00 47%,#c0392b 53%,#c0392b 72%,#7b2d8b 78%,#7b2d8b 100%);position:relative;margin-bottom:4px;}
 .aqi-needle{position:absolute;top:-4px;width:3px;height:18px;background:var(--text);border-radius:2px;transform:translateX(-50%);transition:left .5s ease;}
+.aqi-bar-marks{position:relative;height:13px;font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;}
+.aqi-bar-marks span{position:absolute;transform:translateX(-50%);}
+.aqi-bar-marks span:first-child{transform:none;}
+.aqi-bar-marks span:last-child{transform:translateX(-100%);}
+.aqi-bar-cats{position:relative;height:11px;font-size:9px;color:var(--muted);font-family:var(--mono);opacity:.7;}
+.aqi-bar-cats span{position:absolute;transform:translateX(-50%);white-space:nowrap;}
 .aqi-bar-ticks{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:5px;}
 .section-title{padding:.65rem 2rem .35rem;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
 .charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px;padding:0 2rem .9rem;}
@@ -264,7 +270,8 @@ select:focus{outline:2px solid var(--accent);outline-offset:2px;}
   <div class="aqi-bar-wrap">
     <div class="aqi-bar-label">Air Quality Index — WHO thresholds</div>
     <div class="aqi-bar"><div class="aqi-needle" id="aqi-needle" style="left:36%"></div></div>
-    <div class="aqi-bar-ticks"><span>0 Good</span><span>50</span><span>100 Moderate</span><span>150 Unhealthy</span><span>300+</span></div>
+    <div class="aqi-bar-marks"><span style="left:0%">0</span><span style="left:25%">50</span><span style="left:50%">100</span><span style="left:75%">150</span><span style="left:100%">300+</span></div>
+    <div class="aqi-bar-cats"><span style="left:12.5%">Good</span><span style="left:37.5%">Moderate</span><span style="left:62.5%">Unhealthy (sensitive)</span><span style="left:87.5%">Unhealthy</span></div>
   </div>
 </div>
 
@@ -1415,16 +1422,15 @@ const STATIONS={
     landmarks:['Viman Nagar','Kharadi'],
     state:'Maharashtra',
     data:{
-      'Viman Nagar':{temp:27.4,hum:54,alt:570,pm25:44,pm10:29,pm100:62,co:2.0,mq135:1720,pres:944,live:true,channelId:'3366986',readKey:'QKYDB0GFC8X81NTH'},
+      'Viman Nagar':{temp:27.4,hum:54,alt:570,pm25:44,pm10:29,pm100:62,co:2.0,mq135:1720,pres:944,live:true,channelId:'3386127',readKey:'MYL200D4XURI60WD'},
       'Kharadi'    :{temp:27.2,hum:53,alt:560,pm25:42,pm10:28,pm100:60,co:2.0,mq135:1700,pres:944,live:true,channelId:'3285464',readKey:'TZ5UVGV5AKFDROQV'}
     }
   },
   gurgaon:{
-    landmarks:['Unitech Cyber Park','DLF Phase V'],
+    landmarks:['Unitech Cyber Park'],
     state:'Haryana',
     data:{
-      'Unitech Cyber Park':{temp:29.7,hum:46,alt:218,pm25:92,pm10:60,pm100:130,co:3.2,mq135:2750,pres:1009,live:true,channelId:'3290239',readKey:'97YO37HRNGGJZYJU'},
-      'DLF Phase V'       :{temp:29.5,hum:47,alt:225,pm25:90,pm10:59,pm100:128,co:3.2,mq135:2720,pres:1009,live:true,channelId:'3313143',readKey:'QCM25O6AV0PLMRCJ'}
+      'Unitech Cyber Park':{temp:29.7,hum:46,alt:218,pm25:92,pm10:60,pm100:130,co:3.2,mq135:2750,pres:1009,live:true,channelId:'3290239',readKey:'97YO37HRNGGJZYJU'}
     }
   },
   lucknow:{
